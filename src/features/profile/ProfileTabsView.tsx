@@ -96,9 +96,9 @@ export const ProfileTabsView: React.FC<ProfileTabsViewProps> = ({
             </div>
           </div>
 
-          {user.interests && user.interests.length > 0 && (
+          {user.interests && user.interests.length > 0 ? (
             <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
-              <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2">
+              <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 font-sora">
                 Pan-African Interests
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -108,6 +108,13 @@ export const ProfileTabsView: React.FC<ProfileTabsViewProps> = ({
                   </Badge>
                 ))}
               </div>
+            </div>
+          ) : (
+            <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
+              <h3 className="text-xs font-bold text-neutral-500 uppercase tracking-wider mb-2 font-sora">
+                Pan-African Interests
+              </h3>
+              <p className="text-xs text-neutral-400">No interests selected yet.</p>
             </div>
           )}
         </div>

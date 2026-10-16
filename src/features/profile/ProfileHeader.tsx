@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Calendar,
@@ -16,6 +16,8 @@ import {
   Ban,
   AlertTriangle,
   Sparkles,
+  Camera,
+  Loader2,
 } from 'lucide-react';
 import { User } from '@/types';
 import { Avatar } from '@/components/ui/Avatar';
@@ -28,6 +30,7 @@ import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { getCountryByCode } from '@/utils/countryData';
+import { mediaService } from '@/services/mediaService';
 
 interface ProfileHeaderProps {
   user: User;
@@ -35,7 +38,9 @@ interface ProfileHeaderProps {
 
 export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { currentUser, updateProfile } = useAuth();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
   const {
     getFriendshipStatus,
     sendFriendRequest,
@@ -52,6 +57,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   const isMe = currentUser?.id === user.id;
   const friendship = getFriendshipStatus(user.id);
@@ -61,6 +67,21 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
   const handleStartMessage = () => {
     startConversationWithUser(user);
     router.push('/messages');
+  };
+
+  const handleDirectAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploadingAvatar(true);
+      const newAvatarUrl = await mediaService.uploadAvatar(file, file.name);
+      updateProfile({ avatarUrl: newAvatarUrl });
+    } catch (err: any) {
+      alert(err?.message || 'Failed to update profile photo.');
+    } finally {
+      setIsUploadingAvatar(false);
+    }
   };
 
   return (
@@ -78,15 +99,39 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
       {/* Main Profile Info */}
       <div className="px-5 sm:px-8 pb-6 pt-0 relative">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-16 sm:-mt-20 mb-4 gap-4">
-          {/* Avatar with country flag */}
+          {/* Avatar with country flag and S3 upload trigger if owner */}
           <div className="relative">
-            <Avatar
-              src={user.avatarUrl}
-              alt={user.fullName}
-              size="2xl"
-              className="border-4 border-white dark:border-neutral-900 shadow-xl"
-              countryFlag={countryObj?.flag || (user.countryCode === 'GH' ? '🇬🇭' : '🇳🇬')}
-            />
+            {isMe && (
+              <input
+                type="file"
+                ref={avatarInputRef}
+                onChange={handleDirectAvatarUpload}
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+              />
+            )}
+
+            <div
+              onClick={() => isMe && !isUploadingAvatar && avatarInputRef.current?.click()}
+              className={`relative ${isMe ? 'group cursor-pointer' : ''}`}
+            >
+              <Avatar
+                src={user.avatarUrl}
+                alt={user.fullName}
+                size="2xl"
+                className="border-4 border-white dark:border-neutral-900 shadow-xl"
+                countryFlag={countryObj?.flag || (user.countryCode === 'GH' ? '🇬🇭' : '🇳🇬')}
+              />
+              {isMe && (
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  {isUploadingAvatar ? (
+                    <Loader2 className="w-8 h-8 text-white animate-spin" />
+                  ) : (
+                    <Camera className="w-7 h-7 text-white" />
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -176,7 +221,8 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 <div className="relative">
                   <button
                     onClick={() => setShowMoreMenu(!showMoreMenu)}
-                    className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 transition"
+                    className="p-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:text-neutral-900 dark:hover:text-white transition"
+                    aria-label="More options"
                   >
                     <MoreVertical className="w-4 h-4" />
                   </button>

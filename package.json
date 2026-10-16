@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test src/services/__tests__/apiClient.test.ts"
+    "test": "node --experimental-strip-types --test src/services/__tests__/apiClient.test.ts src/services/__tests__/mediaService.test.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
