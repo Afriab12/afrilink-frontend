@@ -1,0 +1,48 @@
+'use client';
+
+import React from 'react';
+import { usePathname } from 'next/navigation';
+import { Navbar } from './Navbar';
+import { Sidebar } from './Sidebar';
+import { RightSidebar } from './RightSidebar';
+import { MobileNav } from './MobileNav';
+
+export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const pathname = usePathname();
+
+  const isAuthRoute =
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/reset-password' ||
+    pathname === '/onboarding';
+
+  if (isAuthRoute) {
+    return (
+      <main className="min-h-screen bg-[#F5F7F6] dark:bg-neutral-950 flex flex-col justify-center py-10 px-4">
+        {children}
+      </main>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#F5F7F6] dark:bg-neutral-950 flex flex-col font-sans text-neutral-900 dark:text-neutral-100">
+      <Navbar />
+
+      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-20 lg:pb-10 flex gap-6">
+        {/* Left Nav Sidebar */}
+        <Sidebar />
+
+        {/* Center Main Stream */}
+        <main className="flex-1 min-w-0 max-w-2xl mx-auto lg:mx-0 w-full">
+          {children}
+        </main>
+
+        {/* Right Discovery Sidebar */}
+        <RightSidebar />
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileNav />
+    </div>
+  );
+};
