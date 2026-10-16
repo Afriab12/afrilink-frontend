@@ -151,12 +151,12 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
   if (!isRecording) {
     return (
-      <div className="relative">
+      <div className="relative flex-shrink-0">
         <button
           type="button"
           onClick={startRecording}
           disabled={disabled || !isSupported}
-          className="p-2.5 rounded-full text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent"
+          className="p-2.5 rounded-full text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent pointer-events-auto cursor-pointer flex-shrink-0"
           title={isSupported ? 'Record voice message' : 'Voice not supported in this browser'}
           aria-label="Record voice message"
         >
@@ -174,7 +174,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
   // Active recording bar replacing or overlaying input controls
   return (
-    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-2xl animate-fadeIn">
+    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-2xl animate-fadeIn pointer-events-auto flex-shrink-0 z-20">
       {/* Recording Pulsing Dot & Timer */}
       <div className="flex items-center gap-1.5">
         <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
@@ -196,7 +196,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       <button
         type="button"
         onClick={cancelRecording}
-        className="p-1.5 rounded-xl text-neutral-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition"
+        className="p-1.5 rounded-xl text-neutral-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition pointer-events-auto cursor-pointer"
         title="Discard recording"
         aria-label="Discard recording"
       >
@@ -207,7 +207,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       <button
         type="button"
         onClick={stopAndSend}
-        className="px-3 py-1 bg-[#087443] hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1"
+        className="px-3 py-1 bg-[#087443] hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1 pointer-events-auto cursor-pointer"
         aria-label="Send voice message"
       >
         <Send className="w-3.5 h-3.5" />

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Compass, Users, TrendingUp, Sparkles } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
@@ -12,8 +13,13 @@ import { useSocial } from '@/stores/socialContext';
 import { useAuth } from '@/stores/authContext';
 
 export const RightSidebar: React.FC = () => {
+  const pathname = usePathname();
   const { currentUser } = useAuth();
   const { isFollowing, toggleFollow } = useSocial();
+
+  if (pathname?.startsWith('/messages')) {
+    return null;
+  }
 
   const suggestedUsers = INITIAL_USERS.filter((u) => u.id !== currentUser?.id).slice(0, 3);
   const featuredCountries = AFRICAN_COUNTRIES.slice(0, 4);

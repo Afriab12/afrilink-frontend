@@ -16,6 +16,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pathname === '/reset-password' ||
     pathname === '/onboarding';
 
+  const isMessagesRoute = pathname?.startsWith('/messages');
+
   if (isAuthRoute) {
     return (
       <main className="min-h-screen bg-[#F5F7F6] dark:bg-neutral-950 flex flex-col justify-center py-10 px-4">
@@ -28,17 +30,25 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     <div className="min-h-screen bg-[#F5F7F6] dark:bg-neutral-950 flex flex-col font-sans text-neutral-900 dark:text-neutral-100">
       <Navbar />
 
-      <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-20 lg:pb-10 flex gap-6">
+      <div
+        className={`flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-20 lg:pb-10 flex gap-6 ${
+          isMessagesRoute ? 'max-w-full' : 'max-w-7xl'
+        }`}
+      >
         {/* Left Nav Sidebar */}
         <Sidebar />
 
         {/* Center Main Stream */}
-        <main className="flex-1 min-w-0 max-w-2xl mx-auto lg:mx-0 w-full">
+        <main
+          className={`flex-1 min-w-0 w-full ${
+            isMessagesRoute ? 'max-w-full' : 'max-w-2xl mx-auto lg:mx-0'
+          }`}
+        >
           {children}
         </main>
 
-        {/* Right Discovery Sidebar */}
-        <RightSidebar />
+        {/* Right Discovery Sidebar (hidden on messages routes) */}
+        {!isMessagesRoute && <RightSidebar />}
       </div>
 
       {/* Mobile Bottom Navigation */}

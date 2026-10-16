@@ -9,5 +9,9 @@ interface MessageDetailPageProps {
 
 export default function MessageDetailPage({ params }: MessageDetailPageProps) {
   const resolvedParams = use(params);
-  return <ChatView initialConversationId={resolvedParams.id} />;
+  return (
+    <div className="w-full max-w-full min-w-0 flex-1">
+      <ChatView initialConversationId={resolvedParams.id} />
+    </div>
+  );
 }

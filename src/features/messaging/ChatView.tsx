@@ -168,7 +168,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-neutral-800 h-[calc(100vh-140px)] min-h-[580px] flex">
+    <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-200/80 dark:border-neutral-800 h-[calc(100vh-140px)] min-h-[580px] w-full max-w-full overflow-hidden flex flex-1 min-w-0">
       {/* Left Column: Conversations List */}
       <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
         <ConversationList
@@ -181,7 +181,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
       {/* Right Column: Active Chat Stream */}
       <div
-        className={`flex-1 flex flex-col bg-neutral-50/50 dark:bg-neutral-950/40 ${
+        className={`flex-1 min-w-0 flex flex-col bg-neutral-50/50 dark:bg-neutral-950/40 ${
           activeConversation ? 'flex' : 'hidden md:flex'
         }`}
       >
@@ -443,43 +443,51 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
             {/* Message Composer */}
             <form
               onSubmit={handleSendMessage}
-              className="p-3 sm:p-4 bg-white dark:bg-neutral-900 border-t border-neutral-200/80 dark:border-neutral-800 flex items-center gap-2"
+              className="p-3 sm:p-4 bg-white dark:bg-neutral-900 border-t border-neutral-200/80 dark:border-neutral-800 flex items-center gap-2 w-full max-w-full"
             >
-              <button
-                type="button"
-                onClick={() => setShowMediaInput(!showMediaInput)}
-                className={`p-2.5 rounded-full transition ${
-                  showMediaInput || mediaUrlInput
-                    ? 'bg-emerald-50 text-[#087443] dark:bg-emerald-950/40'
-                    : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                }`}
-                title="Attach image or media"
-                aria-label="Attach media"
-              >
-                <ImageIcon className="w-5 h-5" />
-              </button>
+              {/* Media Attachment Button */}
+              <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2 z-10">
+                <button
+                  type="button"
+                  onClick={() => setShowMediaInput(!showMediaInput)}
+                  className={`p-2.5 rounded-full transition pointer-events-auto cursor-pointer ${
+                    showMediaInput || mediaUrlInput
+                      ? 'bg-emerald-50 text-[#087443] dark:bg-emerald-950/40'
+                      : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                  }`}
+                  title="Attach image or media"
+                  aria-label="Attach media"
+                >
+                  <ImageIcon className="w-5 h-5" />
+                </button>
+              </div>
 
-              <input
-                type="text"
-                placeholder={`Message ${activeConversation.participant.fullName}...`}
-                value={messageText}
-                onChange={handleInputChange}
-                className="flex-1 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl text-xs sm:text-sm text-neutral-900 dark:text-white placeholder-neutral-400 border border-transparent focus:border-[#087443] focus:outline-none transition"
-              />
+              {/* Dynamic Text Input Field */}
+              <div className="flex-1 min-w-0">
+                <input
+                  type="text"
+                  placeholder={`Message ${activeConversation.participant.fullName}...`}
+                  value={messageText}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl text-xs sm:text-sm text-neutral-900 dark:text-white placeholder-neutral-400 border border-transparent focus:border-[#087443] focus:outline-none transition"
+                />
+              </div>
 
-              {/* Voice Recorder microphone button */}
-              <VoiceRecorder onSendVoice={handleSendVoice} disabled={!activeConversation} />
+              {/* Action Controls: Voice Recorder + Send Button */}
+              <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-2 z-10 pointer-events-auto">
+                <VoiceRecorder onSendVoice={handleSendVoice} disabled={!activeConversation} />
 
-              <Button
-                type="submit"
-                size="md"
-                variant="primary"
-                disabled={!messageText.trim() && !mediaUrlInput.trim()}
-                className="rounded-full p-2.5 px-3 font-bold shadow-sm"
-                aria-label="Send message"
-              >
-                <Send className="w-4 h-4" />
-              </Button>
+                <Button
+                  type="submit"
+                  size="md"
+                  variant="primary"
+                  disabled={!messageText.trim() && !mediaUrlInput.trim()}
+                  className="rounded-full p-2.5 px-3 font-bold shadow-sm pointer-events-auto cursor-pointer"
+                  aria-label="Send message"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </div>
             </form>
           </>
         ) : (
