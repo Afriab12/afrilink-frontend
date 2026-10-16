@@ -13,23 +13,34 @@ import {
   Ban,
   UserCheck,
   AlertTriangle,
+  Globe,
+  Volume2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Avatar } from '@/components/ui/Avatar';
 import { Modal } from '@/components/ui/Modal';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import { useAuth } from '@/stores/authContext';
 import { moderationService } from '@/services/moderationService';
+import { languageService } from '@/services/languageService';
 import { User as UserType } from '@/types';
 
 export const SettingsView: React.FC = () => {
   const { currentUser, updateProfile, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'account' | 'privacy' | 'notifications' | 'security'>('account');
+  const [activeTab, setActiveTab] = useState<'account' | 'privacy' | 'notifications' | 'language' | 'security'>('account');
 
   // Account State
   const [email, setEmail] = useState(currentUser?.email || '');
   const [phone, setPhone] = useState(currentUser?.phone || '');
   const [username, setUsername] = useState(currentUser?.username || '');
+
+  // Language & Voice State
+  const initialLangPrefs = languageService.getUserLanguagePreferences();
+  const [nativeLanguage, setNativeLanguage] = useState(initialLangPrefs.nativeLanguage || 'yo');
+  const [preferredLanguage, setPreferredLanguage] = useState(initialLangPrefs.preferredLanguage || 'en');
+  const [autoTranslate, setAutoTranslate] = useState(initialLangPrefs.autoTranslateIncoming || false);
+  const [voiceSpeechRate, setVoiceSpeechRate] = useState(initialLangPrefs.voiceSpeechRate || 1.0);
 
   // Privacy State
   const [profileVisibility, setProfileVisibility] = useState<'public' | 'friends' | 'private'>('public');
@@ -99,6 +110,17 @@ export const SettingsView: React.FC = () => {
     setTimeout(() => setSavedMessage(false), 2000);
   };
 
+  const handleSaveLanguagePreferences = async () => {
+    await languageService.saveUserLanguagePreferences({
+      nativeLanguage,
+      preferredLanguage,
+      autoTranslateIncoming: autoTranslate,
+      voiceSpeechRate,
+    });
+    setSavedMessage(true);
+    setTimeout(() => setSavedMessage(false), 2000);
+  };
+
   const handleUnblockUser = async (userId: string) => {
     await moderationService.unblockUser(userId);
     const updated = await moderationService.getBlockedUsers();
@@ -121,7 +143,7 @@ export const SettingsView: React.FC = () => {
           Settings & Preferences
         </h1>
         <p className="text-xs text-neutral-500 mt-0.5">
-          Manage your AfriLink identity, privacy controls, notifications, and account security
+          Manage your AfriLink identity, privacy controls, notifications, language and account security
         </p>
 
         {/* Tab Controls */}
@@ -157,6 +179,17 @@ export const SettingsView: React.FC = () => {
             }`}
           >
             <Bell className="w-3.5 h-3.5" /> Notifications
+          </button>
+
+          <button
+            onClick={() => setActiveTab('language')}
+            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
+              activeTab === 'language'
+                ? 'bg-[#087443] text-white shadow-sm'
+                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5" /> Language & Voice
           </button>
 
           <button
@@ -357,6 +390,97 @@ export const SettingsView: React.FC = () => {
 
             <Button variant="primary" size="sm" onClick={handleSaveNotifications} className="font-bold">
               Save Notification Settings
+            </Button>
+          </div>
+        )}
+
+        {/* Language & Voice Tab */}
+        {activeTab === 'language' && (
+          <div className="space-y-6 max-w-lg">
+            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 leading-relaxed">
+              <span className="font-bold block mb-1">🌍 Pan-African Linguistic Sovereignty</span>
+              AfriLink celebrates Africa's linguistic wealth. Choose your native tongue to communicate naturally, and select your preferred display language for instant message translation and speech playback.
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <LanguageSelector
+                  id="native-language-selector"
+                  label="Native Language (Mother Tongue)"
+                  value={nativeLanguage}
+                  onChange={setNativeLanguage}
+                />
+                <p className="text-[11px] text-neutral-500 mt-1">
+                  The African language you speak and express yourself in most comfortably.
+                </p>
+              </div>
+
+              <div>
+                <LanguageSelector
+                  id="preferred-language-selector"
+                  label="Preferred Translation Language"
+                  value={preferredLanguage}
+                  onChange={setPreferredLanguage}
+                />
+                <p className="text-[11px] text-neutral-500 mt-1">
+                  Incoming messages from other African languages will translate into this language.
+                </p>
+              </div>
+
+              {/* Auto Translate Toggle */}
+              <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
+                <div>
+                  <p className="text-xs font-bold text-neutral-900 dark:text-white">
+                    Auto-Translate Incoming Messages
+                  </p>
+                  <p className="text-[10px] text-neutral-500">
+                    Automatically show translated text alongside original African messages
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={autoTranslate}
+                  onChange={(e) => setAutoTranslate(e.target.checked)}
+                  className="rounded text-[#087443] focus:ring-[#087443]"
+                />
+              </div>
+
+              {/* Voice Speech Playback Rate */}
+              <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
+                    <Volume2 className="w-3.5 h-3.5 text-[#087443]" /> Voice Speech Playback Speed
+                  </p>
+                  <span className="text-xs font-mono font-bold text-[#087443]">
+                    {voiceSpeechRate}x
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {[0.8, 1.0, 1.2].map((rate) => (
+                    <button
+                      key={rate}
+                      type="button"
+                      onClick={() => setVoiceSpeechRate(rate)}
+                      className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition ${
+                        voiceSpeechRate === rate
+                          ? 'bg-[#087443] text-white shadow-xs'
+                          : 'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100'
+                      }`}
+                    >
+                      {rate === 0.8 ? 'Slow (0.8x)' : rate === 1.0 ? 'Normal (1.0x)' : 'Fast (1.2x)'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSaveLanguagePreferences}
+              className="font-bold"
+            >
+              Save Language Preferences
             </Button>
           </div>
         )}

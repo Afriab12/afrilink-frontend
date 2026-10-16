@@ -24,7 +24,12 @@ import { useChat } from '@/stores/chatContext';
 import { useAuth } from '@/stores/authContext';
 import { formatTime, formatDate } from '@/lib/utils';
 import { ConversationList } from './ConversationList';
+import { TranslateButton } from './TranslateButton';
+import { AudioPlayer } from './AudioPlayer';
+import { VoiceRecorder } from './VoiceRecorder';
 import { messagingService } from '@/services/messagingService';
+import { languageService } from '@/services/languageService';
+import { voiceService } from '@/services/voiceService';
 
 interface ChatViewProps {
   initialConversationId?: string;
@@ -48,6 +53,14 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
   const [mediaUrlInput, setMediaUrlInput] = useState('');
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
+
+  // Translation & Voice State
+  const [userLangPrefs] = useState(() => languageService.getUserLanguagePreferences());
+  const [translatedMessages, setTranslatedMessages] = useState<
+    Record<string, { translatedText: string; sourceLang: string; targetLang: string }>
+  >({});
+  const [translatingIds, setTranslatingIds] = useState<Record<string, boolean>>({});
+  const [messageViewModes, setMessageViewModes] = useState<Record<string, 'original' | 'translated'>>({});
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<any>(null);
@@ -102,6 +115,56 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
     setMessageText('');
     setMediaUrlInput('');
     setShowMediaInput(false);
+  };
+
+  const handleToggleTranslation = async (msg: Message) => {
+    const currentMode = messageViewModes[msg.id] || 'original';
+    if (currentMode === 'translated') {
+      setMessageViewModes((prev) => ({ ...prev, [msg.id]: 'original' }));
+      return;
+    }
+
+    if (translatedMessages[msg.id]) {
+      setMessageViewModes((prev) => ({ ...prev, [msg.id]: 'translated' }));
+      return;
+    }
+
+    setTranslatingIds((prev) => ({ ...prev, [msg.id]: true }));
+    try {
+      const res = await languageService.translateMessage({
+        text: msg.content,
+        targetLanguage: userLangPrefs.preferredLanguage || 'en',
+        messageId: msg.id,
+      });
+      setTranslatedMessages((prev) => ({
+        ...prev,
+        [msg.id]: {
+          translatedText: res.translatedText,
+          sourceLang: res.sourceLanguage,
+          targetLang: res.targetLanguage,
+        },
+      }));
+      setMessageViewModes((prev) => ({ ...prev, [msg.id]: 'translated' }));
+    } catch (err) {
+      console.error('Translation error:', err);
+    } finally {
+      setTranslatingIds((prev) => ({ ...prev, [msg.id]: false }));
+    }
+  };
+
+  const handleSendVoice = async (audioBlob: Blob, durationSeconds: number) => {
+    if (!activeConversation) return;
+    try {
+      const res = await voiceService.uploadVoiceMessage({
+        audioBlob,
+        conversationId: activeConversation.id,
+        sourceLanguage: userLangPrefs.nativeLanguage,
+        durationSeconds,
+      });
+      sendMessage(res.transcription || '🎤 Voice message', res.audioUrl);
+    } catch (err) {
+      console.error('Failed to send voice recording:', err);
+    }
   };
 
   return (
@@ -224,19 +287,30 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
               {messages.length > 0 ? (
                 messages.map((msg) => {
                   const isMine = msg.senderId === currentUser?.id || msg.sender?.id === currentUser?.id;
+                  const isTranslated = messageViewModes[msg.id] === 'translated';
+                  const translation = translatedMessages[msg.id];
+                  const displayContent = isTranslated && translation ? translation.translatedText : msg.content;
+                  const targetLangObj = languageService.getLanguageByCode(userLangPrefs.preferredLanguage);
+                  const isAudio =
+                    msg.audioUrl ||
+                    (msg.mediaUrl &&
+                      (msg.mediaUrl.startsWith('blob:') ||
+                        msg.mediaUrl.includes('voice') ||
+                        msg.mediaUrl.includes('audio')));
+
                   return (
                     <div
                       key={msg.id}
                       className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
                     >
                       <div
-                        className={`max-w-[80%] sm:max-w-md p-3.5 rounded-3xl shadow-xs text-xs sm:text-sm leading-relaxed ${
+                        className={`max-w-[85%] sm:max-w-md p-3.5 rounded-3xl shadow-xs text-xs sm:text-sm leading-relaxed ${
                           isMine
                             ? 'bg-[#087443] text-white rounded-br-xs shadow-emerald-900/10'
                             : 'bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 rounded-bl-xs border border-neutral-200/70 dark:border-neutral-800'
                         }`}
                       >
-                        {msg.mediaUrl && (
+                        {msg.mediaUrl && !isAudio && (
                           <div className="mb-2 rounded-2xl overflow-hidden max-h-60 bg-black/10">
                             <img
                               src={msg.mediaUrl}
@@ -245,11 +319,44 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                             />
                           </div>
                         )}
-                        <p className="whitespace-pre-wrap break-words">{msg.content}</p>
+
+                        {/* Audio Note Attachment */}
+                        {isAudio && (
+                          <div
+                            className={`mb-2 p-2.5 rounded-2xl flex items-center gap-2.5 ${
+                              isMine ? 'bg-emerald-900/40 text-emerald-100' : 'bg-neutral-100 dark:bg-neutral-800'
+                            }`}
+                          >
+                            <AudioPlayer audioUrl={msg.audioUrl || msg.mediaUrl} isMine={isMine} />
+                            <div className="flex-1">
+                              <p className="text-[11px] font-bold font-mono">Voice Recording</p>
+                              <div className="flex items-center gap-1 mt-0.5">
+                                <span className="w-1 h-2 bg-[#D9A441] rounded-full animate-pulse" />
+                                <span className="w-1 h-3 bg-[#D9A441] rounded-full animate-pulse delay-75" />
+                                <span className="w-1 h-1.5 bg-[#D9A441] rounded-full animate-pulse delay-150" />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Translation Notice Badge */}
+                        {isTranslated && translation && (
+                          <div
+                            className={`mb-1 text-[10px] font-bold flex items-center gap-1 ${
+                              isMine ? 'text-emerald-200' : 'text-[#087443] dark:text-emerald-400'
+                            }`}
+                          >
+                            <span>
+                              Translated to {targetLangObj?.name || userLangPrefs.preferredLanguage}
+                            </span>
+                          </div>
+                        )}
+
+                        <p className="whitespace-pre-wrap break-words">{displayContent}</p>
                       </div>
 
-                      {/* Timestamp & Read Receipt */}
-                      <div className="flex items-center gap-1 mt-1 px-1 text-[10px] text-neutral-400">
+                      {/* Timestamp, Read Receipt & Action Buttons */}
+                      <div className="flex items-center flex-wrap gap-1.5 mt-1 px-1 text-[10px] text-neutral-400">
                         <span>{formatTime(msg.createdAt)}</span>
                         {isMine && (
                           <span>
@@ -260,6 +367,26 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                             )}
                           </span>
                         )}
+
+                        {/* Translate Toggle */}
+                        <TranslateButton
+                          isTranslated={isTranslated}
+                          isLoading={translatingIds[msg.id]}
+                          targetLanguageName={targetLangObj?.name || 'My Language'}
+                          onClick={() => handleToggleTranslation(msg)}
+                          isMine={isMine}
+                        />
+
+                        {/* Audio Text-to-Speech Player */}
+                        <AudioPlayer
+                          textToSpeak={displayContent}
+                          languageCode={
+                            isTranslated
+                              ? userLangPrefs.preferredLanguage
+                              : userLangPrefs.nativeLanguage
+                          }
+                          isMine={isMine}
+                        />
                       </div>
                     </div>
                   );
@@ -339,6 +466,9 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                 onChange={handleInputChange}
                 className="flex-1 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl text-xs sm:text-sm text-neutral-900 dark:text-white placeholder-neutral-400 border border-transparent focus:border-[#087443] focus:outline-none transition"
               />
+
+              {/* Voice Recorder microphone button */}
+              <VoiceRecorder onSendVoice={handleSendVoice} disabled={!activeConversation} />
 
               <Button
                 type="submit"

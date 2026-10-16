@@ -151,6 +151,10 @@ export interface Message {
   content: string;
   mediaUrl?: string;
   mediaAssetId?: string;
+  audioUrl?: string;
+  audioDuration?: number;
+  detectedLanguage?: string;
+  translations?: Record<string, string>;
   createdAt: string;
   isRead: boolean;
   status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
@@ -290,6 +294,52 @@ export interface UserNotificationSettings {
 export interface UserSettings {
   privacy: UserPrivacySettings;
   notifications: UserNotificationSettings;
+  languages?: UserLanguagePreferences;
+}
+
+export interface AfricanLanguage {
+  code: string; // e.g. "yo", "ha", "ig", "sw", "am", "zu", "en", "fr"
+  name: string; // e.g. "Yoruba", "Hausa", "Igbo", "Swahili"
+  nativeName: string; // e.g. "Èdè Yorùbá", "Harshen Hausa", "Asụsụ Igbo", "Kiswahili"
+  region?: string;
+  flag?: string;
+  isVoiceSupported?: boolean;
+}
+
+export interface UserLanguagePreferences {
+  nativeLanguage: string;
+  preferredLanguage: string;
+  autoTranslateIncoming?: boolean;
+  voiceSpeechRate?: number;
+}
+
+export interface TranslateMessageRequest {
+  text: string;
+  sourceLanguage?: string;
+  targetLanguage: string;
+  messageId?: string;
+}
+
+export interface TranslateMessageResponse {
+  translatedText: string;
+  sourceLanguage: string;
+  targetLanguage: string;
+  confidenceScore?: number;
+}
+
+export interface UploadVoiceMessageRequest {
+  audioBlob: Blob;
+  conversationId: string;
+  sourceLanguage?: string;
+  durationSeconds?: number;
+}
+
+export interface VoiceMessageResponse {
+  messageId: string;
+  audioUrl: string;
+  transcription?: string;
+  detectedLanguage?: string;
+  durationSeconds?: number;
 }
 
 export interface ApiError {
