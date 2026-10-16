@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Avatar } from '@/components/ui/Avatar';
 import { Ban, CheckCircle2 } from 'lucide-react';
 import { useSocial } from '@/stores/socialContext';
+import { moderationService } from '@/services/moderationService';
 
 interface BlockUserModalProps {
   user: User | null;
@@ -21,6 +22,7 @@ export const BlockUserModal: React.FC<BlockUserModalProps> = ({ user, isOpen, on
   if (!user) return null;
 
   const handleConfirmBlock = () => {
+    moderationService.blockUser(user.id).catch(() => {});
     blockUser(user.id);
     setIsBlocked(true);
     setTimeout(() => {

@@ -202,6 +202,26 @@ export type ReportCategory =
   | 'Misinformation'
   | 'Other';
 
+export type ReportReason =
+  | 'harassment'
+  | 'spam'
+  | 'hate_speech'
+  | 'misinformation'
+  | 'impersonation'
+  | 'violence'
+  | 'illegal_content'
+  | 'copyright'
+  | 'other';
+
+export interface CreateReportInput {
+  targetType: 'user' | 'post' | 'comment' | 'community' | 'message';
+  targetId: string;
+  targetPreview: string;
+  category: ReportCategory;
+  reason?: ReportReason;
+  details?: string;
+}
+
 export interface Report {
   id: string;
   reporterId: string;
@@ -210,9 +230,66 @@ export interface Report {
   targetId: string;
   targetPreview: string;
   category: ReportCategory;
+  reason?: ReportReason;
   details: string;
   status: 'pending' | 'resolved' | 'dismissed';
   createdAt: string;
+  resolutionNote?: string;
+}
+
+export type ModerationActionType =
+  | 'resolve'
+  | 'dismiss'
+  | 'warn_user'
+  | 'restrict_user'
+  | 'suspend_user'
+  | 'ban_user'
+  | 'delete_content';
+
+export interface ModerationActionInput {
+  action: ModerationActionType;
+  note?: string;
+}
+
+export interface AdminMetrics {
+  totalUsers: number;
+  activeUsersDaily: number;
+  totalPosts: number;
+  totalComments: number;
+  totalMessages: number;
+  totalCommunities: number;
+  pendingReportsCount: number;
+  resolvedReportsCount: number;
+  systemHealth: 'optimal' | 'degraded' | 'maintenance';
+}
+
+export interface AuditLog {
+  id: string;
+  actorId: string;
+  actorName: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  details: string;
+  createdAt: string;
+}
+
+export interface UserPrivacySettings {
+  profileVisibility: 'public' | 'friends' | 'private';
+  allowFriendRequests: 'everyone' | 'friends_of_friends' | 'none';
+  allowMessages: 'everyone' | 'friends' | 'none';
+  showFriendList: boolean;
+}
+
+export interface UserNotificationSettings {
+  pushNotifs: boolean;
+  emailNotifs: boolean;
+  communityNotifs: boolean;
+}
+
+export interface UserSettings {
+  privacy: UserPrivacySettings;
+  notifications: UserNotificationSettings;
 }
 
 export interface ApiError {

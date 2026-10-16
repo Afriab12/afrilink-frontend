@@ -6,6 +6,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useSocial } from '@/stores/socialContext';
+import { moderationService } from '@/services/moderationService';
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -43,6 +44,16 @@ export const ReportModal: React.FC<ReportModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    moderationService
+      .submitReport({
+        targetType,
+        targetId,
+        targetPreview: targetPreview.slice(0, 80),
+        category,
+        details,
+      })
+      .catch(() => {});
+
     setTimeout(() => {
       submitReport({
         targetType,

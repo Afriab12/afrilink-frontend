@@ -989,6 +989,12 @@ class AfriLinkBackendService {
     return true;
   }
 
+  addReport(report: Report): Report {
+    const reports = this.getReports();
+    this.setItem('reports', [report, ...reports]);
+    return report;
+  }
+
   blockUser(targetUserId: string): boolean {
     const blockedList = this.getItem<string[]>('blocked_users', []);
     if (!blockedList.includes(targetUserId)) {
@@ -996,6 +1002,13 @@ class AfriLinkBackendService {
       this.setItem('blocked_users', blockedList);
     }
     this.setFriendshipStatus(targetUserId, 'blocked');
+    return true;
+  }
+
+  unblockUser(userId: string): boolean {
+    const blockedList = this.getItem<string[]>('blocked_users', []).filter((id) => id !== userId);
+    this.setItem('blocked_users', blockedList);
+    this.setFriendshipStatus(userId, 'none');
     return true;
   }
 
