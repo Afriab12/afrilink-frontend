@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Conversation, Message, User } from '@/types';
 import { mockBackend, INITIAL_USERS } from '@/services/mockBackend';
+import { messagingService } from '@/services/messagingService';
 import { useAuth } from './authContext';
 
 interface ChatContextType {
@@ -24,12 +25,16 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
+    messagingService.connectWebSocket();
     const convs = mockBackend.getConversations();
     setConversations(convs);
     if (convs.length > 0 && !activeConversation) {
       setActiveConversation(convs[0]);
       setMessages(mockBackend.getMessages(convs[0].id));
     }
+    return () => {
+      messagingService.disconnectWebSocket();
+    };
   }, []);
 
   const setActiveConversationId = (id: string | null) => {
@@ -48,11 +53,16 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
       msgs.forEach((m) => (m.isRead = true));
       setMessages(msgs);
       setConversations([...convs]);
+      messagingService.markConversationAsRead(id).catch(() => {});
     }
   };
 
   const sendMessage = (content: string, mediaUrl?: string) => {
     if (!activeConversation) return;
+
+    messagingService
+      .sendMessage(activeConversation.id, { content, mediaUrl })
+      .catch(() => {});
 
     const newMsg = mockBackend.sendMessage(activeConversation.id, content, mediaUrl);
     setMessages((prev) => [...prev, newMsg]);
@@ -143,6 +153,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setConversations(allConvs);
     setActiveConversation(newConv);
     setMessages([]);
+    messagingService.startConversation(user.id).catch(() => {});
     return newConvId;
   };
 

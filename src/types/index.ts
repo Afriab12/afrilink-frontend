@@ -134,6 +134,15 @@ export interface Community {
   pendingRequestsCount?: number;
 }
 
+export type SocketConnectionState = 'connected' | 'connecting' | 'disconnected';
+
+export interface SendMessagePayload {
+  content: string;
+  mediaUrl?: string;
+  mediaAssetId?: string;
+  clientMsgId?: string;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
@@ -141,8 +150,10 @@ export interface Message {
   sender: User;
   content: string;
   mediaUrl?: string;
+  mediaAssetId?: string;
   createdAt: string;
   isRead: boolean;
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
 }
 
 export interface Conversation {
@@ -152,6 +163,8 @@ export interface Conversation {
   unreadCount: number;
   updatedAt: string;
   isBlocked?: boolean;
+  isRequest?: boolean;
+  lastReadMessageId?: string;
 }
 
 export type NotificationType =
