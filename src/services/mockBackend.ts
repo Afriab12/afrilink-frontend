@@ -1,4 +1,4 @@
-import {
+import type {
   User,
   Post,
   Comment,
@@ -11,7 +11,7 @@ import {
   PostVisibility,
   FriendshipStatus,
   AccountStatus,
-} from '@/types';
+} from '../types/index.ts';
 
 const STORAGE_KEY_PREFIX = 'afrilink_db_';
 

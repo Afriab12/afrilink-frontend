@@ -13,6 +13,8 @@ import {
   User,
 } from '@/types';
 import { mockBackend } from '@/services/mockBackend';
+import { socialService } from '@/services/socialService';
+import { notificationService } from '@/services/notificationService';
 import { useAuth } from './authContext';
 
 interface SocialContextType {
@@ -195,6 +197,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         targetId: userId,
         targetSnippet: `${currentUser.fullName} sent you a friend request.`,
       });
+      socialService.sendFriendRequest(userId, currentUser.id).catch(() => {});
     }
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -208,22 +211,26 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         targetId: userId,
         targetSnippet: `${currentUser.fullName} accepted your friend request.`,
       });
+      socialService.respondToFriendRequest(userId, 'accepted', userId).catch(() => {});
     }
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const declineFriendRequest = (userId: string) => {
     mockBackend.setFriendshipStatus(userId, 'none');
+    socialService.respondToFriendRequest(userId, 'declined', userId).catch(() => {});
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const cancelFriendRequest = (userId: string) => {
     mockBackend.setFriendshipStatus(userId, 'none');
+    socialService.removeFriendship(userId, userId).catch(() => {});
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const removeFriend = (userId: string) => {
     mockBackend.setFriendshipStatus(userId, 'none');
+    socialService.removeFriendship(userId, userId).catch(() => {});
     setRefreshTrigger((prev) => prev + 1);
   };
 
@@ -233,24 +240,31 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const toggleFollow = (userId: string) => {
     const willFollow = mockBackend.toggleFollow(userId);
-    if (willFollow && currentUser) {
-      mockBackend.addNotification({
-        type: 'follow',
-        actor: currentUser,
-        targetId: userId,
-        targetSnippet: `${currentUser.fullName} started following you.`,
-      });
+    if (willFollow) {
+      if (currentUser) {
+        mockBackend.addNotification({
+          type: 'follow',
+          actor: currentUser,
+          targetId: userId,
+          targetSnippet: `${currentUser.fullName} started following you.`,
+        });
+      }
+      socialService.followUser(userId, currentUser?.id).catch(() => {});
+    } else {
+      socialService.unfollowUser(userId).catch(() => {});
     }
     setRefreshTrigger((prev) => prev + 1);
   };
 
   const markNotificationRead = (id: string) => {
     mockBackend.markNotificationAsRead(id);
+    notificationService.markAsRead(id).catch(() => {});
     setNotifications(mockBackend.getNotifications());
   };
 
   const markAllNotificationsRead = () => {
     mockBackend.markAllNotificationsAsRead();
+    notificationService.markAllAsRead().catch(() => {});
     setNotifications(mockBackend.getNotifications());
   };
 
