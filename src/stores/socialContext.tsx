@@ -16,6 +16,7 @@ import { mockBackend } from '@/services/mockBackend';
 import { socialService } from '@/services/socialService';
 import { notificationService } from '@/services/notificationService';
 import { postService } from '@/services/postService';
+import { communityService } from '@/services/communityService';
 import { useAuth } from './authContext';
 
 interface SocialContextType {
@@ -172,6 +173,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const joinCommunity = (communityId: string) => {
     mockBackend.toggleJoinCommunity(communityId);
     setCommunities(mockBackend.getCommunities());
+    communityService.joinCommunity(communityId).catch(() => {});
   };
 
   const createCommunity = (data: {
@@ -184,6 +186,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }) => {
     const newComm = mockBackend.createCommunity(data);
     setCommunities(mockBackend.getCommunities());
+    communityService.createCommunity(data).catch(() => {});
     return newComm;
   };
 

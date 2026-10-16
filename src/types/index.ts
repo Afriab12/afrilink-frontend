@@ -92,6 +92,28 @@ export interface Post {
   originalPost?: Post; // For shares
 }
 
+export type CommunityRole = 'owner' | 'moderator' | 'member';
+
+export interface CommunityMember {
+  id: string;
+  communityId: string;
+  user: User;
+  role: CommunityRole;
+  joinedAt: string;
+}
+
+export interface CreateCommunityInput {
+  name: string;
+  description: string;
+  category: string;
+  country?: string;
+  countryCode?: string;
+  isPrivate: boolean;
+  rules: string[];
+  profileImage?: string;
+  coverImage?: string;
+}
+
 export interface Community {
   id: string;
   name: string;
@@ -108,7 +130,7 @@ export interface Community {
   moderatorIds: string[];
   rules: string[];
   isJoined?: boolean;
-  myRole?: 'owner' | 'moderator' | 'member' | null;
+  myRole?: CommunityRole | null;
   pendingRequestsCount?: number;
 }
 

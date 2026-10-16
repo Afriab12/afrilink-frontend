@@ -564,9 +564,12 @@ export const INITIAL_REPORTS: Report[] = [
 // Memory/LocalStorage Database Handler
 class AfriLinkBackendService {
   private isBrowser = typeof window !== 'undefined';
+  private memoryStore = new Map<string, any>();
 
   private getItem<T>(key: string, defaultValue: T): T {
-    if (!this.isBrowser) return defaultValue;
+    if (!this.isBrowser) {
+      return this.memoryStore.has(key) ? this.memoryStore.get(key) : defaultValue;
+    }
     try {
       const data = localStorage.getItem(STORAGE_KEY_PREFIX + key);
       return data ? JSON.parse(data) : defaultValue;
@@ -576,7 +579,10 @@ class AfriLinkBackendService {
   }
 
   private setItem<T>(key: string, value: T): void {
-    if (!this.isBrowser) return;
+    if (!this.isBrowser) {
+      this.memoryStore.set(key, value);
+      return;
+    }
     try {
       localStorage.setItem(STORAGE_KEY_PREFIX + key, JSON.stringify(value));
     } catch (e) {
