@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Image as ImageIcon,
   Video,
@@ -8,16 +8,17 @@ import {
   Users,
   Building2,
   X,
-  Smile,
   Send,
-  Sparkles,
+  Loader2,
+  UploadCloud,
 } from 'lucide-react';
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { PostVisibility } from '@/types';
 import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
+import { postService } from '@/services/postService';
+import { mediaService } from '@/services/mediaService';
 
 interface PostComposerProps {
   communityId?: string;
@@ -32,17 +33,20 @@ export const PostComposer: React.FC<PostComposerProps> = ({
 }) => {
   const { currentUser } = useAuth();
   const { createPost, communities } = useSocial();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [content, setContent] = useState('');
   const [visibility, setVisibility] = useState<PostVisibility>(
     communityId ? 'community' : 'public'
   );
   const [selectedCommunityId, setSelectedCommunityId] = useState<string>(communityId || '');
-  const [mediaList, setMediaList] = useState<Array<{ type: 'image' | 'video'; url: string; caption?: string }>>([]);
-  const [isAddingMedia, setIsAddingMedia] = useState<'image' | 'video' | null>(null);
-  const [mediaInputUrl, setMediaInputUrl] = useState('');
-  const [mediaInputCaption, setMediaInputCaption] = useState('');
+  const [mediaList, setMediaList] = useState<
+    Array<{ type: 'image' | 'video'; url: string; caption?: string; assetId?: string }>
+  >([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const sampleImages = [
     {
@@ -63,38 +67,76 @@ export const PostComposer: React.FC<PostComposerProps> = ({
     },
   ];
 
-  const handleAddSampleImage = (url: string, title: string) => {
-    setMediaList((prev) => [...prev, { type: 'image', url, caption: title }]);
-    setIsAddingMedia(null);
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setErrorMessage(null);
+    try {
+      setIsUploading(true);
+      setUploadProgress(15);
+
+      const isVideo = file.type.startsWith('video');
+      const { uploadUrl, fileUrl, assetId } = await mediaService.getPreSignedUploadUrl({
+        fileName: file.name,
+        fileType: file.type,
+        sizeBytes: file.size,
+        purpose: 'post',
+      });
+
+      setUploadProgress(45);
+
+      await mediaService.uploadBinaryToS3(uploadUrl, file, {
+        onProgress: (p) => setUploadProgress(p),
+      });
+
+      setMediaList((prev) => [
+        ...prev,
+        { type: isVideo ? 'video' : 'image', url: fileUrl, assetId },
+      ]);
+      setUploadProgress(100);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Media upload failed. Please try a different file.');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
   };
 
-  const handleConfirmMediaInput = () => {
-    if (!mediaInputUrl.trim()) return;
-    setMediaList((prev) => [
-      ...prev,
-      {
-        type: isAddingMedia || 'image',
-        url: mediaInputUrl.trim(),
-        caption: mediaInputCaption.trim() || undefined,
-      },
-    ]);
-    setMediaInputUrl('');
-    setMediaInputCaption('');
-    setIsAddingMedia(null);
+  const handleAddSampleImage = (url: string, title: string) => {
+    setMediaList((prev) => [...prev, { type: 'image', url, caption: title }]);
   };
 
   const handleRemoveMedia = (index: number) => {
     setMediaList((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() && mediaList.length === 0) return;
+    setErrorMessage(null);
+
+    const trimmed = content.trim();
+    if (!trimmed && mediaList.length === 0) return;
+
+    if (trimmed.length > 5000) {
+      setErrorMessage('Post content cannot exceed 5000 characters.');
+      return;
+    }
 
     setIsSubmitting(true);
-    setTimeout(() => {
+    const mediaAssetIds = mediaList.map((m) => m.assetId).filter(Boolean) as string[];
+
+    try {
+      await postService.createPost({
+        content: trimmed,
+        visibility,
+        communityId: visibility === 'community' ? selectedCommunityId || communities[0]?.id : undefined,
+        mediaAssetIds: mediaAssetIds.length > 0 ? mediaAssetIds : undefined,
+        media: mediaList,
+      });
+
       createPost({
-        content: content.trim(),
+        content: trimmed,
         visibility,
         communityId: visibility === 'community' ? selectedCommunityId || communities[0]?.id : undefined,
         media: mediaList,
@@ -102,20 +144,31 @@ export const PostComposer: React.FC<PostComposerProps> = ({
 
       setContent('');
       setMediaList([]);
-      setIsSubmitting(false);
       if (onPostCreated) onPostCreated();
-    }, 350);
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Failed to publish post.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-
-  const visibilityOptions = [
-    { value: 'public', label: 'Public (All Africa)', icon: Globe },
-    { value: 'friends', label: 'Friends Only', icon: Users },
-    { value: 'community', label: 'Community', icon: Building2 },
-  ];
 
   return (
     <div className="bg-white dark:bg-neutral-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-neutral-200/80 dark:border-neutral-800 transition-all">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm"
+        className="hidden"
+      />
+
       <form onSubmit={handleSubmit} className="space-y-3">
+        {errorMessage && (
+          <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 rounded-2xl text-xs text-red-600 dark:text-red-400">
+            {errorMessage}
+          </div>
+        )}
+
         {/* Top: Avatar + Visibility Selector */}
         <div className="flex items-center justify-between pb-2">
           <div className="flex items-center gap-2.5">
@@ -123,7 +176,13 @@ export const PostComposer: React.FC<PostComposerProps> = ({
               src={currentUser?.avatarUrl}
               alt={currentUser?.fullName || 'User'}
               size="sm"
-              countryFlag={currentUser?.countryCode === 'GH' ? '🇬🇭' : currentUser?.countryCode === 'NG' ? '🇳🇬' : '🌍'}
+              countryFlag={
+                currentUser?.countryCode === 'GH'
+                  ? '🇬🇭'
+                  : currentUser?.countryCode === 'NG'
+                  ? '🇳🇬'
+                  : '🌍'
+              }
             />
             <div>
               <span className="font-bold text-xs text-neutral-900 dark:text-white">
@@ -157,8 +216,13 @@ export const PostComposer: React.FC<PostComposerProps> = ({
             </div>
           </div>
 
-          <span className="text-[11px] font-medium text-neutral-400 hidden sm:inline-block">
-            {content.length} chars
+          {/* 5000 Characters Live Counter */}
+          <span
+            className={`text-[11px] font-medium hidden sm:inline-block ${
+              content.length > 4800 ? 'text-amber-500 font-bold' : 'text-neutral-400'
+            }`}
+          >
+            {content.length} / 5000
           </span>
         </div>
 
@@ -166,13 +230,35 @@ export const PostComposer: React.FC<PostComposerProps> = ({
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
+          maxLength={5000}
           placeholder={
             placeholder ||
-            `What is happening in your corner of Africa, ${currentUser?.fullName?.split(' ')[0] || ''}? Share ideas, updates or discoveries...`
+            `What is happening in your corner of Africa, ${
+              currentUser?.fullName?.split(' ')[0] || ''
+            }? Share ideas, updates or discoveries...`
           }
           rows={3}
           className="w-full bg-transparent text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none resize-none leading-relaxed"
         />
+
+        {/* S3 Media Upload Progress Bar */}
+        {isUploading && (
+          <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded-2xl space-y-1.5">
+            <div className="flex justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+              <span className="flex items-center gap-1.5">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#087443]" />
+                Uploading attachment to S3...
+              </span>
+              <span>{uploadProgress}%</span>
+            </div>
+            <div className="w-full bg-neutral-200 dark:bg-neutral-700 h-1.5 rounded-full overflow-hidden">
+              <div
+                className="bg-[#087443] h-full transition-all duration-300"
+                style={{ width: `${uploadProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* Media Attachments Preview Gallery */}
         {mediaList.length > 0 && (
@@ -209,118 +295,45 @@ export const PostComposer: React.FC<PostComposerProps> = ({
           </div>
         )}
 
-        {/* Media Ingestion Popover */}
-        {isAddingMedia && (
-          <div className="p-3 bg-neutral-50 dark:bg-neutral-800/80 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-2.5 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-neutral-800 dark:text-neutral-200">
-                Attach {isAddingMedia === 'image' ? 'Photo' : 'Video'}
-              </span>
-              <button
-                type="button"
-                onClick={() => setIsAddingMedia(null)}
-                className="text-neutral-400 hover:text-neutral-600"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <input
-              type="url"
-              placeholder={`Enter direct ${isAddingMedia} URL (e.g. https://...)...`}
-              value={mediaInputUrl}
-              onChange={(e) => setMediaInputUrl(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#087443]"
-            />
-
-            <input
-              type="text"
-              placeholder="Caption (optional)..."
-              value={mediaInputCaption}
-              onChange={(e) => setMediaInputCaption(e.target.value)}
-              className="w-full rounded-xl border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs text-neutral-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-[#087443]"
-            />
-
-            {isAddingMedia === 'image' && (
-              <div className="pt-1">
-                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-wider mb-1">
-                  Or pick from curated African photography:
-                </p>
-                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                  {sampleImages.map((img) => (
-                    <button
-                      key={img.title}
-                      type="button"
-                      onClick={() => handleAddSampleImage(img.url, img.title)}
-                      className="flex-shrink-0 text-left border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden hover:border-[#087443] transition w-24"
-                    >
-                      <img src={img.url} alt={img.title} className="w-full h-14 object-cover" />
-                      <p className="p-1 text-[9px] font-semibold text-neutral-700 dark:text-neutral-300 truncate">
-                        {img.title}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex justify-end gap-2 pt-1">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAddingMedia(null)}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                variant="primary"
-                size="sm"
-                onClick={handleConfirmMediaInput}
-                disabled={!mediaInputUrl.trim()}
-              >
-                Add {isAddingMedia === 'image' ? 'Photo' : 'Video'}
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Bottom Actions Bar */}
+        {/* Bottom Toolbar: S3 Upload Trigger + Sample African Photos + Publish Button */}
         <div className="flex items-center justify-between pt-2 border-t border-neutral-100 dark:border-neutral-800">
-          <div className="flex items-center gap-1 sm:gap-2">
+          <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => setIsAddingMedia(isAddingMedia === 'image' ? null : 'image')}
-              className={`p-2 rounded-xl text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-neutral-800 transition flex items-center gap-1.5 text-xs font-semibold ${
-                isAddingMedia === 'image' ? 'text-[#087443] bg-emerald-50 dark:bg-neutral-800' : ''
-              }`}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="p-2 rounded-xl text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex items-center gap-1.5 text-xs font-semibold"
+              title="Upload Photo or Video to S3"
             >
-              <ImageIcon className="w-4 h-4 text-[#087443]" />
-              <span className="hidden sm:inline">Photo</span>
+              <UploadCloud className="w-4 h-4 text-[#087443]" />
+              <span className="hidden sm:inline">Attach Media</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setIsAddingMedia(isAddingMedia === 'video' ? null : 'video')}
-              className={`p-2 rounded-xl text-neutral-500 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-neutral-800 transition flex items-center gap-1.5 text-xs font-semibold ${
-                isAddingMedia === 'video' ? 'text-amber-600 bg-amber-50 dark:bg-neutral-800' : ''
-              }`}
-            >
-              <Video className="w-4 h-4 text-[#D9A441]" />
-              <span className="hidden sm:inline">Video</span>
-            </button>
+            {/* Quick Sample African Photos Trigger */}
+            <div className="hidden md:flex items-center gap-1 pl-2">
+              <span className="text-[10px] text-neutral-400 font-bold uppercase">Quick Samples:</span>
+              {sampleImages.slice(0, 2).map((sample) => (
+                <button
+                  key={sample.title}
+                  type="button"
+                  onClick={() => handleAddSampleImage(sample.url, sample.title)}
+                  className="px-2 py-0.5 rounded-lg text-[10px] bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 transition"
+                >
+                  {sample.title.split(' ')[0]}
+                </button>
+              ))}
+            </div>
           </div>
 
           <Button
             type="submit"
             variant="primary"
             size="sm"
-            className="px-5 py-2 font-bold"
-            disabled={(!content.trim() && mediaList.length === 0) || isSubmitting}
             isLoading={isSubmitting}
+            disabled={(!content.trim() && mediaList.length === 0) || isUploading}
+            className="px-5 font-bold"
           >
-            Post to Africa <Send className="w-3.5 h-3.5 ml-1" />
+            Publish <Send className="w-3.5 h-3.5 ml-1.5" />
           </Button>
         </div>
       </form>

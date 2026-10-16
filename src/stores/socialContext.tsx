@@ -15,6 +15,7 @@ import {
 import { mockBackend } from '@/services/mockBackend';
 import { socialService } from '@/services/socialService';
 import { notificationService } from '@/services/notificationService';
+import { postService } from '@/services/postService';
 import { useAuth } from './authContext';
 
 interface SocialContextType {
@@ -132,6 +133,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const deletePost = (postId: string) => {
     mockBackend.deletePost(postId);
     setPosts((prev) => prev.filter((p) => p.id !== postId));
+    postService.deletePost(postId).catch(() => {});
   };
 
   const reactToPost = (postId: string, reaction: ReactionType) => {
@@ -139,6 +141,7 @@ export const SocialProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     if (updated) {
       setPosts((prev) => prev.map((p) => (p.id === postId ? { ...updated } : p)));
     }
+    postService.react('post', postId, reaction).catch(() => {});
   };
 
   const getCommentsForPost = (postId: string) => {
