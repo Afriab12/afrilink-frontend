@@ -21,6 +21,7 @@ import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { CreateCommunityModal } from '@/features/communities/CreateCommunityModal';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 
 export const Sidebar: React.FC = () => {
   const pathname = usePathname();
@@ -94,6 +95,10 @@ export const Sidebar: React.FC = () => {
               </Link>
             );
           })}
+
+          <div className="pt-2 mt-2 border-t border-neutral-100 dark:border-neutral-800">
+            <ThemeToggle showLabel className="w-full justify-start px-4 py-2.5" />
+          </div>
         </nav>
 
         {/* Quick Community Launcher Card */}

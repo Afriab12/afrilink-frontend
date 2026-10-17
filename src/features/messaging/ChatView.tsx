@@ -30,6 +30,7 @@ import { VoiceRecorder } from './VoiceRecorder';
 import { messagingService } from '@/services/messagingService';
 import { languageService } from '@/services/languageService';
 import { voiceService } from '@/services/voiceService';
+import { EmojiPickerPopover } from '@/components/ui/EmojiPickerPopover';
 
 interface ChatViewProps {
   initialConversationId?: string;
@@ -445,8 +446,8 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
               onSubmit={handleSendMessage}
               className="p-3 sm:p-4 bg-white dark:bg-neutral-900 border-t border-neutral-200/80 dark:border-neutral-800 flex items-center gap-2 w-full max-w-full"
             >
-              {/* Media Attachment Button */}
-              <div className="flex-shrink-0 flex items-center gap-1 sm:gap-2 z-10">
+              {/* Media Attachment & Emoji Picker */}
+              <div className="flex-shrink-0 flex items-center gap-1 sm:gap-1.5 z-10">
                 <button
                   type="button"
                   onClick={() => setShowMediaInput(!showMediaInput)}
@@ -460,6 +461,11 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                 >
                   <ImageIcon className="w-5 h-5" />
                 </button>
+
+                <EmojiPickerPopover
+                  onSelectEmoji={(emoji) => setMessageText((prev) => prev + emoji)}
+                  placement="top"
+                />
               </div>
 
               {/* Dynamic Text Input Field */}

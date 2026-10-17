@@ -19,6 +19,7 @@ import {
 import { Avatar } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { GlobalSearchModal } from '@/features/search/GlobalSearchModal';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
@@ -39,7 +40,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md border-b border-neutral-200/80 dark:border-neutral-800 transition-colors">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#0B130E]/90 backdrop-blur-md border-b border-neutral-200/80 dark:border-[#1F3327] transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6">
@@ -118,6 +119,9 @@ export const Navbar: React.FC = () => {
                 </span>
               )}
             </Link>
+
+            {/* Afro-Futurist Dark / Light Mode Toggle */}
+            <ThemeToggle />
 
             {/* Profile Avatar & Menu */}
             {currentUser && (

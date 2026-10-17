@@ -8,11 +8,17 @@
     --foreground: #111827;
   }
 
+  .dark {
+    --background: #0B130E;
+    --foreground: #F5F7F6;
+  }
+
   body {
     background-color: var(--background);
     color: var(--foreground);
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
@@ -25,7 +31,11 @@
   scrollbar-width: none;
 }
 
-/* Smooth transitions */
+/* Base border colors */
 * {
   border-color: rgba(226, 232, 229, 0.6);
+}
+
+.dark * {
+  border-color: rgba(31, 51, 39, 0.7);
 }

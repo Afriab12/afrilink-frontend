@@ -1,0 +1,30 @@
+{
+  "name": "AfriLink — Africa's Social Network",
+  "short_name": "AfriLink",
+  "description": "The digital social infrastructure connecting African people, communities, creators, and businesses across borders.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0B130E",
+  "theme_color": "#087443",
+  "orientation": "portrait-primary",
+  "categories": ["social", "networking", "news", "lifestyle"],
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

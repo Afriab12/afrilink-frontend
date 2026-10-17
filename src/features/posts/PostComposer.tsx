@@ -19,6 +19,7 @@ import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { postService } from '@/services/postService';
 import { mediaService } from '@/services/mediaService';
+import { EmojiPickerPopover } from '@/components/ui/EmojiPickerPopover';
 
 interface PostComposerProps {
   communityId?: string;
@@ -308,6 +309,11 @@ export const PostComposer: React.FC<PostComposerProps> = ({
               <UploadCloud className="w-4 h-4 text-[#087443]" />
               <span className="hidden sm:inline">Attach Media</span>
             </button>
+
+            <EmojiPickerPopover
+              onSelectEmoji={(emoji) => setContent((prev) => prev + emoji)}
+              placement="top"
+            />
 
             {/* Quick Sample African Photos Trigger */}
             <div className="hidden md:flex items-center gap-1 pl-2">

@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -10,6 +11,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        afroDark: {
+          DEFAULT: "#0B130E",
+          surface: "#111D16",
+          card: "#16241C",
+          border: "#1F3327",
+          text: "#F5F7F6",
+        },
         afrilink: {
           green: {
             DEFAULT: "#087443",
