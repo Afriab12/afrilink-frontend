@@ -22,15 +22,20 @@ import { ReportModal } from '@/features/moderation/ReportModal';
 import { BlockUserModal } from '@/features/moderation/BlockUserModal';
 import { useChat } from '@/stores/chatContext';
 import { useAuth } from '@/stores/authContext';
+import dynamic from 'next/dynamic';
 import { formatTime, formatDate } from '@/lib/utils';
 import { ConversationList } from './ConversationList';
 import { TranslateButton } from './TranslateButton';
 import { AudioPlayer } from './AudioPlayer';
-import { VoiceRecorder } from './VoiceRecorder';
 import { messagingService } from '@/services/messagingService';
 import { languageService } from '@/services/languageService';
 import { voiceService } from '@/services/voiceService';
 import { EmojiPickerPopover } from '@/components/ui/EmojiPickerPopover';
+
+const VoiceRecorder = dynamic(
+  () => import('./VoiceRecorder').then((m) => m.VoiceRecorder),
+  { ssr: false }
+);
 
 interface ChatViewProps {
   initialConversationId?: string;

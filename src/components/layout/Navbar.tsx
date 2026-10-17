@@ -13,13 +13,18 @@ import {
   Settings,
   Compass,
 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import { Avatar } from '@/components/ui/Avatar';
-import { GlobalSearchModal } from '@/features/search/GlobalSearchModal';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { adminService } from '@/services/adminService';
+
+const GlobalSearchModal = dynamic(
+  () => import('@/features/search/GlobalSearchModal').then((m) => m.GlobalSearchModal),
+  { ssr: false }
+);
 
 export const Navbar: React.FC = () => {
   const router = useRouter();
