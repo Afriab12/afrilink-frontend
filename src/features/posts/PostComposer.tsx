@@ -154,7 +154,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl p-4 sm:p-5 shadow-sm border border-neutral-200/80 dark:border-neutral-800 transition-all">
+    <div className="bg-white dark:bg-surface-0 rounded-3xl p-4 sm:p-5 shadow-sm border border-neutral-200/80 dark:border-white/[0.04] transition-all">
       <input
         type="file"
         ref={fileInputRef}
@@ -186,14 +186,14 @@ export const PostComposer: React.FC<PostComposerProps> = ({
               }
             />
             <div>
-              <span className="font-bold text-xs text-neutral-900 dark:text-white">
+              <span className="font-bold text-xs text-neutral-900 dark:text-white/90">
                 {currentUser?.fullName}
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <select
                   value={visibility}
                   onChange={(e) => setVisibility(e.target.value as PostVisibility)}
-                  className="bg-neutral-100 dark:bg-neutral-800 text-[11px] font-semibold text-neutral-700 dark:text-neutral-300 rounded-full px-2.5 py-0.5 border-0 focus:ring-1 focus:ring-[#087443] cursor-pointer"
+                  className="bg-neutral-100 dark:bg-surface-2 text-[11px] font-semibold text-neutral-700 dark:text-white/90 rounded-full px-2.5 py-0.5 border border-transparent dark:border-white/[0.06] focus:ring-1 focus:ring-[#087443] cursor-pointer"
                 >
                   <option value="public">🌍 Public (All Africa)</option>
                   <option value="friends">👥 Friends Only</option>
@@ -220,7 +220,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
           {/* 5000 Characters Live Counter */}
           <span
             className={`text-[11px] font-medium hidden sm:inline-block ${
-              content.length > 4800 ? 'text-amber-500 font-bold' : 'text-neutral-400'
+              content.length > 4800 ? 'text-amber-500 font-bold' : 'text-neutral-400 dark:text-white/35'
             }`}
           >
             {content.length} / 5000
@@ -239,20 +239,20 @@ export const PostComposer: React.FC<PostComposerProps> = ({
             }? Share ideas, updates or discoveries...`
           }
           rows={3}
-          className="w-full bg-transparent text-sm text-neutral-900 dark:text-white placeholder-neutral-400 focus:outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent text-sm text-neutral-900 dark:text-white/90 placeholder-neutral-400 dark:placeholder-white/35 focus:outline-none resize-none leading-relaxed"
         />
 
         {/* S3 Media Upload Progress Bar */}
         {isUploading && (
-          <div className="p-3 bg-neutral-50 dark:bg-neutral-800 rounded-2xl space-y-1.5">
-            <div className="flex justify-between text-xs font-semibold text-neutral-600 dark:text-neutral-400">
+          <div className="p-3 bg-neutral-50 dark:bg-surface-2 rounded-2xl space-y-1.5">
+            <div className="flex justify-between text-xs font-semibold text-neutral-600 dark:text-white/60">
               <span className="flex items-center gap-1.5">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#087443]" />
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#087443]" strokeWidth={1.75} />
                 Uploading attachment to S3...
               </span>
               <span>{uploadProgress}%</span>
             </div>
-            <div className="w-full bg-neutral-200 dark:bg-neutral-700 h-1.5 rounded-full overflow-hidden">
+            <div className="w-full bg-neutral-200 dark:bg-surface-3 h-1.5 rounded-full overflow-hidden">
               <div
                 className="bg-[#087443] h-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
@@ -267,7 +267,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
             {mediaList.map((m, idx) => (
               <div
                 key={idx}
-                className="relative rounded-2xl overflow-hidden group border border-neutral-200 dark:border-neutral-700 max-h-48 bg-neutral-100 dark:bg-neutral-800"
+                className="relative rounded-2xl overflow-hidden group border border-neutral-200 dark:border-white/[0.06] max-h-48 bg-neutral-100 dark:bg-surface-2"
               >
                 {m.type === 'image' ? (
                   <img
@@ -289,7 +289,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
                   className="absolute top-1.5 right-1.5 p-1 bg-black/70 hover:bg-black text-white rounded-full transition"
                   aria-label="Remove media"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-3.5 h-3.5" strokeWidth={1.75} />
                 </button>
               </div>
             ))}
@@ -297,16 +297,16 @@ export const PostComposer: React.FC<PostComposerProps> = ({
         )}
 
         {/* Bottom Toolbar: S3 Upload Trigger + Sample African Photos + Publish Button */}
-        <div className="flex items-center justify-between pt-2 border-t border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-center justify-between pt-2 border-t border-neutral-100 dark:border-white/[0.04]">
           <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={isUploading}
-              className="p-2 rounded-xl text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition flex items-center gap-1.5 text-xs font-semibold"
+              className="p-2 rounded-xl text-neutral-500 dark:text-white/60 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-surface-3 transition flex items-center gap-1.5 text-xs font-semibold"
               title="Upload Photo or Video to S3"
             >
-              <UploadCloud className="w-4 h-4 text-[#087443]" />
+              <UploadCloud className="w-4 h-4 text-[#087443]" strokeWidth={1.75} />
               <span className="hidden sm:inline">Attach Media</span>
             </button>
 
@@ -317,13 +317,13 @@ export const PostComposer: React.FC<PostComposerProps> = ({
 
             {/* Quick Sample African Photos Trigger */}
             <div className="hidden md:flex items-center gap-1 pl-2">
-              <span className="text-[10px] text-neutral-400 font-bold uppercase">Quick Samples:</span>
+              <span className="text-[10px] text-neutral-400 dark:text-white/35 font-bold uppercase">Quick Samples:</span>
               {sampleImages.slice(0, 2).map((sample) => (
                 <button
                   key={sample.title}
                   type="button"
                   onClick={() => handleAddSampleImage(sample.url, sample.title)}
-                  className="px-2 py-0.5 rounded-lg text-[10px] bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 transition"
+                  className="px-2 py-0.5 rounded-lg text-[10px] bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-transparent dark:border-white/[0.06] hover:bg-neutral-200 dark:hover:bg-surface-3 transition"
                 >
                   {sample.title.split(' ')[0]}
                 </button>
@@ -339,7 +339,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
             disabled={(!content.trim() && mediaList.length === 0) || isUploading}
             className="px-5 font-bold"
           >
-            Publish <Send className="w-3.5 h-3.5 ml-1.5" />
+            Publish <Send className="w-3.5 h-3.5 ml-1.5" strokeWidth={1.75} />
           </Button>
         </div>
       </form>

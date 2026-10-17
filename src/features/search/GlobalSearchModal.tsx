@@ -153,12 +153,12 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       title="Search AfriLink"
       description="Find people, communities, conversations, and African nations"
       maxWidth="xl"
-      className="dark:bg-[#111D16] dark:border-[#1F3327] shadow-2xl"
+      className="dark:bg-surface-4 dark:border-white/[0.08] shadow-2xl"
     >
       <div className="space-y-4">
         {/* Search Input Bar */}
         <div className="relative">
-          <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400" strokeWidth={1.75} />
+          <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-white/60" strokeWidth={1.75} />
           <input
             type="text"
             role="searchbox"
@@ -166,13 +166,13 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             placeholder="Search African founders, #Afrobeats, Lagos, Swahili, FinTech..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 bg-neutral-100 dark:bg-[#0B130E] rounded-2xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-gray-500 border border-neutral-200/80 dark:border-[#1F3327] focus:border-[#087443] focus:bg-white dark:focus:bg-[#0B130E] focus:outline-none focus:ring-2 focus:ring-[#087443]/30 transition-all duration-200"
+            className="w-full pl-10 pr-9 py-2.5 bg-neutral-100 dark:bg-surface-0 rounded-2xl text-sm text-neutral-900 dark:text-white/90 placeholder-neutral-400 dark:placeholder-white/35 border border-neutral-200/80 dark:border-white/[0.06] focus:border-[#087443] focus:bg-white dark:focus:bg-surface-0 focus:outline-none focus:ring-2 focus:ring-[#087443]/30 transition-all duration-200"
             autoFocus
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-all duration-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-neutral-600 dark:hover:text-white/90 transition-all duration-200"
               aria-label="Clear search input"
             >
               <X className="h-4 w-4" strokeWidth={1.75} />
@@ -191,13 +191,13 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
         {/* Categories Tab Bar */}
         {debouncedQuery && (
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs border-b border-neutral-100 dark:border-[#1F3327] pb-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs border-b border-neutral-100 dark:border-white/[0.06] pb-2">
             <button
               onClick={() => setActiveTab('all')}
               className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'all'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
+                  : 'bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06]'
               }`}
             >
               All Results
@@ -207,7 +207,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'people'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
+                  : 'bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06]'
               }`}
             >
               People ({matchingUsers.length})
@@ -217,7 +217,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'communities'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
+                  : 'bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06]'
               }`}
             >
               Communities ({matchingCommunities.length})
@@ -227,7 +227,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'posts'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
+                  : 'bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06]'
               }`}
             >
               Posts ({matchingPosts.length})
@@ -237,7 +237,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'countries'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
+                  : 'bg-neutral-100 dark:bg-surface-2 text-neutral-600 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06]'
               }`}
             >
               Countries ({matchingCountries.length})
@@ -259,7 +259,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {/* People Results */}
             {(activeTab === 'all' || activeTab === 'people') && matchingUsers.length > 0 && (
               <div>
-                <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <h4 className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Users className="h-4 w-4" strokeWidth={1.75} /> People
                 </h4>
                 <div className="space-y-1.5">
@@ -268,15 +268,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                       key={user.id}
                       href={`/profile/${user.username}`}
                       onClick={onClose}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-surface-3 transition-all duration-200"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar src={user.avatarUrl} alt={user.fullName} size="sm" />
                         <div>
-                          <p className="font-bold text-xs text-neutral-900 dark:text-white">
+                          <p className="font-bold text-xs text-neutral-900 dark:text-white/90">
                             {user.fullName}
                           </p>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                          <p className="text-[10px] text-neutral-500 dark:text-white/60">
                             @{user.username} • {user.country}
                           </p>
                         </div>
@@ -292,7 +292,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {(activeTab === 'all' || activeTab === 'communities') &&
               matchingCommunities.length > 0 && (
                 <div>
-                  <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <h4 className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                     <Building2 className="h-4 w-4" strokeWidth={1.75} /> Communities
                   </h4>
                   <div className="space-y-1.5">
@@ -301,15 +301,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         key={comm.id}
                         href={`/communities/${comm.id}`}
                         onClick={onClose}
-                        className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
+                        className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-surface-3 transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar src={comm.profileImage} alt={comm.name} size="sm" />
                           <div>
-                            <p className="font-bold text-xs text-neutral-900 dark:text-white">
+                            <p className="font-bold text-xs text-neutral-900 dark:text-white/90">
                               {comm.name}
                             </p>
-                            <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                            <p className="text-[10px] text-neutral-500 dark:text-white/60">
                               {comm.category} • {comm.memberCount} members
                             </p>
                           </div>
@@ -324,23 +324,23 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {/* Posts Results */}
             {(activeTab === 'all' || activeTab === 'posts') && matchingPosts.length > 0 && (
               <div>
-                <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <h4 className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <FileText className="h-4 w-4" strokeWidth={1.75} /> Posts & Stories
                 </h4>
                 <div className="space-y-1.5">
                   {matchingPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200 cursor-pointer"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-surface-3 transition-all duration-200 cursor-pointer"
                       onClick={onClose}
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <Avatar src={post.author.avatarUrl} alt={post.author.fullName} size="sm" />
                         <div className="min-w-0">
-                          <p className="font-bold text-xs text-neutral-900 dark:text-white truncate">
+                          <p className="font-bold text-xs text-neutral-900 dark:text-white/90 truncate">
                             {post.author.fullName}
                           </p>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 truncate">{post.content}</p>
+                          <p className="text-[10px] text-neutral-500 dark:text-white/60 truncate">{post.content}</p>
                         </div>
                       </div>
                       <ArrowRight className="h-4 w-4 text-neutral-400 flex-shrink-0" strokeWidth={1.75} />
@@ -353,7 +353,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {/* Countries Results */}
             {(activeTab === 'all' || activeTab === 'countries') && matchingCountries.length > 0 && (
               <div>
-                <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <h4 className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider mb-2 flex items-center gap-1.5">
                   <Globe className="h-4 w-4" strokeWidth={1.75} /> African Nations ({matchingCountries.length})
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -362,15 +362,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                       key={c.code}
                       href={`/discover/${c.code.toLowerCase()}`}
                       onClick={onClose}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-white/[0.06] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-surface-3 transition-all duration-200"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="text-2xl select-none">{c.flagEmoji || c.flag}</span>
                         <div className="truncate">
-                          <p className="font-bold text-xs text-neutral-900 dark:text-white truncate">
+                          <p className="font-bold text-xs text-neutral-900 dark:text-white/90 truncate">
                             {c.name}
                           </p>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 truncate">
+                          <p className="text-[10px] text-neutral-500 dark:text-white/60 truncate">
                             {c.capital} • {c.region}
                           </p>
                           {c.majorLanguages && c.majorLanguages.length > 0 && (
@@ -391,10 +391,10 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {totalResultsCount === 0 && (
               <div className="py-8 text-center space-y-2">
                 <Globe className="h-8 w-8 mx-auto text-neutral-400" strokeWidth={1.75} />
-                <p className="font-bold text-sm text-neutral-700 dark:text-neutral-300 font-sora">
+                <p className="font-bold text-sm text-neutral-700 dark:text-white/90 font-sora">
                   No matching results found
                 </p>
-                <p className="text-xs text-neutral-500 max-w-sm mx-auto">
+                <p className="text-xs text-neutral-500 dark:text-white/60 max-w-sm mx-auto">
                   Try searching by African city (e.g. Lagos, Accra, Kigali), language (Swahili, Yoruba, Amharic), topic (#Afrobeats), or person name.
                 </p>
               </div>
@@ -408,12 +408,12 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {recentSearches.length > 0 && (
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider flex items-center gap-1.5">
                     <Clock className="h-4 w-4" strokeWidth={1.75} /> Recent Searches
                   </span>
                   <button
                     onClick={clearRecent}
-                    className="text-[10px] text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-all duration-200"
+                    className="text-[10px] text-neutral-400 hover:text-neutral-600 dark:hover:text-white/90 transition-all duration-200"
                   >
                     Clear All
                   </button>
@@ -423,7 +423,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                     <button
                       key={term}
                       onClick={() => handleSelectRecent(term)}
-                      className="px-3 py-1 rounded-full bg-neutral-100 dark:bg-[#16241C] text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327] transition-all duration-200"
+                      className="px-3 py-1 rounded-full bg-neutral-100 dark:bg-surface-2 text-xs text-neutral-700 dark:text-white/60 hover:bg-neutral-200 dark:hover:bg-surface-3 border border-transparent dark:border-white/[0.06] transition-all duration-200"
                     >
                       {term}
                     </button>
@@ -434,7 +434,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
 
             {/* Trending Pan-African Topics */}
             <div>
-              <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider block mb-2">
+              <span className="text-[11px] font-bold text-neutral-400 dark:text-white/35 uppercase tracking-wider block mb-2">
                 Trending Across Africa
               </span>
               <div className="grid grid-cols-2 gap-2">
@@ -449,16 +449,16 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                     <button
                       key={trend.tag}
                       onClick={() => setQuery(trend.tag)}
-                      className="p-2.5 rounded-xl border border-neutral-100 dark:border-[#1F3327] text-left hover:border-[#087443] transition-all duration-200 flex items-center gap-2.5 bg-neutral-50/50 dark:bg-[#16241C]/60 hover:bg-gray-100 dark:hover:bg-[#16241C]"
+                      className="p-2.5 rounded-xl border border-neutral-100 dark:border-white/[0.06] text-left hover:border-[#087443] transition-all duration-200 flex items-center gap-2.5 bg-neutral-50/50 dark:bg-surface-2/60 hover:bg-gray-100 dark:hover:bg-surface-3"
                     >
                       <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] flex items-center justify-center flex-shrink-0">
                         <TrendIcon className="h-4 w-4" strokeWidth={1.75} />
                       </div>
                       <div className="truncate">
-                        <p className="font-bold text-xs text-neutral-900 dark:text-white truncate">
+                        <p className="font-bold text-xs text-neutral-900 dark:text-white/90 truncate">
                           {trend.tag}
                         </p>
-                        <p className="text-[10px] text-neutral-400">{trend.count}</p>
+                        <p className="text-[10px] text-neutral-400 dark:text-white/35">{trend.count}</p>
                       </div>
                     </button>
                   );

@@ -6,11 +6,23 @@
   :root {
     --background: #F5F7F6;
     --foreground: #111827;
+    --surface-0: #F5F7F6;
+    --surface-1: #FFFFFF;
+    --surface-2: #FFFFFF;
+    --surface-3: #EDF1EE;
+    --surface-4: #FFFFFF;
+    --surface-5: #111827;
   }
 
   .dark {
     --background: #0B130E;
     --foreground: #F5F7F6;
+    --surface-0: #0B130E;
+    --surface-1: #0F1A13;
+    --surface-2: #131F17;
+    --surface-3: #172A1F;
+    --surface-4: #1C3226;
+    --surface-5: #213D2E;
   }
 
   body {
@@ -37,5 +49,5 @@
 }
 
 .dark * {
-  border-color: rgba(31, 51, 39, 0.7);
+  border-color: rgba(255, 255, 255, 0.06);
 }

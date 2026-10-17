@@ -42,7 +42,7 @@ export const CountryExplorer: React.FC = () => {
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
             selectedRegion === 'All'
               ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-              : 'bg-white dark:bg-[#111D16] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#1F3327] hover:border-[#087443]'
+              : 'bg-white dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-neutral-200 dark:border-white/[0.06] hover:border-[#087443] dark:hover:bg-surface-3'
           }`}
         >
           All 5 Regions ({AFRICAN_COUNTRIES.length})
@@ -57,7 +57,7 @@ export const CountryExplorer: React.FC = () => {
               className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
                 selectedRegion === region
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
-                  : 'bg-white dark:bg-[#111D16] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#1F3327] hover:border-[#087443]'
+                  : 'bg-white dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-neutral-200 dark:border-white/[0.06] hover:border-[#087443] dark:hover:bg-surface-3'
               }`}
             >
               {region} ({regionCount})

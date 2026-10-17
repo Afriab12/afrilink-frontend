@@ -64,7 +64,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   };
 
   return (
-    <article className="bg-white dark:bg-neutral-900 rounded-3xl p-5 sm:p-6 shadow-sm border border-neutral-200/80 dark:border-neutral-800 transition-all hover:shadow-card">
+    <article className="bg-white dark:bg-surface-0 rounded-3xl p-5 sm:p-6 shadow-sm border border-neutral-200/80 dark:border-white/[0.04] transition-all hover:shadow-card hover:dark:bg-surface-2 hover:dark:border-white/[0.06]">
       {/* Header */}
       <div className="flex items-start justify-between mb-3.5">
         <div className="flex items-center gap-3">
@@ -81,7 +81,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             <div className="flex items-center gap-1.5 flex-wrap">
               <Link
                 href={`/profile/${post.author.username}`}
-                className="font-bold text-sm text-neutral-900 dark:text-white hover:text-[#087443] transition font-sora"
+                className="font-bold text-sm text-neutral-900 dark:text-white/90 hover:text-[#087443] transition font-sora"
               >
                 {post.author.fullName}
               </Link>
@@ -90,16 +90,16 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                   ✓
                 </span>
               )}
-              <span className="text-xs text-neutral-400">@{post.author.username}</span>
+              <span className="text-xs text-neutral-400 dark:text-white/35">@{post.author.username}</span>
             </div>
 
-            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-400">
+            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-400 dark:text-white/35">
               <span>{formatDate(post.createdAt)}</span>
               <span>•</span>
               <span className="flex items-center gap-1" title={post.visibility}>
-                {post.visibility === 'public' && <Globe className="w-3 h-3" />}
-                {post.visibility === 'friends' && <Users className="w-3 h-3" />}
-                {post.visibility === 'community' && <Building2 className="w-3 h-3" />}
+                {post.visibility === 'public' && <Globe className="w-3 h-3" strokeWidth={1.75} />}
+                {post.visibility === 'friends' && <Users className="w-3 h-3" strokeWidth={1.75} />}
+                {post.visibility === 'community' && <Building2 className="w-3 h-3" strokeWidth={1.75} />}
                 <span className="capitalize">{post.visibility}</span>
               </span>
               {post.communityName && (
@@ -121,14 +121,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         <div className="relative">
           <button
             onClick={() => setShowMoreMenu(!showMoreMenu)}
-            className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+            className="p-1.5 rounded-full text-neutral-400 hover:text-neutral-700 dark:hover:text-white/90 hover:bg-neutral-100 dark:hover:bg-surface-3 transition"
             aria-label="More options"
           >
-            <MoreHorizontal className="w-5 h-5" />
+            <MoreHorizontal className="w-5 h-5" strokeWidth={1.75} />
           </button>
 
           {showMoreMenu && (
-            <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-800 py-1.5 z-20 animate-in fade-in zoom-in-95 duration-100">
+            <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-surface-4 rounded-2xl shadow-xl border border-neutral-200 dark:border-white/[0.08] py-1.5 z-20 animate-in fade-in zoom-in-95 duration-100">
               {isOwner ? (
                 <button
                   onClick={() => {
@@ -137,7 +137,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                   }}
                   className="w-full px-3.5 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
                 >
-                  <Trash2 className="w-3.5 h-3.5" /> Delete Post
+                  <Trash2 className="w-3.5 h-3.5" strokeWidth={1.75} /> Delete Post
                 </button>
               ) : (
                 <>
@@ -146,9 +146,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                       setShowReportModal(true);
                       setShowMoreMenu(false);
                     }}
-                    className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 flex items-center gap-2"
+                    className="w-full px-3.5 py-2 text-left text-xs font-semibold text-neutral-700 dark:text-white/90 hover:bg-neutral-100 dark:hover:bg-surface-3 flex items-center gap-2"
                   >
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" /> Report Post
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" strokeWidth={1.75} /> Report Post
                   </button>
                   <button
                     onClick={() => {
@@ -157,7 +157,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
                     }}
                     className="w-full px-3.5 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 flex items-center gap-2"
                   >
-                    <Ban className="w-3.5 h-3.5" /> Block @{post.author.username}
+                    <Ban className="w-3.5 h-3.5" strokeWidth={1.75} /> Block @{post.author.username}
                   </button>
                 </>
               )}
@@ -167,13 +167,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
       </div>
 
       {/* Post Text Content */}
-      <div className="text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed whitespace-pre-line mb-3 font-sans">
+      <div className="text-sm text-neutral-800 dark:text-white/90 leading-relaxed whitespace-pre-line mb-3 font-sans">
         {post.content}
       </div>
 
       {/* Media Gallery */}
       {post.media && post.media.length > 0 && (
-        <div className="rounded-2xl overflow-hidden mb-3 border border-neutral-100 dark:border-neutral-800 bg-black/5">
+        <div className="rounded-2xl overflow-hidden mb-3 border border-neutral-100 dark:border-white/[0.06] bg-black/5">
           {post.media.map((item) => (
             <div key={item.id} className="relative max-h-[450px] overflow-hidden flex items-center justify-center bg-black/90">
               {item.type === 'image' ? (
@@ -202,7 +202,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
       {/* Reactions Summary Bar */}
       {totalReactions > 0 && (
-        <div className="flex items-center justify-between py-2 border-b border-neutral-100 dark:border-neutral-800 text-xs text-neutral-500">
+        <div className="flex items-center justify-between py-2 border-b border-neutral-100 dark:border-white/[0.04] text-xs text-neutral-500 dark:text-white/60">
           <div className="flex items-center gap-1.5">
             <span className="flex -space-x-1 overflow-hidden">
               {post.reactionsCount.like > 0 && <span className="inline-block text-xs">👍</span>}
@@ -210,7 +210,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
               {post.reactionsCount.support > 0 && <span className="inline-block text-xs">🤝</span>}
               {post.reactionsCount.funny > 0 && <span className="inline-block text-xs">😂</span>}
             </span>
-            <span className="font-semibold text-neutral-700 dark:text-neutral-300">
+            <span className="font-semibold text-neutral-700 dark:text-white/90">
               {totalReactions}
             </span>
           </div>
@@ -245,7 +245,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
             className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition ${
               post.myReaction
                 ? `${REACTION_CONFIG[post.myReaction].color} bg-emerald-50/50 dark:bg-emerald-950/30`
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                : 'text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3'
             }`}
           >
             <span>{post.myReaction ? REACTION_CONFIG[post.myReaction].emoji : '👍'}</span>
@@ -256,18 +256,18 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         {/* Comment Toggle Button */}
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition"
         >
-          <MessageSquare className="w-4 h-4" />
+          <MessageSquare className="w-4 h-4" strokeWidth={1.75} />
           <span>Comment</span>
         </button>
 
         {/* Share Button */}
         <button
           onClick={() => setShowShareModal(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition"
         >
-          <Share2 className="w-4 h-4" />
+          <Share2 className="w-4 h-4" strokeWidth={1.75} />
           <span>Share</span>
         </button>
 
@@ -277,11 +277,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
           className={`p-2 rounded-xl transition ${
             isSaved
               ? 'text-[#D9A441] bg-amber-50 dark:bg-amber-950/30'
-              : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-white/90 hover:bg-neutral-100 dark:hover:bg-surface-3'
           }`}
           title="Save post"
         >
-          <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
+          <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} strokeWidth={1.75} />
         </button>
       </div>
 

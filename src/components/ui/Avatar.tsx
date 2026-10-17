@@ -32,7 +32,7 @@ export const Avatar: React.FC<AvatarProps> = ({
 
       {countryFlag && (
         <span
-          className="absolute -bottom-1 -right-1 text-xs bg-white dark:bg-[#0B130E] rounded-full px-0.5 shadow-sm border border-neutral-200 dark:border-[#1F3327]"
+          className="absolute -bottom-1 -right-1 text-xs bg-white dark:bg-surface-0 rounded-full px-0.5 shadow-sm border border-neutral-200 dark:border-white/[0.04]"
           title="Country"
         >
           {countryFlag}

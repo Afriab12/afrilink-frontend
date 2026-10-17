@@ -46,7 +46,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={sora.variable} suppressHydrationWarning>
-      <body className="antialiased font-sans bg-[#F5F7F6] dark:bg-[#0B130E] text-neutral-900 dark:text-[#F5F7F6] transition-colors duration-200">
+      <body className="antialiased font-sans bg-[#F5F7F6] dark:bg-surface-0 text-neutral-900 dark:text-white/90 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <OfflineBanner />
           <AuthProvider>

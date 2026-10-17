@@ -26,8 +26,8 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       <div
         className={
           showLabel
-            ? `w-full h-11 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse ${className}`
-            : `w-9 h-9 rounded-full bg-neutral-100 dark:bg-[#16241C] animate-pulse ${className}`
+            ? `w-full h-11 rounded-2xl bg-neutral-100 dark:bg-surface-1 animate-pulse ${className}`
+            : `w-9 h-9 rounded-full bg-neutral-100 dark:bg-surface-2 animate-pulse ${className}`
         }
         aria-hidden="true"
       />
@@ -45,7 +45,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
       <button
         type="button"
         onClick={toggleTheme}
-        className={`p-2 rounded-full hover:bg-slate-100 dark:hover:bg-[#16241C] transition-all duration-200 text-neutral-600 dark:text-neutral-300 ${className}`}
+        className={`p-2 rounded-full hover:bg-slate-100 dark:hover:bg-surface-3 transition-all duration-200 text-neutral-600 dark:text-white/60 ${className}`}
         aria-label={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
         title={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
       >
@@ -63,7 +63,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     <button
       type="button"
       onClick={toggleTheme}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-[#16241C] hover:text-neutral-900 dark:hover:text-white transition-all duration-200 group ${className}`}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-neutral-700 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 hover:text-neutral-900 dark:hover:text-white/90 transition-all duration-200 group ${className}`}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
     >

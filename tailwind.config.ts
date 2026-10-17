@@ -7,14 +7,30 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
       colors: {
+        // Phase 1A: 6-Layer Depth Surface System
+        surface: {
+          0: "var(--surface-0)",
+          1: "var(--surface-1)",
+          2: "var(--surface-2)",
+          3: "var(--surface-3)",
+          4: "var(--surface-4)",
+          5: "var(--surface-5)",
+        },
+        "surface-0": "var(--surface-0)",
+        "surface-1": "var(--surface-1)",
+        "surface-2": "var(--surface-2)",
+        "surface-3": "var(--surface-3)",
+        "surface-4": "var(--surface-4)",
+        "surface-5": "var(--surface-5)",
         afroDark: {
           DEFAULT: "#0B130E",
-          surface: "#111D16",
-          card: "#16241C",
+          surface: "#0F1A13",
+          card: "#131F17",
           border: "#1F3327",
           text: "#F5F7F6",
         },

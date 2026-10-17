@@ -75,7 +75,7 @@ export const Sidebar: React.FC = () => {
     <>
       <aside className="hidden lg:flex flex-col w-64 xl:w-72 sticky top-20 h-[calc(100vh-80px)] pb-6 pr-4 space-y-6">
         {/* Navigation Items */}
-        <nav className="space-y-1.5 bg-white dark:bg-[#111D16] rounded-3xl p-3 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm">
+        <nav className="space-y-1.5 bg-white dark:bg-surface-1 rounded-3xl p-3 border border-neutral-200/80 dark:border-white/[0.04] shadow-sm">
           {navItems.map((item) => {
             const isActive = isItemActive(item.href);
             const Icon = item.icon;
@@ -87,7 +87,7 @@ export const Sidebar: React.FC = () => {
                 className={`group flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all duration-200 ${
                   isActive
                     ? 'bg-[#087443] text-white shadow-sm'
-                    : 'text-neutral-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-[#16241C] hover:text-neutral-900 dark:hover:text-white'
+                    : 'text-neutral-700 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 hover:text-neutral-900 dark:hover:text-white/90'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -113,20 +113,20 @@ export const Sidebar: React.FC = () => {
             );
           })}
 
-          <div className="pt-2 mt-2 border-t border-neutral-100 dark:border-[#1F3327]">
+          <div className="pt-2 mt-2 border-t border-neutral-100 dark:border-white/[0.04]">
             <ThemeToggle showLabel className="w-full justify-start px-4 py-2.5" />
           </div>
         </nav>
 
         {/* Quick Community Launcher Card */}
-        <div className="bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-emerald-950/30 dark:to-amber-950/20 rounded-3xl p-4 border border-emerald-100 dark:border-emerald-900/40 text-center space-y-2">
+        <div className="bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-surface-2 dark:to-surface-1 rounded-3xl p-4 border border-emerald-100 dark:border-white/[0.06] text-center space-y-2">
           <div className="w-10 h-10 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-[#087443] dark:text-[#0e9357] flex items-center justify-center mx-auto mb-1">
             <Sparkles className="h-5 w-5" strokeWidth={1.75} />
           </div>
-          <h4 className="font-bold text-xs text-neutral-900 dark:text-white font-sora">
+          <h4 className="font-bold text-xs text-neutral-900 dark:text-white/90 font-sora">
             Start an African Hub
           </h4>
-          <p className="text-[11px] text-neutral-500 dark:text-neutral-400 leading-snug">
+          <p className="text-[11px] text-neutral-500 dark:text-white/60 leading-snug">
             Create an open or invite-only community for your trade, startup or culture.
           </p>
           <Button

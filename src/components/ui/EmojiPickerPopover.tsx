@@ -10,8 +10,8 @@ import { Theme as EmojiTheme } from 'emoji-picker-react';
 const EmojiPicker = dynamic(() => import('emoji-picker-react'), {
   ssr: false,
   loading: () => (
-    <div className="w-[300px] h-[350px] bg-white dark:bg-[#111D16] rounded-3xl flex flex-col items-center justify-center text-xs text-neutral-400 gap-2 border border-neutral-200 dark:border-[#1F3327] shadow-xl">
-      <Loader2 className="w-6 h-6 animate-spin text-[#087443]" />
+    <div className="w-[300px] h-[350px] bg-white dark:bg-surface-4 rounded-3xl flex flex-col items-center justify-center text-xs text-neutral-400 dark:text-white/60 gap-2 border border-neutral-200 dark:border-white/[0.08] shadow-xl">
+      <Loader2 className="w-6 h-6 animate-spin text-[#087443]" strokeWidth={1.75} />
       <span>Loading Emojis...</span>
     </div>
   ),
@@ -70,14 +70,14 @@ export const EmojiPickerPopover: React.FC<EmojiPickerPopoverProps> = ({
         aria-label="Add emoji"
         title="Add emoji"
       >
-        <Smile className="w-5 h-5" />
+        <Smile className="w-5 h-5" strokeWidth={1.75} />
       </button>
 
       {isOpen && (
         <div
           className={`absolute ${
             placement === 'top' ? 'bottom-full mb-2' : 'top-full mt-2'
-          } left-0 sm:left-auto right-auto sm:right-0 z-50 animate-in fade-in zoom-in-95 duration-150 shadow-2xl rounded-3xl overflow-hidden`}
+          } left-0 sm:left-auto right-auto sm:right-0 z-50 animate-in fade-in zoom-in-95 duration-150 shadow-2xl rounded-3xl overflow-hidden border border-transparent dark:border-white/[0.08] dark:bg-surface-4`}
         >
           <div className="relative">
             <EmojiPicker

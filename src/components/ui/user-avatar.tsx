@@ -96,7 +96,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       {/* Online Presence Status Dot */}
       {isOnline && (
         <span
-          className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-[#0B130E] rounded-full"
+          className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white dark:border-surface-0 rounded-full"
           aria-label="Online"
         />
       )}

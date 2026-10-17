@@ -20,14 +20,14 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   if (isAuthRoute) {
     return (
-      <main className="min-h-screen bg-[#F5F7F6] dark:bg-[#0B130E] dark:text-[#F5F7F6] flex flex-col justify-center py-10 px-4 transition-colors duration-200">
+      <main className="min-h-screen bg-[#F5F7F6] dark:bg-surface-0 dark:text-white/90 flex flex-col justify-center py-10 px-4 transition-colors duration-200">
         {children}
       </main>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F7F6] dark:bg-[#0B130E] dark:text-[#F5F7F6] flex flex-col font-sans transition-colors duration-200">
+    <div className="min-h-screen bg-[#F5F7F6] dark:bg-surface-0 dark:text-white/90 flex flex-col font-sans transition-colors duration-200">
       <Navbar />
 
       <div

@@ -65,17 +65,17 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
       </Link>
 
       {/* Country Header Banner */}
-      <div className="bg-white dark:bg-[#111D16] rounded-3xl p-6 sm:p-8 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm relative overflow-hidden">
+      <div className="bg-white dark:bg-surface-0 rounded-3xl p-6 sm:p-8 border border-neutral-200/80 dark:border-white/[0.04] shadow-sm relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
             <span className="text-5xl select-none">{country.flagEmoji || country.flag}</span>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-sora">
+                <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white/90 font-sora">
                   {country.name}
                 </h1>
                 {country.nativeName && country.nativeName !== country.name && (
-                  <span className="text-sm font-semibold text-neutral-400">
+                  <span className="text-sm font-semibold text-neutral-400 dark:text-white/35">
                     ({country.nativeName})
                   </span>
                 )}
@@ -83,14 +83,14 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
                   {country.region}
                 </Badge>
               </div>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              <p className="text-xs text-neutral-500 dark:text-white/60 mt-1">
                 Capital: {country.capital} • Population: {country.population}
               </p>
 
               {/* Major African Languages */}
               {country.majorLanguages && country.majorLanguages.length > 0 && (
-                <div className="flex items-center gap-2 mt-2 text-xs text-neutral-600 dark:text-neutral-300">
-                  <Languages className="w-3.5 h-3.5 text-[#D9A441] flex-shrink-0" />
+                <div className="flex items-center gap-2 mt-2 text-xs text-neutral-600 dark:text-white/60">
+                  <Languages className="w-3.5 h-3.5 text-[#D9A441] flex-shrink-0" strokeWidth={1.75} />
                   <span className="font-bold text-[#087443] dark:text-[#0e9357]">Languages:</span>
                   <span>{country.majorLanguages.join(', ')}</span>
                 </div>
@@ -99,12 +99,12 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
           </div>
         </div>
 
-        <p className="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 mt-4 leading-relaxed max-w-2xl">
+        <p className="text-xs sm:text-sm text-neutral-700 dark:text-white/90 mt-4 leading-relaxed max-w-2xl">
           {country.description}
         </p>
 
         {country.popularInterests && (
-          <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-neutral-100 dark:border-[#1F3327]">
+          <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-neutral-100 dark:border-white/[0.04]">
             {country.popularInterests.map((interest) => (
               <Badge key={interest} variant="neutral" size="sm">
                 {interest}
@@ -115,16 +115,16 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
       </div>
 
       {/* Content Tabs */}
-      <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-2 text-xs font-bold">
+      <div className="flex items-center gap-2 border-b border-neutral-200 dark:border-white/[0.04] pb-2 text-xs font-bold">
         <button
           onClick={() => setActiveTab('posts')}
           className={`px-4 py-2 rounded-2xl transition flex items-center gap-1.5 ${
             activeTab === 'posts'
               ? 'bg-[#087443] text-white'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800'
+              : 'bg-white dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-neutral-200 dark:border-white/[0.06]'
           }`}
         >
-          <FileText className="w-3.5 h-3.5" /> Public Posts ({countryPosts.length})
+          <FileText className="w-3.5 h-3.5" strokeWidth={1.75} /> Public Posts ({countryPosts.length})
         </button>
 
         <button
@@ -132,10 +132,10 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
           className={`px-4 py-2 rounded-2xl transition flex items-center gap-1.5 ${
             activeTab === 'communities'
               ? 'bg-[#087443] text-white'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800'
+              : 'bg-white dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-neutral-200 dark:border-white/[0.06]'
           }`}
         >
-          <Building2 className="w-3.5 h-3.5" /> Communities ({countryCommunities.length})
+          <Building2 className="w-3.5 h-3.5" strokeWidth={1.75} /> Communities ({countryCommunities.length})
         </button>
 
         <button
@@ -143,10 +143,10 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
           className={`px-4 py-2 rounded-2xl transition flex items-center gap-1.5 ${
             activeTab === 'people'
               ? 'bg-[#087443] text-white'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800'
+              : 'bg-white dark:bg-surface-2 text-neutral-600 dark:text-white/60 border border-neutral-200 dark:border-white/[0.06]'
           }`}
         >
-          <Users className="w-3.5 h-3.5" /> People & Creators ({countryUsers.length})
+          <Users className="w-3.5 h-3.5" strokeWidth={1.75} /> People & Creators ({countryUsers.length})
         </button>
       </div>
 
@@ -156,8 +156,8 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
           {countryPosts.length > 0 ? (
             countryPosts.map((post) => <PostCard key={post.id} post={post} />)
           ) : (
-            <div className="bg-white dark:bg-neutral-900 rounded-3xl p-8 text-center border border-neutral-200 dark:border-neutral-800">
-              <p className="text-xs text-neutral-500">
+            <div className="bg-white dark:bg-surface-0 rounded-3xl p-8 text-center border border-neutral-200 dark:border-white/[0.04]">
+              <p className="text-xs text-neutral-500 dark:text-white/60">
                 No public posts currently geotagged in {country.name}. Be the first to share an update from {country.name}!
               </p>
             </div>
@@ -173,8 +173,8 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
               <CommunityCard key={comm.id} community={comm} />
             ))
           ) : (
-            <div className="col-span-2 bg-white dark:bg-neutral-900 rounded-3xl p-8 text-center border border-neutral-200 dark:border-neutral-800">
-              <p className="text-xs text-neutral-500">
+            <div className="col-span-2 bg-white dark:bg-surface-0 rounded-3xl p-8 text-center border border-neutral-200 dark:border-white/[0.04]">
+              <p className="text-xs text-neutral-500 dark:text-white/60">
                 No dedicated communities formed in {country.name} yet. Anyone can launch an open community!
               </p>
             </div>
@@ -191,18 +191,18 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
               return (
                 <div
                   key={user.id}
-                  className="bg-white dark:bg-neutral-900 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-800 flex items-center justify-between"
+                  className="bg-white dark:bg-surface-0 rounded-2xl p-4 border border-neutral-200 dark:border-white/[0.04] flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
                     <Avatar src={user.avatarUrl} alt={user.fullName} size="md" />
                     <div>
                       <Link
                         href={`/profile/${user.username}`}
-                        className="font-bold text-sm text-neutral-900 dark:text-white hover:text-[#087443] transition"
+                        className="font-bold text-sm text-neutral-900 dark:text-white/90 hover:text-[#087443] transition"
                       >
                         {user.fullName}
                       </Link>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-white/35">
                         @{user.username} {user.city ? `• ${user.city}` : ''}
                       </p>
                     </div>
@@ -218,8 +218,8 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
               );
             })
           ) : (
-            <div className="col-span-2 bg-white dark:bg-neutral-900 rounded-3xl p-8 text-center border border-neutral-200 dark:border-neutral-800">
-              <p className="text-xs text-neutral-500">
+            <div className="col-span-2 bg-white dark:bg-surface-0 rounded-3xl p-8 text-center border border-neutral-200 dark:border-white/[0.04]">
+              <p className="text-xs text-neutral-500 dark:text-white/60">
                 Be the pioneer to invite creators from {country.name} to AfriLink!
               </p>
             </div>

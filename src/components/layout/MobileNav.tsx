@@ -38,7 +38,7 @@ export const MobileNav: React.FC = () => {
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-[#0B130E]/95 backdrop-blur-lg border-t border-neutral-200/80 dark:border-[#1F3327] z-40 px-2 py-1.5 safe-area-pb">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-surface-1/95 backdrop-blur-lg border-t border-neutral-200/80 dark:border-white/[0.04] z-40 px-2 py-1.5 safe-area-pb">
       <div className="flex items-center justify-around">
         {links.map((link) => {
           const isActive =
@@ -56,7 +56,7 @@ export const MobileNav: React.FC = () => {
               className={`flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 ${
                 isActive
                   ? 'text-[#087443] font-bold'
-                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
+                  : 'text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white/90'
               }`}
             >
               <div className="relative">

@@ -59,29 +59,29 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Dialog Window */}
       <div
         className={cn(
-          'relative w-full bg-white dark:bg-[#111D16] rounded-2xl shadow-2xl border border-neutral-200 dark:border-[#1F3327] p-6 z-10 transition-all transform scale-100 max-h-[90vh] flex flex-col',
+          'relative w-full bg-white dark:bg-surface-4 rounded-2xl shadow-2xl border border-neutral-200 dark:border-white/[0.08] p-6 z-10 transition-all transform scale-100 max-h-[90vh] flex flex-col',
           maxWidths[maxWidth],
           className
         )}
         role="dialog"
         aria-modal="true"
       >
-        <div className="flex items-start justify-between pb-3 border-b border-neutral-100 dark:border-neutral-800">
+        <div className="flex items-start justify-between pb-3 border-b border-neutral-100 dark:border-white/[0.08]">
           <div>
             {title && (
-              <h3 className="text-lg font-bold text-neutral-900 dark:text-white font-sora">
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white/90 font-sora">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+              <p className="text-xs text-neutral-500 dark:text-white/60 mt-0.5">
                 {description}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-[#16241C] transition-all duration-200"
+            className="p-1.5 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-white/90 hover:bg-neutral-100 dark:hover:bg-surface-3 transition-all duration-200"
             aria-label="Close"
           >
             <X className="h-4 w-4" strokeWidth={1.75} />
