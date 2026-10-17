@@ -194,7 +194,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({ user, isOpen
             >
               {AFRICAN_COUNTRIES.map((c) => (
                 <option key={c.code} value={c.code}>
-                  {c.flag} {c.name}
+                  {c.flagEmoji || c.flag} {c.name}
                 </option>
               ))}
             </select>

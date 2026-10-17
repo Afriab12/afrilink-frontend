@@ -27,7 +27,7 @@ export const RightSidebar: React.FC = () => {
   return (
     <aside className="hidden xl:flex flex-col w-80 sticky top-20 h-[calc(100vh-80px)] pb-6 space-y-5">
       {/* Explore Africa Widget */}
-      <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-[#111D16] rounded-3xl p-5 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-900 dark:text-white font-sora">
             <Compass className="w-4 h-4 text-[#087443]" />
@@ -37,7 +37,7 @@ export const RightSidebar: React.FC = () => {
             href="/discover"
             className="text-[11px] font-bold text-[#087443] dark:text-[#0e9357] hover:underline"
           >
-            See All
+            See All (54)
           </Link>
         </div>
 
@@ -46,14 +46,14 @@ export const RightSidebar: React.FC = () => {
             <Link
               key={country.code}
               href={`/discover/${country.code.toLowerCase()}`}
-              className="p-2.5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 hover:border-[#087443] bg-neutral-50/50 dark:bg-neutral-800/40 hover:bg-white dark:hover:bg-neutral-800 transition flex items-center gap-2 group"
+              className="p-2.5 rounded-2xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] bg-neutral-50/50 dark:bg-[#16241C]/60 hover:bg-gray-100 dark:hover:bg-[#16241C] transition flex items-center gap-2 group"
             >
-              <span className="text-xl">{country.flag}</span>
+              <span className="text-xl select-none">{country.flagEmoji || country.flag}</span>
               <div className="truncate">
-                <p className="font-bold text-xs text-neutral-900 dark:text-white group-hover:text-[#087443] transition truncate">
+                <p className="font-bold text-xs text-neutral-900 dark:text-white group-hover:text-[#087443] dark:group-hover:text-[#D9A441] transition truncate">
                   {country.name}
                 </p>
-                <p className="text-[10px] text-neutral-400">{country.region.split(' ')[0]}</p>
+                <p className="text-[10px] text-neutral-500 dark:text-neutral-400">{country.region.split(' ')[0]}</p>
               </div>
             </Link>
           ))}

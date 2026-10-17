@@ -158,7 +158,7 @@ export const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
               <option value="Pan-African">🌍 Pan-African (All Africa)</option>
               {AFRICAN_COUNTRIES.map((c) => (
                 <option key={c.code} value={c.name}>
-                  {c.flag} {c.name}
+                  {c.flagEmoji || c.flag} {c.name}
                 </option>
               ))}
             </select>

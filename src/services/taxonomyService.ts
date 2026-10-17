@@ -5,14 +5,14 @@
  */
 
 import { apiClient, ApiError } from './apiClient.ts';
-import { Country, AfricanRegion } from '@/types';
+import type { Country, AfricanRegion } from '../types/index.ts';
 import {
   AFRICAN_COUNTRIES,
   AFRICAN_INTERESTS,
   AFRICAN_REGIONS,
   getCountryByCode,
   getCountriesByRegion,
-} from '@/utils/countryData';
+} from '../utils/countryData.ts';
 
 export interface InterestItem {
   id: string;

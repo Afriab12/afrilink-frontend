@@ -41,26 +41,29 @@ export const CountryExplorer: React.FC = () => {
           onClick={() => setSelectedRegion('All')}
           className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
             selectedRegion === 'All'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800'
+              ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
+              : 'bg-white dark:bg-[#111D16] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#1F3327] hover:border-[#087443]'
           }`}
         >
           All 5 Regions ({AFRICAN_COUNTRIES.length})
         </button>
 
-        {AFRICAN_REGIONS.map((region) => (
-          <button
-            key={region}
-            onClick={() => setSelectedRegion(region)}
-            className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
-              selectedRegion === region
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800'
-            }`}
-          >
-            {region}
-          </button>
-        ))}
+        {AFRICAN_REGIONS.map((region) => {
+          const regionCount = AFRICAN_COUNTRIES.filter((c) => c.region === region).length;
+          return (
+            <button
+              key={region}
+              onClick={() => setSelectedRegion(region)}
+              className={`px-4 py-2 rounded-2xl text-xs font-bold transition whitespace-nowrap ${
+                selectedRegion === region
+                  ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
+                  : 'bg-white dark:bg-[#111D16] text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-[#1F3327] hover:border-[#087443]'
+              }`}
+            >
+              {region} ({regionCount})
+            </button>
+          );
+        })}
       </div>
 
       {/* Countries Grid */}

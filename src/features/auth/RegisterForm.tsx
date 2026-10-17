@@ -268,7 +268,7 @@ export const RegisterForm: React.FC = () => {
             >
               {AFRICAN_COUNTRIES.map((c) => (
                 <option key={c.code} value={c.code}>
-                  {c.flag} {c.name} ({c.region})
+                  {c.flagEmoji || c.flag} {c.name} ({c.region})
                 </option>
               ))}
             </select>

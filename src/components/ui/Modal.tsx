@@ -11,6 +11,7 @@ interface ModalProps {
   description?: string;
   children: React.ReactNode;
   maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  className?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,6 +21,7 @@ export const Modal: React.FC<ModalProps> = ({
   description,
   children,
   maxWidth = 'md',
+  className = '',
 }) => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,8 +59,9 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Dialog Window */}
       <div
         className={cn(
-          'relative w-full bg-white dark:bg-neutral-900 rounded-2xl shadow-2xl border border-neutral-200 dark:border-neutral-800 p-6 z-10 transition-all transform scale-100 max-h-[90vh] flex flex-col',
-          maxWidths[maxWidth]
+          'relative w-full bg-white dark:bg-[#111D16] rounded-2xl shadow-2xl border border-neutral-200 dark:border-[#1F3327] p-6 z-10 transition-all transform scale-100 max-h-[90vh] flex flex-col',
+          maxWidths[maxWidth],
+          className
         )}
         role="dialog"
         aria-modal="true"

@@ -66,10 +66,13 @@ export const OnboardingWizard: React.FC = () => {
   // Filter countries by region and search query
   const filteredCountries = AFRICAN_COUNTRIES.filter((c) => {
     const matchesRegion = selectedRegion === 'All' || c.region === selectedRegion;
+    const q = searchCountry.toLowerCase();
     const matchesSearch =
-      c.name.toLowerCase().includes(searchCountry.toLowerCase()) ||
-      c.code.toLowerCase().includes(searchCountry.toLowerCase()) ||
-      c.capital.toLowerCase().includes(searchCountry.toLowerCase());
+      c.name.toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q) ||
+      c.capital.toLowerCase().includes(q) ||
+      (c.nativeName && c.nativeName.toLowerCase().includes(q)) ||
+      (c.majorLanguages && c.majorLanguages.some((lang) => lang.toLowerCase().includes(q)));
     return matchesRegion && matchesSearch;
   });
 
@@ -258,12 +261,14 @@ export const OnboardingWizard: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-center justify-between w-full">
-                    <span className="text-2xl">{c.flag}</span>
+                    <span className="text-2xl select-none">{c.flagEmoji || c.flag}</span>
                     {isSelected && <Check className="w-4 h-4 text-[#087443]" />}
                   </div>
                   <div className="mt-2">
                     <p className="font-bold text-sm text-neutral-900 dark:text-white truncate">{c.name}</p>
-                    <p className="text-[11px] text-neutral-500">{c.region}</p>
+                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 truncate">
+                      {c.region} {c.majorLanguages ? `• ${c.majorLanguages[0]}` : ''}
+                    </p>
                   </div>
                 </button>
               );

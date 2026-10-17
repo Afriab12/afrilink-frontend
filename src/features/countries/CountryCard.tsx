@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Users, Building2 } from 'lucide-react';
+import { ArrowRight, Languages } from 'lucide-react';
 import { Country } from '@/types';
 import { Badge } from '@/components/ui/Badge';
 
@@ -11,25 +11,37 @@ interface CountryCardProps {
 }
 
 export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
+  const flagDisplay = country.flagEmoji || country.flag;
+
   return (
     <Link
       href={`/discover/${country.code.toLowerCase()}`}
-      className="group bg-white dark:bg-neutral-900 rounded-3xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-sm hover:shadow-md hover:border-[#087443]/50 transition-all flex flex-col justify-between"
+      className="group bg-white dark:bg-[#111D16] rounded-3xl p-5 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm hover:shadow-md hover:border-[#087443] dark:hover:border-[#087443] transition-all flex flex-col justify-between"
     >
       <div>
         <div className="flex items-center justify-between mb-3">
           <span className="text-3xl select-none" role="img" aria-label={country.name}>
-            {country.flag}
+            {flagDisplay}
           </span>
           <Badge variant="emerald" size="sm">
             {country.region}
           </Badge>
         </div>
 
-        <h3 className="font-bold text-base text-neutral-900 dark:text-white group-hover:text-[#087443] transition font-sora">
+        <h3 className="font-bold text-base text-neutral-900 dark:text-white group-hover:text-[#087443] dark:group-hover:text-[#D9A441] transition font-sora">
           {country.name}
         </h3>
-        <p className="text-xs text-neutral-500 mt-0.5">Capital: {country.capital} • Pop: {country.population}</p>
+        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+          Capital: {country.capital} • Pop: {country.population}
+        </p>
+
+        {/* 3 Major Local Languages */}
+        {country.majorLanguages && country.majorLanguages.length > 0 && (
+          <div className="flex items-center gap-1.5 mt-2 text-[11px] font-medium text-neutral-600 dark:text-neutral-300">
+            <Languages className="w-3.5 h-3.5 text-[#D9A441] flex-shrink-0" />
+            <span className="truncate">{country.majorLanguages.join(' • ')}</span>
+          </div>
+        )}
 
         <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-2.5 line-clamp-2 leading-relaxed">
           {country.description}
@@ -40,7 +52,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
             {country.popularInterests.slice(0, 3).map((item) => (
               <span
                 key={item}
-                className="text-[10px] px-2 py-0.5 bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 rounded-full font-medium"
+                className="text-[10px] px-2 py-0.5 bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-400 border border-transparent dark:border-[#1F3327] rounded-full font-medium"
               >
                 {item}
               </span>
@@ -49,7 +61,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
         )}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs font-bold text-[#087443] dark:text-[#0e9357]">
+      <div className="mt-4 pt-3 border-t border-neutral-100 dark:border-[#1F3327] flex items-center justify-between text-xs font-bold text-[#087443] dark:text-[#0e9357]">
         <span>Explore Country</span>
         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
       </div>

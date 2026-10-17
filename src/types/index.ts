@@ -1,14 +1,19 @@
 export type AfricanRegion = 'West Africa' | 'East Africa' | 'Southern Africa' | 'North Africa' | 'Central Africa';
 
 export interface Country {
-  code: string; // e.g. "NG", "GH", "KE", "ZA", "RW", "EG", "SN"
-  name: string;
-  region: AfricanRegion;
-  flag: string; // emoji or url
+  id: string; // uuid or stable slug (e.g. "ng", "gh")
+  code: string; // ISO 3166-1 alpha-2 (e.g. "NG", "GH")
+  name: string; // English name
+  nativeName?: string; // local endonym
   capital: string;
-  population: string;
-  description: string;
+  population: string; // e.g. "223 Million"
+  region: AfricanRegion;
+  flag: string; // emoji flag e.g. "🇳🇬"
+  flagEmoji: string; // alias for flag
+  description: string; // cultural and economic blurb
+  majorLanguages: [string, string, string]; // EXACTLY 3 primary languages
   popularInterests: string[];
+  tags?: string[]; // alias for popularInterests
 }
 
 export type PostVisibility = 'public' | 'friends' | 'community';

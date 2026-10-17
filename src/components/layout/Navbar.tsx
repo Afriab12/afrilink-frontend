@@ -64,13 +64,14 @@ export const Navbar: React.FC = () => {
           <div className="flex-1 max-w-md hidden md:block">
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="w-full flex items-center justify-between px-4 py-2 bg-neutral-100 dark:bg-neutral-800/80 hover:bg-neutral-200/70 dark:hover:bg-neutral-800 text-neutral-400 rounded-2xl text-xs transition border border-transparent hover:border-neutral-300 dark:hover:border-neutral-700"
+              className="w-full flex items-center justify-between px-4 py-2 bg-neutral-100 hover:bg-neutral-200/70 dark:bg-[#111D16] dark:border-[#1F3327] dark:hover:border-[#087443] rounded-2xl text-xs transition border border-transparent hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#087443]"
+              aria-label="Search AfriLink"
             >
               <div className="flex items-center gap-2.5">
-                <Search className="w-4 h-4 text-neutral-400" />
-                <span>Search African people, topics, countries...</span>
+                <Search className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+                <span className="text-gray-600 dark:text-gray-300 font-medium">Search African people, topics, countries...</span>
               </div>
-              <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] bg-white dark:bg-neutral-700 rounded border border-neutral-300 dark:border-neutral-600 text-neutral-500 font-mono">
+              <kbd className="hidden lg:inline-block px-1.5 py-0.5 text-[10px] bg-white dark:bg-[#16241C] text-neutral-500 dark:text-gray-400 rounded border border-neutral-300 dark:border-[#1F3327] font-mono shadow-sm">
                 ⌘K
               </kbd>
             </button>

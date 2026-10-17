@@ -2,7 +2,7 @@
 
 import React, { use, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Users, Building2, Globe, FileText, Sparkles } from 'lucide-react';
+import { ArrowLeft, Users, Building2, Globe, FileText, Sparkles, Languages } from 'lucide-react';
 import { getCountryByCode } from '@/utils/countryData';
 import { PostCard } from '@/features/posts/PostCard';
 import { CommunityCard } from '@/features/communities/CommunityCard';
@@ -65,22 +65,36 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
       </Link>
 
       {/* Country Header Banner */}
-      <div className="bg-white dark:bg-neutral-900 rounded-3xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden">
+      <div className="bg-white dark:bg-[#111D16] rounded-3xl p-6 sm:p-8 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm relative overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <span className="text-5xl select-none">{country.flag}</span>
+            <span className="text-5xl select-none">{country.flagEmoji || country.flag}</span>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-sora">
                   {country.name}
                 </h1>
+                {country.nativeName && country.nativeName !== country.name && (
+                  <span className="text-sm font-semibold text-neutral-400">
+                    ({country.nativeName})
+                  </span>
+                )}
                 <Badge variant="emerald" size="sm">
                   {country.region}
                 </Badge>
               </div>
-              <p className="text-xs text-neutral-500 mt-1">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                 Capital: {country.capital} • Population: {country.population}
               </p>
+
+              {/* Major African Languages */}
+              {country.majorLanguages && country.majorLanguages.length > 0 && (
+                <div className="flex items-center gap-2 mt-2 text-xs text-neutral-600 dark:text-neutral-300">
+                  <Languages className="w-3.5 h-3.5 text-[#D9A441] flex-shrink-0" />
+                  <span className="font-bold text-[#087443] dark:text-[#0e9357]">Languages:</span>
+                  <span>{country.majorLanguages.join(', ')}</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -90,7 +104,7 @@ export default function CountryDetailPage({ params }: CountryPageProps) {
         </p>
 
         {country.popularInterests && (
-          <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex flex-wrap gap-1.5 mt-4 pt-4 border-t border-neutral-100 dark:border-[#1F3327]">
             {country.popularInterests.map((interest) => (
               <Badge key={interest} variant="neutral" size="sm">
                 {interest}
