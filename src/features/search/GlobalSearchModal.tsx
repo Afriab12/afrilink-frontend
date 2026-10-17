@@ -12,6 +12,10 @@ import {
   ArrowRight,
   X,
   Loader2,
+  Laptop,
+  Trophy,
+  Music,
+  TrendingUp,
 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Avatar } from '@/components/ui/Avatar';
@@ -154,7 +158,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
       <div className="space-y-4">
         {/* Search Input Bar */}
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400" />
+          <Search className="h-4 w-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-500 dark:text-neutral-400" strokeWidth={1.75} />
           <input
             type="text"
             role="searchbox"
@@ -162,16 +166,16 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             placeholder="Search African founders, #Afrobeats, Lagos, Swahili, FinTech..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 bg-neutral-100 dark:bg-[#0B130E] rounded-2xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-gray-500 border border-neutral-200/80 dark:border-[#1F3327] focus:border-[#087443] focus:bg-white dark:focus:bg-[#0B130E] focus:outline-none focus:ring-2 focus:ring-[#087443]/30 transition-all"
+            className="w-full pl-10 pr-9 py-2.5 bg-neutral-100 dark:bg-[#0B130E] rounded-2xl text-sm text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-gray-500 border border-neutral-200/80 dark:border-[#1F3327] focus:border-[#087443] focus:bg-white dark:focus:bg-[#0B130E] focus:outline-none focus:ring-2 focus:ring-[#087443]/30 transition-all duration-200"
             autoFocus
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 transition-all duration-200"
               aria-label="Clear search input"
             >
-              <X className="w-4 h-4" />
+              <X className="h-4 w-4" strokeWidth={1.75} />
             </button>
           )}
         </div>
@@ -190,7 +194,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
           <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs border-b border-neutral-100 dark:border-[#1F3327] pb-2">
             <button
               onClick={() => setActiveTab('all')}
-              className={`px-3 py-1.5 rounded-full font-bold transition ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'all'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
                   : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
@@ -200,7 +204,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('people')}
-              className={`px-3 py-1.5 rounded-full font-bold transition ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'people'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
                   : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
@@ -210,7 +214,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('communities')}
-              className={`px-3 py-1.5 rounded-full font-bold transition ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'communities'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
                   : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
@@ -220,7 +224,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('posts')}
-              className={`px-3 py-1.5 rounded-full font-bold transition ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'posts'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
                   : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
@@ -230,7 +234,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             </button>
             <button
               onClick={() => setActiveTab('countries')}
-              className={`px-3 py-1.5 rounded-full font-bold transition ${
+              className={`px-3 py-1.5 rounded-full font-bold transition-all duration-200 ${
                 activeTab === 'countries'
                   ? 'bg-[#087443] text-white shadow-sm ring-2 ring-[#D9A441]/80'
                   : 'bg-neutral-100 dark:bg-[#16241C] text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327]'
@@ -244,7 +248,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
         {/* Loading Spinner */}
         {isSearching && (
           <div className="py-8 flex flex-col items-center justify-center text-neutral-500 text-xs gap-2">
-            <Loader2 className="w-5 h-5 animate-spin text-[#087443]" />
+            <Loader2 className="h-5 w-5 animate-spin text-[#087443]" strokeWidth={1.75} />
             <span>Discovering matches across Africa...</span>
           </div>
         )}
@@ -256,7 +260,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {(activeTab === 'all' || activeTab === 'people') && matchingUsers.length > 0 && (
               <div>
                 <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5" /> People
+                  <Users className="h-4 w-4" strokeWidth={1.75} /> People
                 </h4>
                 <div className="space-y-1.5">
                   {matchingUsers.map((user) => (
@@ -264,7 +268,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                       key={user.id}
                       href={`/profile/${user.username}`}
                       onClick={onClose}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
                     >
                       <div className="flex items-center gap-3">
                         <Avatar src={user.avatarUrl} alt={user.fullName} size="sm" />
@@ -277,7 +281,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                           </p>
                         </div>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+                      <ArrowRight className="h-4 w-4 text-neutral-400" strokeWidth={1.75} />
                     </Link>
                   ))}
                 </div>
@@ -289,7 +293,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               matchingCommunities.length > 0 && (
                 <div>
                   <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                    <Building2 className="w-3.5 h-3.5" /> Communities
+                    <Building2 className="h-4 w-4" strokeWidth={1.75} /> Communities
                   </h4>
                   <div className="space-y-1.5">
                     {matchingCommunities.map((comm) => (
@@ -297,7 +301,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                         key={comm.id}
                         href={`/communities/${comm.id}`}
                         onClick={onClose}
-                        className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition"
+                        className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
                       >
                         <div className="flex items-center gap-3">
                           <Avatar src={comm.profileImage} alt={comm.name} size="sm" />
@@ -310,7 +314,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                             </p>
                           </div>
                         </div>
-                        <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
+                        <ArrowRight className="h-4 w-4 text-neutral-400" strokeWidth={1.75} />
                       </Link>
                     ))}
                   </div>
@@ -321,13 +325,13 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {(activeTab === 'all' || activeTab === 'posts') && matchingPosts.length > 0 && (
               <div>
                 <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5" /> Posts & Stories
+                  <FileText className="h-4 w-4" strokeWidth={1.75} /> Posts & Stories
                 </h4>
                 <div className="space-y-1.5">
                   {matchingPosts.map((post) => (
                     <div
                       key={post.id}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition cursor-pointer"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200 cursor-pointer"
                       onClick={onClose}
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -339,7 +343,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                           <p className="text-[10px] text-neutral-500 dark:text-neutral-400 truncate">{post.content}</p>
                         </div>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0" />
+                      <ArrowRight className="h-4 w-4 text-neutral-400 flex-shrink-0" strokeWidth={1.75} />
                     </div>
                   ))}
                 </div>
@@ -350,7 +354,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {(activeTab === 'all' || activeTab === 'countries') && matchingCountries.length > 0 && (
               <div>
                 <h4 className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Globe className="w-3.5 h-3.5" /> African Nations ({matchingCountries.length})
+                  <Globe className="h-4 w-4" strokeWidth={1.75} /> African Nations ({matchingCountries.length})
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {matchingCountries.map((c) => (
@@ -358,7 +362,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                       key={c.code}
                       href={`/discover/${c.code.toLowerCase()}`}
                       onClick={onClose}
-                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition"
+                      className="p-2.5 rounded-xl border border-neutral-200/80 dark:border-[#1F3327] hover:border-[#087443] dark:hover:border-[#087443] flex items-center justify-between hover:bg-gray-100 dark:hover:bg-[#16241C] transition-all duration-200"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span className="text-2xl select-none">{c.flagEmoji || c.flag}</span>
@@ -376,7 +380,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                           )}
                         </div>
                       </div>
-                      <ArrowRight className="w-3.5 h-3.5 text-neutral-400 flex-shrink-0 ml-2" />
+                      <ArrowRight className="h-4 w-4 text-neutral-400 flex-shrink-0 ml-2" strokeWidth={1.75} />
                     </Link>
                   ))}
                 </div>
@@ -386,7 +390,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
             {/* Empty Results State */}
             {totalResultsCount === 0 && (
               <div className="py-8 text-center space-y-2">
-                <Globe className="w-8 h-8 mx-auto text-neutral-400" />
+                <Globe className="h-8 w-8 mx-auto text-neutral-400" strokeWidth={1.75} />
                 <p className="font-bold text-sm text-neutral-700 dark:text-neutral-300 font-sora">
                   No matching results found
                 </p>
@@ -405,11 +409,11 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5" /> Recent Searches
+                    <Clock className="h-4 w-4" strokeWidth={1.75} /> Recent Searches
                   </span>
                   <button
                     onClick={clearRecent}
-                    className="text-[10px] text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition"
+                    className="text-[10px] text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-all duration-200"
                   >
                     Clear All
                   </button>
@@ -419,7 +423,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
                     <button
                       key={term}
                       onClick={() => handleSelectRecent(term)}
-                      className="px-3 py-1 rounded-full bg-neutral-100 dark:bg-[#16241C] text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327] transition"
+                      className="px-3 py-1 rounded-full bg-neutral-100 dark:bg-[#16241C] text-xs text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-[#1F3327] border border-transparent dark:border-[#1F3327] transition-all duration-200"
                     >
                       {term}
                     </button>
@@ -435,25 +439,30 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({
               </span>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { tag: '#AfroTechSummit', count: '45.2k posts', icon: '💻' },
-                  { tag: '#AFCON2027', count: '120.4k posts', icon: '⚽' },
-                  { tag: '#AmapianoVibes', count: '89.1k posts', icon: '🎵' },
-                  { tag: '#AfCFTA_Trade', count: '14.8k posts', icon: '📈' },
-                ].map((trend) => (
-                  <button
-                    key={trend.tag}
-                    onClick={() => setQuery(trend.tag)}
-                    className="p-2.5 rounded-xl border border-neutral-100 dark:border-[#1F3327] text-left hover:border-[#087443] transition flex items-center gap-2.5 bg-neutral-50/50 dark:bg-[#16241C]/60 hover:bg-gray-100 dark:hover:bg-[#16241C]"
-                  >
-                    <span className="text-base">{trend.icon}</span>
-                    <div className="truncate">
-                      <p className="font-bold text-xs text-neutral-900 dark:text-white truncate">
-                        {trend.tag}
-                      </p>
-                      <p className="text-[10px] text-neutral-400">{trend.count}</p>
-                    </div>
-                  </button>
-                ))}
+                  { tag: '#AfroTechSummit', count: '45.2k posts', icon: Laptop },
+                  { tag: '#AFCON2027', count: '120.4k posts', icon: Trophy },
+                  { tag: '#AmapianoVibes', count: '89.1k posts', icon: Music },
+                  { tag: '#AfCFTA_Trade', count: '14.8k posts', icon: TrendingUp },
+                ].map((trend) => {
+                  const TrendIcon = trend.icon;
+                  return (
+                    <button
+                      key={trend.tag}
+                      onClick={() => setQuery(trend.tag)}
+                      className="p-2.5 rounded-xl border border-neutral-100 dark:border-[#1F3327] text-left hover:border-[#087443] transition-all duration-200 flex items-center gap-2.5 bg-neutral-50/50 dark:bg-[#16241C]/60 hover:bg-gray-100 dark:hover:bg-[#16241C]"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] flex items-center justify-center flex-shrink-0">
+                        <TrendIcon className="h-4 w-4" strokeWidth={1.75} />
+                      </div>
+                      <div className="truncate">
+                        <p className="font-bold text-xs text-neutral-900 dark:text-white truncate">
+                          {trend.tag}
+                        </p>
+                        <p className="text-[10px] text-neutral-400">{trend.count}</p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

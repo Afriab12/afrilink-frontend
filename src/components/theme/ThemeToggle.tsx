@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import { Sun, Moon, Sparkles } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 
 interface ThemeToggleProps {
   showLabel?: boolean;
@@ -13,7 +13,7 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   showLabel = false,
   className = '',
 }) => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch by waiting until mounted on client
@@ -24,7 +24,11 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
   if (!mounted) {
     return (
       <div
-        className={`w-9 h-9 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse ${className}`}
+        className={
+          showLabel
+            ? `w-full h-11 rounded-2xl bg-neutral-100 dark:bg-neutral-800 animate-pulse ${className}`
+            : `w-9 h-9 rounded-full bg-neutral-100 dark:bg-[#16241C] animate-pulse ${className}`
+        }
         aria-hidden="true"
       />
     );
@@ -36,31 +40,44 @@ export const ThemeToggle: React.FC<ThemeToggleProps> = ({
     setTheme(isDark ? 'light' : 'dark');
   };
 
+  if (!showLabel) {
+    return (
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className={`p-2 rounded-full hover:bg-slate-100 dark:hover:bg-[#16241C] transition-all duration-200 text-neutral-600 dark:text-neutral-300 ${className}`}
+        aria-label={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
+        title={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
+      >
+        <span className="sr-only">{isDark ? 'Switch to light mode' : 'Switch to dark mode'}</span>
+        {isDark ? (
+          <Sun className="h-5 w-5 text-[#D9A441] transition-transform duration-200" strokeWidth={1.75} />
+        ) : (
+          <Moon className="h-5 w-5 text-[#087443] transition-transform duration-200" strokeWidth={1.75} />
+        )}
+      </button>
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className={`p-2 rounded-2xl transition-all duration-200 flex items-center gap-2 group ${
-        isDark
-          ? 'bg-[#111D16] text-[#D9A441] hover:bg-[#16241C] border border-[#1F3327]'
-          : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 border border-transparent'
-      } ${className}`}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-slate-100 dark:hover:bg-[#16241C] hover:text-neutral-900 dark:hover:text-white transition-all duration-200 group ${className}`}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to Afro-Futurist dark mode'}
     >
-      <div className="relative w-5 h-5 flex items-center justify-center">
+      <div className="relative h-5 w-5 flex items-center justify-center">
         {isDark ? (
-          <Sun className="w-4 h-4 text-[#D9A441] transition-transform duration-300 group-hover:rotate-90" />
+          <Sun className="h-5 w-5 text-[#D9A441] transition-transform duration-200 group-hover:rotate-45" strokeWidth={1.75} />
         ) : (
-          <Moon className="w-4 h-4 text-[#087443] transition-transform duration-300 group-hover:-rotate-12" />
+          <Moon className="h-5 w-5 text-[#087443] transition-transform duration-200 group-hover:-rotate-12" strokeWidth={1.75} />
         )}
       </div>
 
-      {showLabel && (
-        <span className="text-xs font-semibold font-sora">
-          {isDark ? 'Afro-Dark' : 'Light'}
-        </span>
-      )}
+      <span className="font-sora">
+        {isDark ? 'Afro-Dark Mode' : 'Light Mode'}
+      </span>
     </button>
   );
 };

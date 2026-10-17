@@ -81,10 +81,10 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition"
+            className="p-1.5 rounded-xl text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-[#16241C] transition-all duration-200"
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <X className="h-4 w-4" strokeWidth={1.75} />
           </button>
         </div>
 

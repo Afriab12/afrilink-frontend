@@ -30,7 +30,7 @@ export const RightSidebar: React.FC = () => {
       <div className="bg-white dark:bg-[#111D16] rounded-3xl p-5 border border-neutral-200/80 dark:border-[#1F3327] shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-900 dark:text-white font-sora">
-            <Compass className="w-4 h-4 text-[#087443]" />
+            <Compass className="h-4 w-4 text-[#087443]" strokeWidth={1.75} />
             <span>Explore African Nations</span>
           </div>
           <Link
@@ -64,7 +64,7 @@ export const RightSidebar: React.FC = () => {
       <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-900 dark:text-white font-sora">
-            <Sparkles className="w-4 h-4 text-[#D9A441]" />
+            <Sparkles className="h-4 w-4 text-[#D9A441]" strokeWidth={1.75} />
             <span>Connect Across Borders</span>
           </div>
         </div>
@@ -111,7 +111,7 @@ export const RightSidebar: React.FC = () => {
       {/* Trending Pan-African Topics */}
       <div className="bg-white dark:bg-neutral-900 rounded-3xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-3">
         <div className="flex items-center gap-1.5 text-xs font-bold text-neutral-900 dark:text-white font-sora">
-          <TrendingUp className="w-4 h-4 text-[#087443]" />
+          <TrendingUp className="h-4 w-4 text-[#087443]" strokeWidth={1.75} />
           <span>Trending in Africa</span>
         </div>
 

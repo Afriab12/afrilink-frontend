@@ -20,11 +20,34 @@ export default function UserProfilePage({ params }: ProfilePageProps) {
   const { posts, communities } = useSocial();
   const { currentUser } = useAuth();
 
-  // Find user by username or fallback to current user if matches
+  // Find user by username or fallback to current user if matches or if 'me'
+  const isMe = username.toLowerCase() === 'me';
   const targetUser =
-    currentUser?.username.toLowerCase() === username.toLowerCase()
+    currentUser && (currentUser.username.toLowerCase() === username.toLowerCase() || isMe)
       ? currentUser
-      : mockBackend.getUserById(username);
+      : isMe
+        ? null
+        : mockBackend.getUserById(username);
+
+  if (isMe && !currentUser) {
+    return (
+      <div className="bg-white dark:bg-neutral-900 rounded-3xl p-10 text-center border border-neutral-200 dark:border-neutral-800 space-y-3">
+        <h2 className="text-xl font-bold text-neutral-900 dark:text-white font-sora">
+          Sign In Required
+        </h2>
+        <p className="text-xs text-neutral-500">
+          Please sign in to view your personal profile.
+        </p>
+        <div className="pt-2">
+          <Link href="/login">
+            <Button size="sm" variant="primary">
+              Sign In to AfriLink
+            </Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   if (!targetUser) {
     return (
@@ -38,7 +61,7 @@ export default function UserProfilePage({ params }: ProfilePageProps) {
         <div className="mt-4">
           <Link href="/">
             <Button size="sm" variant="primary">
-              <ArrowLeft className="w-4 h-4 mr-1" /> Back to Home
+              <ArrowLeft className="h-4 w-4 mr-1" strokeWidth={1.75} /> Back to Home
             </Button>
           </Link>
         </div>

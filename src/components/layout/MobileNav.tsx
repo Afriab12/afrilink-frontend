@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Building2, MessageSquare, User, Bell } from 'lucide-react';
+import { Home, Compass, Users, MessageSquare, Bell, User } from 'lucide-react';
 import { useAuth } from '@/stores/authContext';
 import { useChat } from '@/stores/chatContext';
 import { useSocial } from '@/stores/socialContext';
@@ -17,54 +17,57 @@ export const MobileNav: React.FC = () => {
   const links = [
     { label: 'Home', href: '/', icon: Home },
     { label: 'Explore', href: '/discover', icon: Compass },
-    { label: 'Hubs', href: '/communities', icon: Building2 },
+    { label: 'Hubs', href: '/communities', icon: Users },
     {
       label: 'Chat',
       href: '/messages',
       icon: MessageSquare,
-      badge: unreadMessagesCount,
+      badge: unreadMessagesCount > 0 ? unreadMessagesCount : undefined,
     },
     {
       label: 'Alerts',
       href: '/notifications',
       icon: Bell,
-      badge: unreadNotifsCount,
+      badge: unreadNotifsCount > 0 ? unreadNotifsCount : undefined,
     },
     {
       label: 'Profile',
-      href: currentUser ? `/profile/${currentUser.username}` : '/login',
+      href: '/profile/me',
       icon: User,
     },
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-lg border-t border-neutral-200/80 dark:border-neutral-800 z-40 px-2 py-1.5 safe-area-pb">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-[#0B130E]/95 backdrop-blur-lg border-t border-neutral-200/80 dark:border-[#1F3327] z-40 px-2 py-1.5 safe-area-pb">
       <div className="flex items-center justify-around">
         {links.map((link) => {
           const isActive =
             link.href === '/'
               ? pathname === '/'
-              : pathname.startsWith(link.href);
+              : link.href === '/profile/me'
+                ? pathname === '/profile/me' || (!!currentUser?.username && pathname.startsWith(`/profile/${currentUser.username}`))
+                : pathname.startsWith(link.href);
           const Icon = link.icon;
 
           return (
             <Link
               key={link.label}
               href={link.href}
-              className={`flex flex-col items-center justify-center p-2 rounded-2xl relative transition-colors ${
+              className={`flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 ${
                 isActive
                   ? 'text-[#087443] font-bold'
-                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900'
+                  : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white'
               }`}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px] mt-0.5 font-medium">{link.label}</span>
-
-              {link.badge !== undefined && link.badge > 0 && (
-                <span className="absolute top-1.5 right-2 w-4 h-4 bg-[#D9A441] text-neutral-900 font-extrabold text-[9px] rounded-full flex items-center justify-center">
-                  {link.badge}
-                </span>
-              )}
+              <div className="relative">
+                <Icon className="h-5 w-5 transition-all duration-200" strokeWidth={1.75} />
+                {link.badge !== undefined && link.badge > 0 && (
+                  <span className="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#087443] px-1 text-[10px] font-bold text-white leading-none">
+                    {link.badge}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] mt-0.5 font-medium font-sora">{link.label}</span>
             </Link>
           );
         })}
