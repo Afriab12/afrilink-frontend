@@ -27,11 +27,24 @@ export class MessagingService {
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
   private reconnectTimer: any = null;
+  private pollingTimer: any = null;
+  private isPollingFallback = false;
+  private readonly backoffSequence = [1000, 2000, 4000, 8000];
+
+  /**
+   * Calculates exponential backoff in seconds: 1s, 2s, 4s, 8s, max 10s.
+   */
+  public calculateBackoff(attempt: number): number {
+    if (attempt <= 0) return 1000;
+    const idx = attempt - 1;
+    return idx < this.backoffSequence.length ? this.backoffSequence[idx] : 10000;
+  }
 
   // --- WebSocket Connection Management ---
 
   /**
    * Initializes the WebSocket gateway connection.
+   * Reads NEXT_PUBLIC_WS_URL from process.env or falls back to window.location host.
    */
   public connectWebSocket(token?: string): void {
     if (typeof window === 'undefined' || typeof WebSocket === 'undefined') {
@@ -46,9 +59,12 @@ export class MessagingService {
 
     this.setConnectionState('connecting');
 
+    const envWsUrl = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_WS_URL;
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     const host = window.location.host;
-    const wsUrl = `${wsProtocol}//${host}/ws/messaging${token ? `?token=${encodeURIComponent(token)}` : ''}`;
+    const baseWs = envWsUrl || `${wsProtocol}//${host}/ws/messaging`;
+    const separator = baseWs.includes('?') ? '&' : '?';
+    const wsUrl = token ? `${baseWs}${separator}token=${encodeURIComponent(token)}` : baseWs;
 
     try {
       this.socket = new WebSocket(wsUrl);
@@ -56,6 +72,7 @@ export class MessagingService {
       this.socket.onopen = () => {
         this.setConnectionState('connected');
         this.reconnectAttempts = 0;
+        this.stopPollingFallback();
         this.emitLocal('connected', { timestamp: new Date().toISOString() });
       };
 
@@ -64,6 +81,12 @@ export class MessagingService {
           const payload = JSON.parse(event.data);
           if (payload && payload.event) {
             this.emitLocal(payload.event, payload.data);
+            // Support normalized aliases
+            if (payload.event === 'typing:status') {
+              this.emitLocal('typing:update', payload.data);
+            } else if (payload.event === 'typing:update') {
+              this.emitLocal('typing:status', payload.data);
+            }
           }
         } catch {
           // ignore malformed frame
@@ -93,6 +116,7 @@ export class MessagingService {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
+    this.stopPollingFallback();
     if (this.socket) {
       this.socket.close();
       this.socket = null;
@@ -104,18 +128,62 @@ export class MessagingService {
     return this.connectionState;
   }
 
+  public isPolling(): boolean {
+    return this.isPollingFallback;
+  }
+
   private setConnectionState(state: SocketConnectionState): void {
     this.connectionState = state;
     this.emitLocal('connection:state', state);
   }
 
   private scheduleReconnect(token?: string): void {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) return;
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+      this.startPollingFallback();
+      return;
+    }
     this.reconnectAttempts += 1;
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 15000);
+    const delay = this.calculateBackoff(this.reconnectAttempts);
     this.reconnectTimer = setTimeout(() => {
       this.connectWebSocket(token);
     }, delay);
+    // While disconnected/reconnecting, activate 10-second polling fallback
+    this.startPollingFallback();
+  }
+
+  /**
+   * Activates fallback REST polling every 10 seconds when WebSocket is offline.
+   */
+  public startPollingFallback(): void {
+    if (this.isPollingFallback) return;
+    this.isPollingFallback = true;
+    this.emitLocal('polling:state', true);
+
+    this.pollChatUpdates();
+    this.pollingTimer = setInterval(() => {
+      this.pollChatUpdates();
+    }, 10000);
+  }
+
+  /**
+   * Deactivates REST polling fallback once WebSocket connection is restored.
+   */
+  public stopPollingFallback(): void {
+    if (this.pollingTimer) {
+      clearInterval(this.pollingTimer);
+      this.pollingTimer = null;
+    }
+    this.isPollingFallback = false;
+    this.emitLocal('polling:state', false);
+  }
+
+  private async pollChatUpdates(): Promise<void> {
+    try {
+      const convs = await this.getConversations('primary');
+      this.emitLocal('chat:poll:conversations', convs);
+    } catch {
+      // Safe ignore in offline/unreachable conditions
+    }
   }
 
   /**
