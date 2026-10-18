@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "node --experimental-strip-types --test src/lib/__tests__/avatar-gradient.test.ts src/lib/__tests__/animations.test.ts src/lib/__tests__/theme-tokens.test.ts src/services/__tests__/apiClient.test.ts src/services/__tests__/mediaService.test.ts src/services/__tests__/socialService.test.ts src/services/__tests__/postService.test.ts src/services/__tests__/communityService.test.ts src/services/__tests__/messagingService.test.ts src/services/__tests__/moderationService.test.ts src/services/__tests__/adminService.test.ts src/services/__tests__/languageService.test.ts src/services/__tests__/voiceService.test.ts src/services/__tests__/taxonomyService.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/__tests__/avatar-gradient.test.ts src/lib/__tests__/animations.test.ts src/lib/__tests__/theme-tokens.test.ts src/lib/__tests__/skeleton.test.ts src/hooks/__tests__/useMinimumLoading.test.ts src/services/__tests__/apiClient.test.ts src/services/__tests__/mediaService.test.ts src/services/__tests__/socialService.test.ts src/services/__tests__/postService.test.ts src/services/__tests__/communityService.test.ts src/services/__tests__/messagingService.test.ts src/services/__tests__/moderationService.test.ts src/services/__tests__/adminService.test.ts src/services/__tests__/languageService.test.ts src/services/__tests__/voiceService.test.ts src/services/__tests__/taxonomyService.test.ts"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",

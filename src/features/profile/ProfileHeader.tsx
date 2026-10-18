@@ -31,15 +31,18 @@ import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { getCountryByCode } from '@/utils/countryData';
 import { mediaService } from '@/services/mediaService';
+import { ProfileHeaderSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
 interface ProfileHeaderProps {
   user: User;
+  isLoading?: boolean;
 }
 
-export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
+export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = false }) => {
   const router = useRouter();
   const { currentUser, updateProfile } = useAuth();
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
   const {
     getFriendshipStatus,
@@ -84,10 +87,14 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
     }
   };
 
+  if (isMinimumLoading) {
+    return <ProfileHeaderSkeleton />;
+  }
+
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-neutral-800 mb-6">
+    <div className="bg-white dark:bg-surface-0 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-white/[0.04] mb-6">
       {/* Cover Image Banner */}
-      <div className="relative h-44 sm:h-64 w-full bg-neutral-200 dark:bg-neutral-800">
+      <div className="relative h-44 sm:h-64 w-full bg-neutral-200 dark:bg-surface-2">
         <img
           src={user.coverImageUrl || 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=80'}
           alt="Cover banner"
@@ -119,7 +126,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user }) => {
                 src={user.avatarUrl}
                 alt={user.fullName}
                 size="2xl"
-                className="border-4 border-white dark:border-neutral-900 shadow-xl"
+                className="border-4 border-white dark:border-surface-0 shadow-xl"
                 countryFlag={countryObj?.flag || (user.countryCode === 'GH' ? '🇬🇭' : '🇳🇬')}
               />
               {isMe && (

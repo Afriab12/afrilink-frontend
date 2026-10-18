@@ -6,10 +6,12 @@ import { PostComposer } from '@/features/posts/PostComposer';
 import { Button } from '@/components/ui/Button';
 import { useSocial } from '@/stores/socialContext';
 import { Sparkles, Users, Building2, Flame, Loader2 } from 'lucide-react';
+import { FeedPostSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
 export const FeedList: React.FC = () => {
   const { posts, isLoadingPosts, hasMorePosts, loadMorePosts } = useSocial();
   const [feedFilter, setFeedFilter] = useState<'all' | 'friends' | 'communities' | 'media'>('all');
+  const isMinimumLoading = useMinimumLoading(isLoadingPosts, 300);
 
   const filteredPosts = posts.filter((post) => {
     if (feedFilter === 'friends') return post.visibility === 'friends';
@@ -71,11 +73,24 @@ export const FeedList: React.FC = () => {
       </div>
 
       {/* Posts Stream */}
-      {filteredPosts.length > 0 ? (
+      {isMinimumLoading && posts.length === 0 ? (
+        <div className="space-y-4">
+          <FeedPostSkeleton />
+          <FeedPostSkeleton />
+          <FeedPostSkeleton />
+        </div>
+      ) : filteredPosts.length > 0 ? (
         <div className="space-y-4">
           {filteredPosts.map((post) => (
             <PostCard key={post.id} post={post} />
           ))}
+
+          {/* Loading More Skeleton */}
+          {isLoadingPosts && (
+            <div className="pt-2">
+              <FeedPostSkeleton />
+            </div>
+          )}
 
           {/* Infinite Scroll Trigger */}
           <div className="text-center pt-4 pb-8">
@@ -97,14 +112,14 @@ export const FeedList: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-10 text-center border border-neutral-200 dark:border-neutral-800">
+        <div className="bg-white dark:bg-surface-0 rounded-3xl p-10 text-center border border-neutral-200/80 dark:border-white/[0.04]">
           <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] flex items-center justify-center mx-auto mb-3 text-2xl">
             🌍
           </div>
-          <h3 className="text-base font-bold text-neutral-900 dark:text-white font-sora">
+          <h3 className="text-base font-bold text-neutral-900 dark:text-white/90 font-sora">
             No posts found in this filter
           </h3>
-          <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-neutral-500 dark:text-white/60 mt-1 max-w-sm mx-auto">
             Switch back to &ldquo;For Africa&rdquo; or create the first post in this channel!
           </p>
           <div className="mt-4">

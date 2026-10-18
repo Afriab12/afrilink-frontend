@@ -25,10 +25,16 @@ import { useAuth } from '@/stores/authContext';
 import { moderationService } from '@/services/moderationService';
 import { languageService } from '@/services/languageService';
 import { User as UserType } from '@/types';
+import { SettingsFormSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
-export const SettingsView: React.FC = () => {
+interface SettingsViewProps {
+  isLoading?: boolean;
+}
+
+export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false }) => {
   const { currentUser, updateProfile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<'account' | 'privacy' | 'notifications' | 'language' | 'security'>('account');
+  const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
   // Account State
   const [email, setEmail] = useState(currentUser?.email || '');
@@ -135,11 +141,15 @@ export const SettingsView: React.FC = () => {
     logout();
   };
 
+  if (isMinimumLoading) {
+    return <SettingsFormSkeleton />;
+  }
+
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-neutral-800">
+    <div className="bg-white dark:bg-surface-0 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-white/[0.04]">
       {/* Header */}
-      <div className="p-6 border-b border-neutral-100 dark:border-neutral-800">
-        <h1 className="text-2xl font-black text-neutral-900 dark:text-white font-sora">
+      <div className="p-6 border-b border-neutral-100 dark:border-white/[0.04]">
+        <h1 className="text-2xl font-black text-neutral-900 dark:text-white/90 font-sora">
           Settings & Preferences
         </h1>
         <p className="text-xs text-neutral-500 mt-0.5">

@@ -8,12 +8,14 @@ import { Badge } from '@/components/ui/Badge';
 import { Search, UserPlus, MessageSquare, Check, CheckCheck, Inbox, ShieldAlert } from 'lucide-react';
 import { formatTime } from '@/lib/utils';
 import { NewChatModal } from './NewChatModal';
+import { ConversationRowSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
 interface ConversationListProps {
   conversations: Conversation[];
   activeConversationId: string | null;
   onSelectConversation: (id: string) => void;
   onStartChatWithUser: (user: User) => void;
+  isLoading?: boolean;
 }
 
 export const ConversationList: React.FC<ConversationListProps> = ({
@@ -21,10 +23,12 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   activeConversationId,
   onSelectConversation,
   onStartChatWithUser,
+  isLoading = false,
 }) => {
   const [activeTab, setActiveTab] = useState<'primary' | 'requests'>('primary');
   const [searchQuery, setSearchQuery] = useState('');
   const [isNewChatModalOpen, setIsNewChatModalOpen] = useState(false);
+  const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
   const primaryConversations = conversations.filter((c) => !c.isRequest);
   const requestConversations = conversations.filter((c) => c.isRequest);
@@ -104,8 +108,15 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       </div>
 
       {/* Conversations Stream */}
-      <div className="flex-1 overflow-y-auto divide-y divide-neutral-100 dark:divide-neutral-800/60">
-        {filtered.length > 0 ? (
+      <div className="flex-1 overflow-y-auto divide-y divide-neutral-100 dark:divide-white/[0.04]">
+        {isMinimumLoading && conversations.length === 0 ? (
+          <div>
+            <ConversationRowSkeleton />
+            <ConversationRowSkeleton />
+            <ConversationRowSkeleton />
+            <ConversationRowSkeleton />
+          </div>
+        ) : filtered.length > 0 ? (
           filtered.map((conv) => {
             const isActive = conv.id === activeConversationId;
             return (
@@ -115,7 +126,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                 className={`p-3.5 flex items-center gap-3 cursor-pointer transition ${
                   isActive
                     ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-l-4 border-[#087443]'
-                    : 'hover:bg-neutral-50 dark:hover:bg-neutral-800/50'
+                    : 'hover:bg-neutral-50 dark:hover:bg-surface-3'
                 }`}
               >
                 <div className="relative flex-shrink-0">
@@ -123,10 +134,10 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     src={conv.participant.avatarUrl}
                     alt={conv.participant.fullName}
                     size="md"
-                    className="ring-1 ring-neutral-200 dark:ring-neutral-700"
+                    className="ring-1 ring-neutral-200 dark:ring-white/[0.06]"
                   />
                   {/* African Presence Ring */}
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-900" />
+                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-surface-0" />
                 </div>
 
                 <div className="flex-1 min-w-0">

@@ -5,9 +5,15 @@ import { CountryCard } from './CountryCard';
 import { AFRICAN_COUNTRIES, AFRICAN_REGIONS } from '@/utils/countryData';
 import { AfricanRegion } from '@/types';
 import { Globe, Compass, Sparkles } from 'lucide-react';
+import { CountryCardSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
-export const CountryExplorer: React.FC = () => {
+interface CountryExplorerProps {
+  isLoading?: boolean;
+}
+
+export const CountryExplorer: React.FC<CountryExplorerProps> = ({ isLoading = false }) => {
   const [selectedRegion, setSelectedRegion] = useState<AfricanRegion | 'All'>('All');
+  const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
   const filteredCountries =
     selectedRegion === 'All'
@@ -68,9 +74,20 @@ export const CountryExplorer: React.FC = () => {
 
       {/* Countries Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredCountries.map((country) => (
-          <CountryCard key={country.code} country={country} />
-        ))}
+        {isMinimumLoading ? (
+          <>
+            <CountryCardSkeleton />
+            <CountryCardSkeleton />
+            <CountryCardSkeleton />
+            <CountryCardSkeleton />
+            <CountryCardSkeleton />
+            <CountryCardSkeleton />
+          </>
+        ) : (
+          filteredCountries.map((country) => (
+            <CountryCard key={country.code} country={country} />
+          ))
+        )}
       </div>
     </div>
   );

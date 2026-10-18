@@ -67,6 +67,15 @@ const config: Config = {
         cardHover: "0 6px 20px rgba(8, 116, 67, 0.12)",
         goldGlow: "0 0 15px rgba(217, 164, 65, 0.35)",
       },
+      keyframes: {
+        'skeleton-pulse': {
+          '0%, 100%': { opacity: '0.06' },
+          '50%': { opacity: '0.12' },
+        },
+      },
+      animation: {
+        'skeleton-pulse': 'skeleton-pulse 1.5s ease-in-out infinite',
+      },
     },
   },
   plugins: [],

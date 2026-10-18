@@ -11,11 +11,13 @@ import { INITIAL_USERS } from '@/services/mockBackend';
 import { AFRICAN_COUNTRIES } from '@/utils/countryData';
 import { useSocial } from '@/stores/socialContext';
 import { useAuth } from '@/stores/authContext';
+import { ConnectRowSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
-export const RightSidebar: React.FC = () => {
+export const RightSidebar: React.FC<{ isLoading?: boolean }> = ({ isLoading = false }) => {
   const pathname = usePathname();
   const { currentUser } = useAuth();
   const { isFollowing, toggleFollow } = useSocial();
+  const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
   if (pathname?.startsWith('/messages')) {
     return null;
@@ -70,41 +72,49 @@ export const RightSidebar: React.FC = () => {
         </div>
 
         <div className="space-y-3 pt-1">
-          {suggestedUsers.map((user) => {
-            const following = isFollowing(user.id);
-            return (
-              <div key={user.id} className="flex items-center justify-between gap-2">
-                <Link
-                  href={`/profile/${user.username}`}
-                  className="flex items-center gap-2.5 min-w-0 group"
-                >
-                  <Avatar
-                    src={user.avatarUrl}
-                    alt={user.fullName}
-                    size="sm"
-                    countryFlag={user.countryCode === 'NG' ? '🇳🇬' : user.countryCode === 'KE' ? '🇰🇪' : '🇿🇼'}
-                  />
-                  <div className="min-w-0">
-                    <p className="font-bold text-xs text-neutral-900 dark:text-white/90 group-hover:text-[#087443] transition truncate">
-                      {user.fullName}
-                    </p>
-                    <p className="text-[10px] text-neutral-400 dark:text-white/35 truncate">
-                      @{user.username}
-                    </p>
-                  </div>
-                </Link>
+          {isMinimumLoading ? (
+            <>
+              <ConnectRowSkeleton />
+              <ConnectRowSkeleton />
+              <ConnectRowSkeleton />
+            </>
+          ) : (
+            suggestedUsers.map((user) => {
+              const following = isFollowing(user.id);
+              return (
+                <div key={user.id} className="flex items-center justify-between gap-2">
+                  <Link
+                    href={`/profile/${user.username}`}
+                    className="flex items-center gap-2.5 min-w-0 group"
+                  >
+                    <Avatar
+                      src={user.avatarUrl}
+                      alt={user.fullName}
+                      size="sm"
+                      countryFlag={user.countryCode === 'NG' ? '🇳🇬' : user.countryCode === 'KE' ? '🇰🇪' : '🇿🇼'}
+                    />
+                    <div className="min-w-0">
+                      <p className="font-bold text-xs text-neutral-900 dark:text-white/90 group-hover:text-[#087443] transition truncate">
+                        {user.fullName}
+                      </p>
+                      <p className="text-[10px] text-neutral-400 dark:text-white/35 truncate">
+                        @{user.username}
+                      </p>
+                    </div>
+                  </Link>
 
-                <Button
-                  size="sm"
-                  variant={following ? 'outline' : 'secondary'}
-                  onClick={() => toggleFollow(user.id)}
-                  className="text-[11px] px-2.5 py-1 font-bold flex-shrink-0"
-                >
-                  {following ? 'Following' : 'Follow'}
-                </Button>
-              </div>
-            );
-          })}
+                  <Button
+                    size="sm"
+                    variant={following ? 'outline' : 'secondary'}
+                    onClick={() => toggleFollow(user.id)}
+                    className="text-[11px] px-2.5 py-1 font-bold flex-shrink-0"
+                  >
+                    {following ? 'Following' : 'Follow'}
+                  </Button>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 
