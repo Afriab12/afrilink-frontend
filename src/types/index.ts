@@ -56,6 +56,7 @@ export interface User {
   friendsCount: number;
   isVerified?: boolean;
   isCreator?: boolean;
+  isOnline?: boolean;
 }
 
 export interface PostMedia {
