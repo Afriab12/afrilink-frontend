@@ -500,6 +500,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                   type="button"
                   onClick={() => setShowMediaInput(false)}
                   className="text-white/40 hover:text-white p-1"
+                  aria-label="Close media input"
                 >
                   <X className="h-4 w-4" strokeWidth={1.75} />
                 </button>

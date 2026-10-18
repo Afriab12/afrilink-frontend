@@ -64,6 +64,7 @@ export const MobileNav: React.FC = () => {
                 key={link.label}
                 type="button"
                 onClick={link.onClick}
+                aria-label={link.label}
                 className="flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white/90"
               >
                 <div className="relative">

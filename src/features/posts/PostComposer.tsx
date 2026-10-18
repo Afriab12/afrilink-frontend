@@ -307,6 +307,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({
               disabled={isUploading}
               className="p-2 rounded-xl text-neutral-500 dark:text-white/60 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-surface-3 transition flex items-center gap-1.5 text-xs font-semibold"
               title="Upload Photo or Video to S3"
+              aria-label="Attach Media"
             >
               <UploadCloud className="w-4 h-4 text-[#087443]" strokeWidth={1.75} />
               <span className="hidden sm:inline">Attach Media</span>

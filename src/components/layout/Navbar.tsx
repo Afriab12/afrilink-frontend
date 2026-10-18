@@ -157,6 +157,9 @@ export const Navbar: React.FC = () => {
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  aria-label="User account menu"
+                  aria-expanded={isUserMenuOpen}
+                  aria-haspopup="true"
                   className="flex items-center gap-2 p-1 rounded-full hover:ring-2 hover:ring-[#087443]/30 transition-all duration-200"
                 >
                   <Avatar
