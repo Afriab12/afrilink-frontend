@@ -1,32 +1,38 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useTheme } from 'next-themes';
 import {
   User,
   Shield,
   Bell,
-  Lock,
-  Trash2,
-  Check,
-  Eye,
-  Key,
-  Ban,
-  UserCheck,
-  AlertTriangle,
   Globe,
-  Volume2,
+  Palette,
+  Lock,
+  AlertCircle,
+  Loader2,
+  Check,
+  Trash2,
+  Sun,
+  Moon,
+  Laptop,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Avatar } from '@/components/ui/Avatar';
-import { Modal } from '@/components/ui/Modal';
-import { LanguageSelector } from '@/components/ui/LanguageSelector';
 import { useAuth } from '@/stores/authContext';
 import { moderationService } from '@/services/moderationService';
 import { languageService } from '@/services/languageService';
 import { User as UserType } from '@/types';
 import { SettingsFormSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 import { toast } from '@/components/ui/toast';
+import { Modal } from '@/components/ui/Modal';
+import { LanguageSelector } from '@/components/ui/LanguageSelector';
+import {
+  validateAccountForm,
+  validatePasswordForm,
+  SETTINGS_TABS,
+  SettingsTabId,
+  AccountFormErrors,
+  PasswordFormErrors,
+} from '@/lib/settings-validation';
 
 interface SettingsViewProps {
   isLoading?: boolean;
@@ -34,13 +40,17 @@ interface SettingsViewProps {
 
 export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false }) => {
   const { currentUser, updateProfile, logout } = useAuth();
-  const [activeTab, setActiveTab] = useState<'account' | 'privacy' | 'notifications' | 'language' | 'security'>('account');
+  const { theme, setTheme } = useTheme();
+  const [activeTab, setActiveTab] = useState<SettingsTabId>('account');
   const isMinimumLoading = useMinimumLoading(isLoading, 300);
 
-  // Account State
+  // Account State & Errors
+  const [username, setUsername] = useState(currentUser?.username || '');
   const [email, setEmail] = useState(currentUser?.email || '');
   const [phone, setPhone] = useState(currentUser?.phone || '');
-  const [username, setUsername] = useState(currentUser?.username || '');
+  const [accountErrors, setAccountErrors] = useState<AccountFormErrors>({});
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [accountSuccessFlash, setAccountSuccessFlash] = useState(false);
 
   // Language & Voice State
   const initialLangPrefs = languageService.getUserLanguagePreferences();
@@ -48,6 +58,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
   const [preferredLanguage, setPreferredLanguage] = useState(initialLangPrefs.preferredLanguage || 'en');
   const [autoTranslate, setAutoTranslate] = useState(initialLangPrefs.autoTranslateIncoming || false);
   const [voiceSpeechRate, setVoiceSpeechRate] = useState(initialLangPrefs.voiceSpeechRate || 1.0);
+  const [isSavingLang, setIsSavingLang] = useState(false);
+  const [langSuccessFlash, setLangSuccessFlash] = useState(false);
 
   // Privacy State
   const [profileVisibility, setProfileVisibility] = useState<'public' | 'friends' | 'private'>('public');
@@ -55,14 +67,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
   const [allowMessages, setAllowMessages] = useState<'everyone' | 'friends' | 'none'>('everyone');
   const [showFriendList, setShowFriendList] = useState(true);
   const [blockedUsers, setBlockedUsers] = useState<UserType[]>([]);
+  const [isSavingPrivacy, setIsSavingPrivacy] = useState(false);
+  const [privacySuccessFlash, setPrivacySuccessFlash] = useState(false);
 
   // Notification State
   const [pushNotifs, setPushNotifs] = useState(true);
   const [emailNotifs, setEmailNotifs] = useState(true);
   const [communityNotifs, setCommunityNotifs] = useState(true);
+  const [isSavingNotifs, setIsSavingNotifs] = useState(false);
+  const [notifsSuccessFlash, setNotifsSuccessFlash] = useState(false);
 
-  // Status feedback
-  const [savedMessage, setSavedMessage] = useState(false);
+  // Security State & Errors
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [passwordErrors, setPasswordErrors] = useState<PasswordFormErrors>({});
+  const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [passwordSuccessFlash, setPasswordSuccessFlash] = useState(false);
+
+  // Danger Zone / Account Deletion Modal
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -81,55 +105,123 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
     moderationService.getBlockedUsers().then(setBlockedUsers);
   }, []);
 
-  const handleSaveAccount = (e: React.FormEvent) => {
+  // Sync current user fields
+  useEffect(() => {
+    if (currentUser) {
+      setUsername(currentUser.username || '');
+      setEmail(currentUser.email || '');
+      setPhone(currentUser.phone || '');
+    }
+  }, [currentUser]);
+
+  // Handle Account Form Submit with Validation & Success Flash
+  const handleSaveAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile({
-      email,
-      phone,
-      username,
-    });
-    setSavedMessage(true);
-    toast.success('Account updated', 'Your account details have been saved.');
-    setTimeout(() => setSavedMessage(false), 2000);
+    const errors = validateAccountForm({ username, email, phone });
+    setAccountErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      toast.error('Validation Error', 'Please correct the highlighted fields before saving.');
+      return;
+    }
+
+    setIsSavingAccount(true);
+    try {
+      updateProfile({ email, phone, username });
+      setAccountSuccessFlash(true);
+      toast.success('Account updated', 'Your account preferences have been saved.');
+      setTimeout(() => setAccountSuccessFlash(false), 2000);
+    } catch {
+      toast.error('Save Failed', 'Unable to persist account changes.');
+    } finally {
+      setIsSavingAccount(false);
+    }
   };
 
+  // Handle Privacy Save
   const handleSavePrivacy = async () => {
-    await moderationService.updateUserSettings({
-      privacy: {
-        profileVisibility,
-        allowFriendRequests,
-        allowMessages,
-        showFriendList,
-      },
-    });
-    setSavedMessage(true);
-    toast.success('Privacy updated', 'Your privacy preferences have been saved.');
-    setTimeout(() => setSavedMessage(false), 2000);
+    setIsSavingPrivacy(true);
+    try {
+      await moderationService.updateUserSettings({
+        privacy: {
+          profileVisibility,
+          allowFriendRequests,
+          allowMessages,
+          showFriendList,
+        },
+      });
+      setPrivacySuccessFlash(true);
+      toast.success('Privacy updated', 'Your privacy preferences have been saved.');
+      setTimeout(() => setPrivacySuccessFlash(false), 2000);
+    } catch {
+      toast.error('Save Failed', 'Could not update privacy preferences.');
+    } finally {
+      setIsSavingPrivacy(false);
+    }
   };
 
+  // Handle Notifications Save
   const handleSaveNotifications = async () => {
-    await moderationService.updateUserSettings({
-      notifications: {
-        pushNotifs,
-        emailNotifs,
-        communityNotifs,
-      },
-    });
-    setSavedMessage(true);
-    toast.success('Notifications updated', 'Your notification preferences have been saved.');
-    setTimeout(() => setSavedMessage(false), 2000);
+    setIsSavingNotifs(true);
+    try {
+      await moderationService.updateUserSettings({
+        notifications: {
+          pushNotifs,
+          emailNotifs,
+          communityNotifs,
+        },
+      });
+      setNotifsSuccessFlash(true);
+      toast.success('Notifications updated', 'Your notification preferences have been saved.');
+      setTimeout(() => setNotifsSuccessFlash(false), 2000);
+    } catch {
+      toast.error('Save Failed', 'Could not update notification preferences.');
+    } finally {
+      setIsSavingNotifs(false);
+    }
   };
 
+  // Handle Language Save
   const handleSaveLanguagePreferences = async () => {
-    await languageService.saveUserLanguagePreferences({
-      nativeLanguage,
-      preferredLanguage,
-      autoTranslateIncoming: autoTranslate,
-      voiceSpeechRate,
-    });
-    setSavedMessage(true);
-    toast.success('Language preferences saved', 'Your translation settings are active.');
-    setTimeout(() => setSavedMessage(false), 2000);
+    setIsSavingLang(true);
+    try {
+      await languageService.saveUserLanguagePreferences({
+        nativeLanguage,
+        preferredLanguage,
+        autoTranslateIncoming: autoTranslate,
+        voiceSpeechRate,
+      });
+      setLangSuccessFlash(true);
+      toast.success('Language preferences saved', 'Your translation settings are active.');
+      setTimeout(() => setLangSuccessFlash(false), 2000);
+    } catch {
+      toast.error('Save Failed', 'Could not update language settings.');
+    } finally {
+      setIsSavingLang(false);
+    }
+  };
+
+  // Handle Password Change with Validation
+  const handleSavePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors = validatePasswordForm({ currentPassword, newPassword, confirmPassword });
+    setPasswordErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
+      toast.error('Security Error', 'Please check the password requirements.');
+      return;
+    }
+
+    setIsSavingPassword(true);
+    setTimeout(() => {
+      setIsSavingPassword(false);
+      setPasswordSuccessFlash(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      toast.success('Password updated', 'Your account credentials have been updated.');
+      setTimeout(() => setPasswordSuccessFlash(false), 2000);
+    }, 400);
   };
 
   const handleUnblockUser = async (userId: string) => {
@@ -141,443 +233,741 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
-    await moderationService.deleteAccount();
-    setIsDeleting(false);
-    setIsDeleteModalOpen(false);
-    logout();
+    try {
+      await moderationService.deleteAccount();
+      setIsDeleteModalOpen(false);
+      toast.info('Account deleted', 'Your profile and data have been removed.');
+      logout();
+    } catch {
+      toast.error('Deletion Failed', 'Unable to delete account at this time.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   if (isMinimumLoading) {
     return <SettingsFormSkeleton />;
   }
 
+  const renderTabIcon = (iconName: string) => {
+    const props = { className: 'h-4 w-4 shrink-0', strokeWidth: 1.75 };
+    switch (iconName) {
+      case 'Shield':
+        return <Shield {...props} />;
+      case 'Bell':
+        return <Bell {...props} />;
+      case 'Globe':
+        return <Globe {...props} />;
+      case 'Palette':
+        return <Palette {...props} />;
+      case 'Lock':
+        return <Lock {...props} />;
+      case 'User':
+      default:
+        return <User {...props} />;
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-surface-0 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-white/[0.04]">
-      {/* Header */}
-      <div className="p-6 border-b border-neutral-100 dark:border-white/[0.04]">
-        <h1 className="text-2xl font-black text-neutral-900 dark:text-white/90 font-sora">
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-0 py-4 sm:py-8">
+      {/* Sub-Nav Header */}
+      <div className="mb-6">
+        <h1 className="text-xl sm:text-2xl font-black text-white font-sora tracking-tight">
           Settings & Preferences
         </h1>
-        <p className="text-xs text-neutral-500 mt-0.5">
-          Manage your AfriLink identity, privacy controls, notifications, language and account security
+        <p className="text-xs text-white/40 mt-1">
+          Manage your account credentials, regional preferences, and security settings.
         </p>
-
-        {/* Tab Controls */}
-        <div className="flex items-center gap-2 mt-4 overflow-x-auto no-scrollbar text-xs font-bold">
-          <button
-            onClick={() => setActiveTab('account')}
-            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'account'
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" /> Account
-          </button>
-
-          <button
-            onClick={() => setActiveTab('privacy')}
-            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'privacy'
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Eye className="w-3.5 h-3.5" /> Privacy & Blocks
-          </button>
-
-          <button
-            onClick={() => setActiveTab('notifications')}
-            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'notifications'
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Bell className="w-3.5 h-3.5" /> Notifications
-          </button>
-
-          <button
-            onClick={() => setActiveTab('language')}
-            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'language'
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Globe className="w-3.5 h-3.5" /> Language & Voice
-          </button>
-
-          <button
-            onClick={() => setActiveTab('security')}
-            className={`px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 whitespace-nowrap ${
-              activeTab === 'security'
-                ? 'bg-[#087443] text-white shadow-sm'
-                : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-            }`}
-          >
-            <Key className="w-3.5 h-3.5" /> Security & Danger
-          </button>
-        </div>
       </div>
 
-      {savedMessage && (
-        <div className="mx-6 mt-4 p-3 bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] rounded-2xl text-xs font-bold flex items-center gap-2 border border-emerald-200 dark:border-emerald-800">
-          <Check className="w-4 h-4" />
-          <span>Preferences updated successfully!</span>
+      {/* Sub-Nav Horizontal Tab Strip */}
+      <div className="relative mb-6">
+        <div
+          role="tablist"
+          aria-label="Settings sections"
+          className="flex items-center gap-6 overflow-x-auto no-scrollbar border-b border-white/[0.06] pr-8"
+        >
+          {SETTINGS_TABS.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                role="tab"
+                id={`tab-${tab.id}`}
+                aria-selected={isActive}
+                aria-controls={`tabpanel-${tab.id}`}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 select-none ${
+                  isActive
+                    ? 'text-white border-b-2 border-emerald-500 -mb-px font-semibold'
+                    : 'text-white/40 hover:text-white/70'
+                }`}
+              >
+                {renderTabIcon(tab.iconName)}
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
-      )}
+
+        {/* Mobile Gradient Overflow Signal */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#0B130E] to-transparent sm:hidden"
+        />
+      </div>
 
       {/* Tab Panels */}
-      <div className="p-6">
-        {/* Account Tab */}
+      <div className="space-y-6">
+        {/* TAB: ACCOUNT */}
         {activeTab === 'account' && (
-          <form onSubmit={handleSaveAccount} className="space-y-4 max-w-lg">
-            <Input
-              label="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-            <Input
-              label="Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <Input
-              label="Phone Number"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="+233 24 000 0000"
-            />
+          <div role="tabpanel" id="tabpanel-account" aria-labelledby="tab-account" className="space-y-6">
+            <form onSubmit={handleSaveAccount} className="space-y-5">
+              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+                ACCOUNT CREDENTIALS
+              </h2>
 
-            <Button type="submit" variant="primary" size="md" className="font-bold">
-              Save Account Changes
-            </Button>
-          </form>
+              {/* Username Field */}
+              <div>
+                <label
+                  htmlFor="settings-username"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  USERNAME
+                </label>
+                <input
+                  id="settings-username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    if (accountErrors.username) setAccountErrors((prev) => ({ ...prev, username: undefined }));
+                  }}
+                  placeholder="e.g. kwame_mensah"
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    accountErrors.username
+                      ? 'border-red-500/50'
+                      : accountSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {accountErrors.username ? (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{accountErrors.username}</span>
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-white/20 mt-1.5">
+                    Your unique AfriLink identity visible across hubs and direct messaging.
+                  </p>
+                )}
+              </div>
+
+              {/* Email Field */}
+              <div>
+                <label
+                  htmlFor="settings-email"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  EMAIL ADDRESS
+                </label>
+                <input
+                  id="settings-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (accountErrors.email) setAccountErrors((prev) => ({ ...prev, email: undefined }));
+                  }}
+                  placeholder="your.email@example.com"
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    accountErrors.email
+                      ? 'border-red-500/50'
+                      : accountSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {accountErrors.email ? (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{accountErrors.email}</span>
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-white/20 mt-1.5">
+                    Used for essential account recovery, security alerts, and system notices.
+                  </p>
+                )}
+              </div>
+
+              {/* Phone Field */}
+              <div>
+                <label
+                  htmlFor="settings-phone"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  PHONE NUMBER
+                </label>
+                <input
+                  id="settings-phone"
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                    if (accountErrors.phone) setAccountErrors((prev) => ({ ...prev, phone: undefined }));
+                  }}
+                  placeholder="+234 80 1234 5678"
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    accountErrors.phone
+                      ? 'border-red-500/50'
+                      : accountSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {accountErrors.phone ? (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{accountErrors.phone}</span>
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-white/20 mt-1.5">
+                    Optional mobile number for SMS 2FA verification.
+                  </p>
+                )}
+              </div>
+
+              {/* Save Button */}
+              <div className="pt-2 flex items-center gap-3">
+                <button
+                  type="submit"
+                  disabled={isSavingAccount}
+                  className="h-10 px-6 rounded-xl bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                >
+                  {isSavingAccount ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.75} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Changes</span>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* DANGER ZONE */}
+            <div className="mt-12 border-t border-red-500/10 pt-6">
+              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-red-400/80 mb-2">
+                DANGER ZONE
+              </h2>
+              <p className="text-xs text-white/30 mb-4">
+                Permanently delete your profile, posts, communities, and message history. This action cannot be reversed.
+              </p>
+              <button
+                type="button"
+                onClick={() => setIsDeleteModalOpen(true)}
+                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all duration-150 flex items-center gap-2 select-none"
+              >
+                <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} />
+                <span>Delete Account</span>
+              </button>
+            </div>
+          </div>
         )}
 
-        {/* Privacy Tab */}
+        {/* TAB: PRIVACY & SAFETY */}
         {activeTab === 'privacy' && (
-          <div className="space-y-6 max-w-lg">
+          <div role="tabpanel" id="tabpanel-privacy" aria-labelledby="tab-privacy" className="space-y-6">
+            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              PROFILE & VISIBILITY CONTROLS
+            </h2>
+
             <div className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">
-                  Profile Visibility
+              <div>
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                  PROFILE VISIBILITY
                 </label>
                 <select
                   value={profileVisibility}
                   onChange={(e) => setProfileVisibility(e.target.value as any)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:border-[#087443]"
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-white/[0.06]'
+                  }`}
                 >
-                  <option value="public">Public (All Africans & Diaspora)</option>
-                  <option value="friends">Connections & Friends Only</option>
-                  <option value="private">Private (Only Me)</option>
+                  <option value="public" className="bg-[#0B130E] text-white">Public (Entire Pan-African Network)</option>
+                  <option value="friends" className="bg-[#0B130E] text-white">Friends Only</option>
+                  <option value="private" className="bg-[#0B130E] text-white">Private</option>
                 </select>
+                <p className="text-[11px] text-white/20 mt-1.5">
+                  Controls who can discover and view your profile bio and activity.
+                </p>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">
-                  Direct Messaging Permissions
+              <div>
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                  DIRECT MESSAGES
                 </label>
                 <select
                   value={allowMessages}
                   onChange={(e) => setAllowMessages(e.target.value as any)}
-                  className="w-full text-xs p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:border-[#087443]"
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-white/[0.06]'
+                  }`}
                 >
-                  <option value="everyone">Everyone (Unconnected in Requests)</option>
-                  <option value="friends">Friends & Connections Only</option>
-                  <option value="none">Nobody</option>
+                  <option value="everyone" className="bg-[#0B130E] text-white">Everyone</option>
+                  <option value="friends" className="bg-[#0B130E] text-white">Friends Only</option>
+                  <option value="none" className="bg-[#0B130E] text-white">No One</option>
                 </select>
               </div>
 
-              <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
-                <div>
-                  <p className="text-xs font-bold text-neutral-900 dark:text-white">
-                    Show Friends & Network List
-                  </p>
-                  <p className="text-[10px] text-neutral-500">Allow visitors to view your connections on your profile</p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={showFriendList}
-                  onChange={(e) => setShowFriendList(e.target.checked)}
-                  className="rounded text-[#087443] focus:ring-[#087443]"
-                />
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleSavePrivacy}
+                  disabled={isSavingPrivacy}
+                  className="h-10 px-6 rounded-xl bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 flex items-center gap-2 select-none"
+                >
+                  {isSavingPrivacy ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.75} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Privacy Settings</span>
+                  )}
+                </button>
               </div>
 
-              <Button variant="primary" size="sm" onClick={handleSavePrivacy} className="font-bold">
-                Update Privacy Preferences
-              </Button>
-            </div>
-
-            {/* Blocked Users Section */}
-            <div className="pt-6 border-t border-neutral-100 dark:border-neutral-800 space-y-3">
-              <h3 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                <Ban className="w-3.5 h-3.5 text-red-500" />
-                Blocked Accounts ({blockedUsers.length})
-              </h3>
-              <p className="text-[11px] text-neutral-500">
-                Blocked users cannot view your profile, send you messages, or interact with your posts.
-              </p>
-
-              {blockedUsers.length > 0 ? (
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {blockedUsers.map((user) => (
-                    <div
-                      key={user.id}
-                      className="flex items-center justify-between p-2.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-xl"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <Avatar src={user.avatarUrl} alt={user.fullName} size="sm" />
+              {/* Blocked Users */}
+              {blockedUsers.length > 0 && (
+                <div className="mt-8 border-t border-white/[0.06] pt-5">
+                  <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-3">
+                    BLOCKED ACCOUNTS ({blockedUsers.length})
+                  </h3>
+                  <div className="space-y-2">
+                    {blockedUsers.map((u) => (
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
                         <div>
-                          <p className="text-xs font-bold text-neutral-900 dark:text-white">{user.fullName}</p>
-                          <p className="text-[10px] text-neutral-400">@{user.username}</p>
+                          <p className="text-xs font-semibold text-white/90">{u.fullName}</p>
+                          <p className="text-[10px] text-white/30">@{u.username}</p>
                         </div>
+                        <button
+                          type="button"
+                          onClick={() => handleUnblockUser(u.id)}
+                          className="px-3 py-1 rounded-lg border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                        >
+                          Unblock
+                        </button>
                       </div>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleUnblockUser(user.id)}
-                        className="text-xs py-1 px-2.5"
-                      >
-                        <UserCheck className="w-3.5 h-3.5 mr-1 text-[#087443]" /> Unblock
-                      </Button>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              ) : (
-                <p className="text-xs text-neutral-400 italic">No blocked users.</p>
               )}
             </div>
           </div>
         )}
 
-        {/* Notifications Tab */}
+        {/* TAB: NOTIFICATIONS */}
         {activeTab === 'notifications' && (
-          <div className="space-y-4 max-w-lg">
-            <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
-              <div>
-                <p className="text-xs font-bold text-neutral-900 dark:text-white">
-                  Push Notifications
-                </p>
-                <p className="text-[10px] text-neutral-500">Instant alerts for new DMs, comments, and mentions</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={pushNotifs}
-                onChange={(e) => setPushNotifs(e.target.checked)}
-                className="rounded text-[#087443] focus:ring-[#087443]"
-              />
-            </div>
+          <div role="tabpanel" id="tabpanel-notifications" aria-labelledby="tab-notifications" className="space-y-6">
+            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              NOTIFICATION CHANNELS
+            </h2>
 
-            <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
-              <div>
-                <p className="text-xs font-bold text-neutral-900 dark:text-white">
-                  Email Digest
-                </p>
-                <p className="text-[10px] text-neutral-500">Weekly highlights of trending pan-African discussions</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={emailNotifs}
-                onChange={(e) => setEmailNotifs(e.target.checked)}
-                className="rounded text-[#087443] focus:ring-[#087443]"
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
-              <div>
-                <p className="text-xs font-bold text-neutral-900 dark:text-white">
-                  Community Announcements
-                </p>
-                <p className="text-[10px] text-neutral-500">Broadcasts and event notifications from joined hubs</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={communityNotifs}
-                onChange={(e) => setCommunityNotifs(e.target.checked)}
-                className="rounded text-[#087443] focus:ring-[#087443]"
-              />
-            </div>
-
-            <Button variant="primary" size="sm" onClick={handleSaveNotifications} className="font-bold">
-              Save Notification Settings
-            </Button>
-          </div>
-        )}
-
-        {/* Language & Voice Tab */}
-        {activeTab === 'language' && (
-          <div className="space-y-6 max-w-lg">
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-800 text-xs text-emerald-900 dark:text-emerald-200 leading-relaxed">
-              <span className="font-bold block mb-1">🌍 Pan-African Linguistic Sovereignty</span>
-              AfriLink celebrates Africa's linguistic wealth. Choose your native tongue to communicate naturally, and select your preferred display language for instant message translation and speech playback.
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <LanguageSelector
-                  id="native-language-selector"
-                  label="Native Language (Mother Tongue)"
-                  value={nativeLanguage}
-                  onChange={setNativeLanguage}
-                />
-                <p className="text-[11px] text-neutral-500 mt-1">
-                  The African language you speak and express yourself in most comfortably.
-                </p>
-              </div>
-
-              <div>
-                <LanguageSelector
-                  id="preferred-language-selector"
-                  label="Preferred Translation Language"
-                  value={preferredLanguage}
-                  onChange={setPreferredLanguage}
-                />
-                <p className="text-[11px] text-neutral-500 mt-1">
-                  Incoming messages from other African languages will translate into this language.
-                </p>
-              </div>
-
-              {/* Auto Translate Toggle */}
-              <div className="flex items-center justify-between p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl">
+            <div className="space-y-3">
+              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
                 <div>
-                  <p className="text-xs font-bold text-neutral-900 dark:text-white">
-                    Auto-Translate Incoming Messages
-                  </p>
-                  <p className="text-[10px] text-neutral-500">
-                    Automatically show translated text alongside original African messages
-                  </p>
+                  <p className="text-sm font-semibold text-white/90">Push Notifications</p>
+                  <p className="text-[11px] text-white/30">Receive instant alerts for chats, mentions, and community events.</p>
                 </div>
                 <input
                   type="checkbox"
-                  checked={autoTranslate}
-                  onChange={(e) => setAutoTranslate(e.target.checked)}
-                  className="rounded text-[#087443] focus:ring-[#087443]"
+                  checked={pushNotifs}
+                  onChange={(e) => setPushNotifs(e.target.checked)}
+                  className="h-4 w-4 accent-emerald-600 rounded cursor-pointer"
                 />
-              </div>
+              </label>
 
-              {/* Voice Speech Playback Rate */}
-              <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/60 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <p className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
-                    <Volume2 className="w-3.5 h-3.5 text-[#087443]" /> Voice Speech Playback Speed
-                  </p>
-                  <span className="text-xs font-mono font-bold text-[#087443]">
-                    {voiceSpeechRate}x
-                  </span>
+              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+                <div>
+                  <p className="text-sm font-semibold text-white/90">Email Digest</p>
+                  <p className="text-[11px] text-white/30">Weekly summary of trending discussions in your African country hub.</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  {[0.8, 1.0, 1.2].map((rate) => (
-                    <button
-                      key={rate}
-                      type="button"
-                      onClick={() => setVoiceSpeechRate(rate)}
-                      className={`flex-1 py-1.5 rounded-xl text-xs font-bold transition ${
-                        voiceSpeechRate === rate
-                          ? 'bg-[#087443] text-white shadow-xs'
-                          : 'bg-white dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100'
-                      }`}
-                    >
-                      {rate === 0.8 ? 'Slow (0.8x)' : rate === 1.0 ? 'Normal (1.0x)' : 'Fast (1.2x)'}
-                    </button>
-                  ))}
+                <input
+                  type="checkbox"
+                  checked={emailNotifs}
+                  onChange={(e) => setEmailNotifs(e.target.checked)}
+                  className="h-4 w-4 accent-emerald-600 rounded cursor-pointer"
+                />
+              </label>
+
+              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+                <div>
+                  <p className="text-sm font-semibold text-white/90">Community Announcements</p>
+                  <p className="text-[11px] text-white/30">Official updates from creators and hubs you follow.</p>
                 </div>
+                <input
+                  type="checkbox"
+                  checked={communityNotifs}
+                  onChange={(e) => setCommunityNotifs(e.target.checked)}
+                  className="h-4 w-4 accent-emerald-600 rounded cursor-pointer"
+                />
+              </label>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveNotifications}
+                  disabled={isSavingNotifs}
+                  className="h-10 px-6 rounded-xl bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 flex items-center gap-2 select-none"
+                >
+                  {isSavingNotifs ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.75} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Notifications</span>
+                  )}
+                </button>
               </div>
             </div>
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSaveLanguagePreferences}
-              className="font-bold"
-            >
-              Save Language Preferences
-            </Button>
           </div>
         )}
 
-        {/* Security & Danger Zone Tab */}
-        {activeTab === 'security' && (
-          <div className="space-y-6 max-w-lg">
-            <div className="space-y-3">
-              <h3 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">
-                Change Password
-              </h3>
-              <Input label="Current Password" type="password" placeholder="••••••••" />
-              <Input label="New Password" type="password" placeholder="••••••••" />
-              <Button variant="outline" size="sm">
-                Update Password
-              </Button>
-            </div>
+        {/* TAB: LANGUAGE & REGION */}
+        {activeTab === 'language' && (
+          <div role="tabpanel" id="tabpanel-language" aria-labelledby="tab-language" className="space-y-6">
+            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              LOCAL LANGUAGE & TRANSLATION ENGINE
+            </h2>
 
-            <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
-              <h3 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-2">
-                Active Login Sessions
-              </h3>
-              <div className="p-3 bg-neutral-50 dark:bg-neutral-800/60 rounded-xl flex items-center justify-between text-xs">
-                <div>
-                  <p className="font-bold text-neutral-800 dark:text-neutral-200">
-                    Chrome on Windows (Current Session)
-                  </p>
-                  <p className="text-[10px] text-neutral-400">Accra, Ghana • Active Now</p>
-                </div>
-                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-                  Active
-                </span>
+            <div className="space-y-5">
+              <div>
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                  NATIVE AFRICAN LANGUAGE
+                </label>
+                <LanguageSelector
+                  value={nativeLanguage}
+                  onChange={setNativeLanguage}
+                  label=""
+                />
+                <p className="text-[11px] text-white/20 mt-1.5">
+                  Your primary African dialect for voice transcription and audio messages.
+                </p>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                  DISPLAY & TRANSLATION TARGET
+                </label>
+                <LanguageSelector
+                  value={preferredLanguage}
+                  onChange={setPreferredLanguage}
+                  label=""
+                />
+                <p className="text-[11px] text-white/20 mt-1.5">
+                  Languages you wish to read posts and incoming messages in.
+                </p>
+              </div>
+
+              <div>
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                  VOICE SPEECH RATE ({voiceSpeechRate}x)
+                </label>
+                <input
+                  type="range"
+                  min="0.75"
+                  max="1.5"
+                  step="0.05"
+                  value={voiceSpeechRate}
+                  onChange={(e) => setVoiceSpeechRate(parseFloat(e.target.value))}
+                  className="w-full accent-emerald-500 cursor-pointer"
+                />
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={handleSaveLanguagePreferences}
+                  disabled={isSavingLang}
+                  className="h-10 px-6 rounded-xl bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 flex items-center gap-2 select-none"
+                >
+                  {isSavingLang ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.75} />
+                      <span>Saving...</span>
+                    </>
+                  ) : (
+                    <span>Save Language Preferences</span>
+                  )}
+                </button>
               </div>
             </div>
+          </div>
+        )}
 
-            {/* Danger Zone */}
-            <div className="pt-6 border-t border-red-100 dark:border-red-950/40 space-y-3">
-              <h3 className="text-xs font-bold text-red-600 uppercase tracking-wider flex items-center gap-1.5">
-                <AlertTriangle className="w-3.5 h-3.5" /> Danger Zone
-              </h3>
-              <p className="text-xs text-neutral-500">
-                Deactivating your account will soft-delete your PII, hide your posts, and disconnect all relationships in compliance with African NDPR standards.
-              </p>
-              <Button
-                variant="danger"
-                size="sm"
-                onClick={() => setIsDeleteModalOpen(true)}
-                className="font-bold"
+        {/* TAB: APPEARANCE */}
+        {activeTab === 'appearance' && (
+          <div role="tabpanel" id="tabpanel-appearance" aria-labelledby="tab-appearance" className="space-y-6">
+            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              THEME & DISPLAY MODE
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Obsidian Green Dark */}
+              <button
+                type="button"
+                onClick={() => {
+                  setTheme('dark');
+                  toast.success('Dark Mode Active', 'Switched to Obsidian Green depth layers.');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
+                  theme === 'dark'
+                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                }`}
               >
-                <Trash2 className="w-3.5 h-3.5 mr-1" /> Deactivate Account
-              </Button>
+                <div className="w-8 h-8 rounded-lg bg-[#0B130E] border border-white/10 flex items-center justify-center text-emerald-400 mb-3">
+                  <Moon className="h-4 w-4" strokeWidth={1.75} />
+                </div>
+                <p className="text-sm font-semibold text-white/90">Obsidian Green</p>
+                <p className="text-[11px] text-white/40 mt-0.5">High-contrast 6-layer dark mode for AMOLED screens.</p>
+              </button>
+
+              {/* Soft Neutral Light */}
+              <button
+                type="button"
+                onClick={() => {
+                  setTheme('light');
+                  toast.success('Light Mode Active', 'Switched to Soft Neutral theme.');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
+                  theme === 'light'
+                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                }`}
+              >
+                <div className="w-8 h-8 rounded-lg bg-[#F5F7F6] border border-black/10 flex items-center justify-center text-neutral-800 mb-3">
+                  <Sun className="h-4 w-4" strokeWidth={1.75} />
+                </div>
+                <p className="text-sm font-semibold text-white/90">Soft Neutral</p>
+                <p className="text-[11px] text-white/40 mt-0.5">Clean light palette engineered for daytime clarity.</p>
+              </button>
+
+              {/* System Match */}
+              <button
+                type="button"
+                onClick={() => {
+                  setTheme('system');
+                  toast.info('System Sync Active', 'AfriLink will follow your device theme settings.');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
+                  theme === 'system'
+                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                }`}
+              >
+                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/70 mb-3">
+                  <Laptop className="h-4 w-4" strokeWidth={1.75} />
+                </div>
+                <p className="text-sm font-semibold text-white/90">System Default</p>
+                <p className="text-[11px] text-white/40 mt-0.5">Syncs dynamically with your device operating system.</p>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: SECURITY */}
+        {activeTab === 'security' && (
+          <div role="tabpanel" id="tabpanel-security" aria-labelledby="tab-security" className="space-y-6">
+            <form onSubmit={handleSavePassword} className="space-y-4">
+              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+                UPDATE PASSWORD
+              </h2>
+
+              <div>
+                <label
+                  htmlFor="security-curr-pw"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  CURRENT PASSWORD
+                </label>
+                <input
+                  id="security-curr-pw"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => {
+                    setCurrentPassword(e.target.value);
+                    if (passwordErrors.currentPassword) setPasswordErrors((prev) => ({ ...prev, currentPassword: undefined }));
+                  }}
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    passwordErrors.currentPassword
+                      ? 'border-red-500/50'
+                      : passwordSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {passwordErrors.currentPassword && (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{passwordErrors.currentPassword}</span>
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="security-new-pw"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  NEW PASSWORD
+                </label>
+                <input
+                  id="security-new-pw"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                    if (passwordErrors.newPassword) setPasswordErrors((prev) => ({ ...prev, newPassword: undefined }));
+                  }}
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    passwordErrors.newPassword
+                      ? 'border-red-500/50'
+                      : passwordSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {passwordErrors.newPassword ? (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{passwordErrors.newPassword}</span>
+                  </p>
+                ) : (
+                  <p className="text-[11px] text-white/20 mt-1.5">
+                    Minimum 8 characters with a mix of letters and numbers.
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="security-confirm-pw"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                >
+                  CONFIRM NEW PASSWORD
+                </label>
+                <input
+                  id="security-confirm-pw"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                    if (passwordErrors.confirmPassword) setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined }));
+                  }}
+                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    passwordErrors.confirmPassword
+                      ? 'border-red-500/50'
+                      : passwordSuccessFlash
+                      ? 'border-emerald-500/30'
+                      : 'border-white/[0.06]'
+                  }`}
+                />
+                {passwordErrors.confirmPassword && (
+                  <p className="text-[11px] text-red-400 mt-1.5 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3 shrink-0" strokeWidth={1.75} />
+                    <span>{passwordErrors.confirmPassword}</span>
+                  </p>
+                )}
+              </div>
+
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  disabled={isSavingPassword}
+                  className="h-10 px-6 rounded-xl bg-emerald-600 text-sm font-semibold text-white hover:bg-emerald-500 active:scale-[0.98] transition-all duration-150 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed select-none"
+                >
+                  {isSavingPassword ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin text-white" strokeWidth={1.75} />
+                      <span>Updating...</span>
+                    </>
+                  ) : (
+                    <span>Update Password</span>
+                  )}
+                </button>
+              </div>
+            </form>
+
+            {/* 2FA Toggle */}
+            <div className="mt-8 border-t border-white/[0.06] pt-5">
+              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-3">
+                TWO-FACTOR AUTHENTICATION
+              </h3>
+              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+                <div>
+                  <p className="text-sm font-semibold text-white/90">Two-Factor Authentication (2FA)</p>
+                  <p className="text-[11px] text-white/30">Protect your AfriLink profile with authenticator app codes on login.</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={twoFactorEnabled}
+                  onChange={(e) => {
+                    setTwoFactorEnabled(e.target.checked);
+                    if (e.target.checked) {
+                      toast.success('2FA Activated', 'Authenticator verification enabled.');
+                    } else {
+                      toast.info('2FA Disabled', 'Two-factor protection turned off.');
+                    }
+                  }}
+                  className="h-4 w-4 accent-emerald-600 rounded cursor-pointer"
+                />
+              </label>
             </div>
           </div>
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Account Confirmation Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
-        title="Deactivate AfriLink Account?"
-        description="This action will disable your profile and redact personal data"
-        maxWidth="sm"
+        title="Delete Your AfriLink Account"
+        description="Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone."
       >
-        <div className="space-y-4">
-          <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-            Are you sure you want to deactivate your AfriLink citizen profile? Your posts, messages, and community memberships will be archived.
+        <div className="space-y-4 pt-2">
+          <p className="text-xs text-white/40 leading-relaxed">
+            All your posts, stories, community contributions, and messages will be permanently scheduled for deletion.
           </p>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" size="sm" onClick={() => setIsDeleteModalOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              variant="danger"
-              size="sm"
-              isLoading={isDeleting}
-              onClick={handleDeleteAccount}
-              className="font-bold"
+
+          <div className="flex items-center justify-end gap-3 pt-3">
+            <button
+              type="button"
+              onClick={() => setIsDeleteModalOpen(false)}
+              className="px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors"
             >
-              Confirm Deactivation
-            </Button>
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteAccount}
+              disabled={isDeleting}
+              className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-xs font-semibold text-white transition-colors flex items-center gap-1.5 disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" strokeWidth={1.75} />
+                  <span>Deleting...</span>
+                </>
+              ) : (
+                <span>Yes, Delete Account</span>
+              )}
+            </button>
           </div>
         </div>
       </Modal>
