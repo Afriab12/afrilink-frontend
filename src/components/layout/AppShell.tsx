@@ -6,11 +6,22 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { RightSidebar } from './RightSidebar';
 import { MobileNav } from './MobileNav';
+import dynamic from 'next/dynamic';
 import { useSearchKeyboardShortcut } from '@/hooks/use-search';
+import { useKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
+
+const KeyboardShortcutsModal = dynamic(
+  () =>
+    import('@/components/ui/keyboard-shortcuts-modal').then(
+      (m) => m.KeyboardShortcutsModal
+    ),
+  { ssr: false }
+);
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   useSearchKeyboardShortcut();
+  useKeyboardShortcuts();
 
   const isAuthRoute =
     pathname === '/login' ||
@@ -24,6 +35,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     return (
       <main className="min-h-screen bg-[#F5F7F6] dark:bg-surface-0 dark:text-white/90 flex flex-col justify-center py-10 px-4 transition-colors duration-200">
         {children}
+        <KeyboardShortcutsModal />
       </main>
     );
   }
@@ -55,6 +67,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Mobile Bottom Navigation */}
       <MobileNav />
+
+      {/* Global Desktop Keyboard Shortcuts Reference Modal */}
+      <KeyboardShortcutsModal />
     </div>
   );
 };

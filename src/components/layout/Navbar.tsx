@@ -21,6 +21,7 @@ import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { adminService } from '@/services/adminService';
 import { useSearchModal, useSearchKeyboardShortcut } from '@/hooks/use-search';
+import { ShortcutHint } from '@/components/ui/shortcut-hint';
 
 const GlobalSearchModal = dynamic(
   () => import('@/features/search/GlobalSearchModal').then((m) => m.GlobalSearchModal),
@@ -81,9 +82,7 @@ export const Navbar: React.FC = () => {
                 <Search className="h-4 w-4 text-neutral-500 dark:text-neutral-400" strokeWidth={1.75} />
                 <span className="text-gray-600 dark:text-white/60 font-medium">Search African people, topics, countries...</span>
               </div>
-              <kbd className="hidden lg:inline-block border border-slate-200 dark:border-white/[0.06] bg-slate-50 dark:bg-surface-3 px-1.5 py-0.5 text-[10px] rounded-md text-slate-400 dark:text-white/60 font-mono shadow-sm">
-                ⌘K
-              </kbd>
+              <ShortcutHint shortcut="⌘K" className="hidden lg:inline-flex" />
             </button>
           </div>
 

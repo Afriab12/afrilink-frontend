@@ -229,6 +229,8 @@ export const PostComposer: React.FC<PostComposerProps> = ({
 
         {/* Text Area */}
         <textarea
+          id="post-composer-textarea"
+          data-testid="post-composer-textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           maxLength={5000}
