@@ -26,6 +26,7 @@ import { moderationService } from '@/services/moderationService';
 import { languageService } from '@/services/languageService';
 import { User as UserType } from '@/types';
 import { SettingsFormSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
+import { toast } from '@/components/ui/toast';
 
 interface SettingsViewProps {
   isLoading?: boolean;
@@ -88,6 +89,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
       username,
     });
     setSavedMessage(true);
+    toast.success('Account updated', 'Your account details have been saved.');
     setTimeout(() => setSavedMessage(false), 2000);
   };
 
@@ -101,6 +103,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
       },
     });
     setSavedMessage(true);
+    toast.success('Privacy updated', 'Your privacy preferences have been saved.');
     setTimeout(() => setSavedMessage(false), 2000);
   };
 
@@ -113,6 +116,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
       },
     });
     setSavedMessage(true);
+    toast.success('Notifications updated', 'Your notification preferences have been saved.');
     setTimeout(() => setSavedMessage(false), 2000);
   };
 
@@ -124,6 +128,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
       voiceSpeechRate,
     });
     setSavedMessage(true);
+    toast.success('Language preferences saved', 'Your translation settings are active.');
     setTimeout(() => setSavedMessage(false), 2000);
   };
 
@@ -131,6 +136,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
     await moderationService.unblockUser(userId);
     const updated = await moderationService.getBlockedUsers();
     setBlockedUsers(updated);
+    toast.info('User unblocked', 'User has been removed from your blocked list.');
   };
 
   const handleDeleteAccount = async () => {

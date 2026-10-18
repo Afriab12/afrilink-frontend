@@ -72,9 +72,24 @@ const config: Config = {
           '0%, 100%': { opacity: '0.06' },
           '50%': { opacity: '0.12' },
         },
+        'toast-enter': {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'toast-exit': {
+          '0%': { opacity: '1', transform: 'translateX(0)' },
+          '100%': { opacity: '0', transform: 'translateX(100%)' },
+        },
+        'toast-progress': {
+          '0%': { transform: 'scaleX(1)' },
+          '100%': { transform: 'scaleX(0)' },
+        },
       },
       animation: {
         'skeleton-pulse': 'skeleton-pulse 1.5s ease-in-out infinite',
+        'toast-enter': 'toast-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'toast-exit': 'toast-exit 200ms cubic-bezier(0.4, 0, 1, 1) forwards',
+        'toast-progress': 'toast-progress linear forwards',
       },
     },
   },

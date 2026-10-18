@@ -72,3 +72,57 @@
   }
 }
 
+/* Phase 1C: Toast Notification System Animations */
+@keyframes toast-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-exit {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes toast-progress {
+  0% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+
+.animate-toast-enter {
+  animation: toast-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-toast-exit {
+  animation: toast-exit 200ms cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.animate-toast-progress {
+  transform-origin: left;
+  animation: toast-progress linear forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-toast-enter,
+  .animate-toast-exit,
+  .animate-toast-progress {
+    animation: none !important;
+    transform: none !important;
+  }
+}
+

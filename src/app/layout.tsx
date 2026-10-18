@@ -7,6 +7,7 @@ import { ChatProvider } from '@/stores/chatContext';
 import { AppShell } from '@/components/layout/AppShell';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { OfflineBanner } from '@/components/ui/OfflineBanner';
+import { ToastProvider } from '@/components/ui/toast';
 
 const sora = Sora({
   subsets: ['latin'],
@@ -48,14 +49,16 @@ export default function RootLayout({
     <html lang="en" className={sora.variable} suppressHydrationWarning>
       <body className="antialiased font-sans bg-[#F5F7F6] dark:bg-surface-0 text-neutral-900 dark:text-white/90 transition-colors duration-200">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <OfflineBanner />
-          <AuthProvider>
-            <SocialProvider>
-              <ChatProvider>
-                <AppShell>{children}</AppShell>
-              </ChatProvider>
-            </SocialProvider>
-          </AuthProvider>
+          <ToastProvider>
+            <OfflineBanner />
+            <AuthProvider>
+              <SocialProvider>
+                <ChatProvider>
+                  <AppShell>{children}</AppShell>
+                </ChatProvider>
+              </SocialProvider>
+            </AuthProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>
