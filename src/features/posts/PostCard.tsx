@@ -27,6 +27,8 @@ import { useSocial } from '@/stores/socialContext';
 import { useAuth } from '@/stores/authContext';
 import { formatDate } from '@/lib/utils';
 import { getCountryByCode } from '@/utils/countryData';
+import { ReactionBurst } from '@/components/ui/ReactionBurst';
+import { BUTTON_PRESS_CLASS, CARD_HOVER_LIFT_CLASS } from '@/lib/animations';
 
 interface PostCardProps {
   post: Post;
@@ -43,6 +45,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const [showReportModal, setShowReportModal] = useState(false);
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
+  const [isBurstingReaction, setIsBurstingReaction] = useState(false);
 
   const isOwner = currentUser?.id === post.author.id;
   const authorCountry = post.countryCode ? getCountryByCode(post.countryCode) : undefined;
@@ -51,6 +54,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
   const totalReactions = Object.values(post.reactionsCount || {}).reduce((a, b) => a + b, 0);
 
   const handleSelectReaction = (reaction: ReactionType) => {
+    setIsBurstingReaction(true);
     reactToPost(post.id, reaction);
     setShowReactionPicker(false);
   };
@@ -59,12 +63,13 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
     if (post.myReaction) {
       reactToPost(post.id, post.myReaction); // Toggle off
     } else {
+      setIsBurstingReaction(true);
       reactToPost(post.id, 'like');
     }
   };
 
   return (
-    <article className="bg-white dark:bg-surface-0 rounded-3xl p-5 sm:p-6 shadow-sm border border-neutral-200/80 dark:border-white/[0.04] transition-all hover:shadow-card hover:dark:bg-surface-2 hover:dark:border-white/[0.06]">
+    <article className={`bg-white dark:bg-surface-0 rounded-3xl p-5 sm:p-6 shadow-sm border border-neutral-200/80 dark:border-white/[0.04] transition-all hover:shadow-card hover:dark:bg-surface-2 hover:dark:border-white/[0.06] ${CARD_HOVER_LIFT_CLASS}`}>
       {/* Header */}
       <div className="flex items-start justify-between mb-3.5">
         <div className="flex items-center gap-3">
@@ -242,13 +247,18 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
 
           <button
             onClick={handleQuickReactionClick}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition ${
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition ${BUTTON_PRESS_CLASS} ${
               post.myReaction
                 ? `${REACTION_CONFIG[post.myReaction].color} bg-emerald-50/50 dark:bg-emerald-950/30`
                 : 'text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3'
             }`}
           >
-            <span>{post.myReaction ? REACTION_CONFIG[post.myReaction].emoji : '👍'}</span>
+            <ReactionBurst
+              active={isBurstingReaction}
+              onAnimationEnd={() => setIsBurstingReaction(false)}
+            >
+              <span>{post.myReaction ? REACTION_CONFIG[post.myReaction].emoji : '👍'}</span>
+            </ReactionBurst>
             <span className="capitalize">{post.myReaction || 'Like'}</span>
           </button>
         </div>
@@ -256,7 +266,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         {/* Comment Toggle Button */}
         <button
           onClick={() => setShowComments(!showComments)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition"
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition ${BUTTON_PRESS_CLASS}`}
         >
           <MessageSquare className="w-4 h-4" strokeWidth={1.75} />
           <span>Comment</span>
@@ -265,7 +275,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         {/* Share Button */}
         <button
           onClick={() => setShowShareModal(true)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition"
+          className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-neutral-600 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 transition ${BUTTON_PRESS_CLASS}`}
         >
           <Share2 className="w-4 h-4" strokeWidth={1.75} />
           <span>Share</span>
@@ -274,7 +284,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post }) => {
         {/* Save Bookmark */}
         <button
           onClick={() => setIsSaved(!isSaved)}
-          className={`p-2 rounded-xl transition ${
+          className={`p-2 rounded-xl transition ${BUTTON_PRESS_CLASS} ${
             isSaved
               ? 'text-[#D9A441] bg-amber-50 dark:bg-amber-950/30'
               : 'text-neutral-400 hover:text-neutral-700 dark:hover:text-white/90 hover:bg-neutral-100 dark:hover:bg-surface-3'

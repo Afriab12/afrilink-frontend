@@ -1,9 +1,9 @@
 /**
  * AfriLink Budget-Device Animation Safeguard Utilities
- * Phase 0: Non-Negotiable Engineering Constraints
+ * Phase 0 & Phase 3A: Micro-Interactions Library & Animation Guards
  * 
  * Enforces compositor-only animations (transform, opacity), OS Reduced Motion compliance,
- * capped spring physics, and lightweight page transitions for low-spec African Android/iOS devices.
+ * capped spring physics, and lightweight transitions for low-spec African Android/iOS devices.
  */
 
 'use client';
@@ -22,8 +22,101 @@ export const SAFE_SPRING_CONFIG = {
 };
 
 /**
- * Page transitions: opacity + translateY(8px) only, <= 250ms (200ms)
+ * 1. Reaction burst spring configuration:
+ * on reaction tap scale 1 -> 1.5 -> 1 spring (stiffness <= 400, damping >= 20)
  */
+export const REACTION_SPRING_CONFIG = {
+  type: 'spring' as const,
+  stiffness: 350,
+  damping: 22,
+  mass: 0.8,
+};
+
+/**
+ * Reaction particle burst constraints:
+ * Pure CSS pseudo/DOM elements <= 6 dots, transform + opacity only, 400ms, no canvas lib
+ */
+export const REACTION_BURST_CONSTRAINTS = {
+  maxDots: 6,
+  durationMs: 400,
+  properties: ['transform', 'opacity'] as const,
+  scaleRange: [1, 1.5, 1] as const,
+  spring: {
+    stiffness: 350, // <= 400
+    damping: 22,    // >= 20
+  },
+};
+
+/**
+ * 2. Button press micro-interaction:
+ * active:scale-[0.97] duration-100
+ */
+export const BUTTON_PRESS_CLASS =
+  'active:scale-[0.97] duration-100 transition-transform motion-reduce:active:scale-100';
+
+export const BUTTON_PRESS_CONFIG = {
+  scale: 0.97,
+  durationMs: 100,
+  property: 'transform' as const,
+};
+
+export function getButtonPressClass(prefersReduced = false): string {
+  return prefersReduced
+    ? 'active:scale-100'
+    : 'active:scale-[0.97] duration-100 transition-transform';
+}
+
+/**
+ * 3. Card hover lift micro-interaction:
+ * hover:translate-y-[-2px] only (compositor-safe transform)
+ */
+export const CARD_HOVER_LIFT_CLASS =
+  'hover:translate-y-[-2px] transition-transform duration-200 motion-reduce:hover:translate-y-0';
+
+export const CARD_HOVER_LIFT_CONFIG = {
+  translateY: '-2px',
+  durationMs: 200,
+  property: 'transform' as const,
+};
+
+export function getCardHoverClass(prefersReduced = false): string {
+  return prefersReduced
+    ? 'hover:translate-y-0'
+    : 'hover:translate-y-[-2px] transition-transform duration-200';
+}
+
+/**
+ * 4. Toggle knobs micro-interaction:
+ * translateX spring cubic-bezier(0.34, 1.56, 0.64, 1) <= 200ms
+ */
+export const TOGGLE_KNOB_TRANSITION =
+  'transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none';
+
+export const TOGGLE_KNOB_CONFIG = {
+  durationMs: 200, // <= 200ms
+  easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+  property: 'translateX' as const,
+};
+
+export function getToggleKnobClass(prefersReduced = false): string {
+  return prefersReduced
+    ? 'transition-none'
+    : 'transition-transform duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)]';
+}
+
+/**
+ * 5. Page enter transitions:
+ * opacity + translateY(8px) <= 250ms (200ms) with AnimatePresence/layout
+ */
+export const PAGE_ENTER_CONFIG = {
+  durationMs: 200, // <= 250ms
+  maxDurationMs: 250,
+  properties: ['opacity', 'translateY'] as const,
+  offsetY: '8px',
+};
+
+export const PAGE_ENTER_CLASS = 'animate-page-enter motion-reduce:animate-none';
+
 export const pageTransitionVariants = {
   initial: { opacity: 0, transform: 'translateY(8px)' },
   animate: {
@@ -82,16 +175,6 @@ export const slideUpVariants = {
 };
 
 /**
- * Reaction particle burst constraints:
- * Pure CSS pseudo-elements <= 6 dots, transform + opacity only, 400ms, no JS RAF loops
- */
-export const REACTION_BURST_CONSTRAINTS = {
-  maxDots: 6,
-  durationMs: 400,
-  properties: ['transform', 'opacity'] as const,
-};
-
-/**
  * Hook to detect user's operating system preferences for reduced motion.
  * Safely defaults to false in SSR/Node testing environments.
  */
@@ -132,7 +215,7 @@ export function useReducedMotion(): boolean {
 }
 
 /**
- * Hook wrapping useReducedMotion() with helper utilities to apply safe animations.
+ * 6. Hook wrapping useReducedMotion() with helper utilities to apply safe animations.
  */
 export function useSafeMotion() {
   const prefersReduced = useReducedMotion();
@@ -159,5 +242,9 @@ export function useSafeMotion() {
       }
       return stripped as T;
     },
+    getButtonPress: () => getButtonPressClass(prefersReduced),
+    getCardHover: () => getCardHoverClass(prefersReduced),
+    getToggleTransition: () => getToggleKnobClass(prefersReduced),
+    getPageEnter: () => (prefersReduced ? 'opacity-100 transform-none' : PAGE_ENTER_CLASS),
   };
 }
