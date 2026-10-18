@@ -6,9 +6,11 @@ import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { RightSidebar } from './RightSidebar';
 import { MobileNav } from './MobileNav';
+import { useSearchKeyboardShortcut } from '@/hooks/use-search';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const pathname = usePathname();
+  useSearchKeyboardShortcut();
 
   const isAuthRoute =
     pathname === '/login' ||

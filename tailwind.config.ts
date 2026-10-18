@@ -84,12 +84,22 @@ const config: Config = {
           '0%': { transform: 'scaleX(1)' },
           '100%': { transform: 'scaleX(0)' },
         },
+        'search-enter': {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'search-exit': {
+          '0%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(0.95)' },
+        },
       },
       animation: {
         'skeleton-pulse': 'skeleton-pulse 1.5s ease-in-out infinite',
         'toast-enter': 'toast-enter 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
         'toast-exit': 'toast-exit 200ms cubic-bezier(0.4, 0, 1, 1) forwards',
         'toast-progress': 'toast-progress linear forwards',
+        'search-enter': 'search-enter 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'search-exit': 'search-exit 150ms cubic-bezier(0.4, 0, 1, 1) forwards',
       },
     },
   },

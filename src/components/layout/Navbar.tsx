@@ -20,6 +20,7 @@ import { useAuth } from '@/stores/authContext';
 import { useSocial } from '@/stores/socialContext';
 import { useChat } from '@/stores/chatContext';
 import { adminService } from '@/services/adminService';
+import { useSearchModal, useSearchKeyboardShortcut } from '@/hooks/use-search';
 
 const GlobalSearchModal = dynamic(
   () => import('@/features/search/GlobalSearchModal').then((m) => m.GlobalSearchModal),
@@ -33,7 +34,9 @@ export const Navbar: React.FC = () => {
   const { unreadNotifsCount } = useSocial();
   const { unreadMessagesCount } = useChat();
 
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { isOpen: isSearchOpen, openSearch, closeSearch } = useSearchModal();
+  useSearchKeyboardShortcut();
+
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const handleLogout = () => {
@@ -70,7 +73,7 @@ export const Navbar: React.FC = () => {
           {/* Search Trigger Bar */}
           <div className="flex-1 max-w-md hidden md:block">
             <button
-              onClick={() => setIsSearchOpen(true)}
+              onClick={() => openSearch()}
               className="w-full flex items-center justify-between px-4 py-2 bg-neutral-100 hover:bg-neutral-200/70 dark:bg-surface-0 dark:border-white/[0.04] dark:hover:border-[#087443] rounded-2xl text-xs transition-all duration-200 border border-transparent hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#087443]"
               aria-label="Search AfriLink"
             >
@@ -88,7 +91,7 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-2 sm:gap-3">
             {/* Mobile Search Button */}
             <button
-              onClick={() => setIsSearchOpen(true)}
+              onClick={() => openSearch()}
               className="md:hidden p-2 rounded-full text-neutral-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 transition-all duration-200"
               aria-label="Search"
             >
@@ -221,7 +224,7 @@ export const Navbar: React.FC = () => {
       {/* Global Search Modal */}
       <GlobalSearchModal
         isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
+        onClose={closeSearch}
       />
     </>
   );

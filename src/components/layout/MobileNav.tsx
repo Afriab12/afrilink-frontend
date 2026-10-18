@@ -3,19 +3,28 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Compass, Users, MessageSquare, Bell, User } from 'lucide-react';
+import { Home, Compass, Search, Users, MessageSquare, Bell, User } from 'lucide-react';
 import { useAuth } from '@/stores/authContext';
 import { useChat } from '@/stores/chatContext';
 import { useSocial } from '@/stores/socialContext';
+import { useSearchModal } from '@/hooks/use-search';
 
 export const MobileNav: React.FC = () => {
   const pathname = usePathname();
   const { currentUser } = useAuth();
   const { unreadMessagesCount } = useChat();
   const { unreadNotifsCount } = useSocial();
+  const { openSearch } = useSearchModal();
 
-  const links = [
+  const links: Array<{
+    label: string;
+    href?: string;
+    icon: typeof Home;
+    badge?: number;
+    onClick?: () => void;
+  }> = [
     { label: 'Home', href: '/', icon: Home },
+    { label: 'Search', icon: Search, onClick: () => openSearch() },
     { label: 'Explore', href: '/discover', icon: Compass },
     { label: 'Hubs', href: '/communities', icon: Users },
     {
@@ -46,13 +55,29 @@ export const MobileNav: React.FC = () => {
               ? pathname === '/'
               : link.href === '/profile/me'
                 ? pathname === '/profile/me' || (!!currentUser?.username && pathname.startsWith(`/profile/${currentUser.username}`))
-                : pathname.startsWith(link.href);
+                : !!link.href && pathname.startsWith(link.href);
           const Icon = link.icon;
+
+          if (link.onClick) {
+            return (
+              <button
+                key={link.label}
+                type="button"
+                onClick={link.onClick}
+                className="flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white/90"
+              >
+                <div className="relative">
+                  <Icon className="h-5 w-5 transition-all duration-200" strokeWidth={1.75} />
+                </div>
+                <span className="text-[10px] mt-0.5 font-medium font-sora">{link.label}</span>
+              </button>
+            );
+          }
 
           return (
             <Link
               key={link.label}
-              href={link.href}
+              href={link.href || '#'}
               className={`flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 ${
                 isActive
                   ? 'text-[#087443] font-bold'
