@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useSocial } from '@/stores/socialContext';
 import { INITIAL_USERS } from '@/services/mockBackend';
 import { getCountryByCode } from '@/utils/countryData';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface ProfileTabsViewProps {
   user: User;
@@ -50,8 +51,13 @@ export const ProfileTabsView: React.FC<ProfileTabsViewProps> = ({
           {userPosts.length > 0 ? (
             userPosts.map((post) => <PostCard key={post.id} post={post} />)
           ) : (
-            <div className="bg-white dark:bg-neutral-900 rounded-3xl p-8 text-center border border-neutral-200 dark:border-neutral-800">
-              <p className="text-sm text-neutral-500">No posts published yet by {user.fullName}.</p>
+            <div className="bg-white dark:bg-surface-0 rounded-3xl border border-neutral-200/80 dark:border-white/[0.04]">
+              <EmptyState
+                preset="feed"
+                title="No posts published yet"
+                description={`No posts published yet by ${user.fullName}.`}
+                actionLabel={null}
+              />
             </div>
           )}
         </div>
@@ -213,32 +219,43 @@ export const ProfileTabsView: React.FC<ProfileTabsViewProps> = ({
 
       {/* Communities Tab */}
       {activeTab === 'communities' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {userCommunities.map((comm) => (
-            <div
-              key={comm.id}
-              className="bg-white dark:bg-neutral-900 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-800 flex items-center gap-3"
-            >
-              <Avatar src={comm.profileImage} alt={comm.name} size="lg" />
-              <div className="flex-1">
-                <Link
-                  href={`/communities/${comm.id}`}
-                  className="font-bold text-sm text-neutral-900 dark:text-white hover:text-[#087443] transition"
-                >
-                  {comm.name}
-                </Link>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant="gold" size="sm">
-                    {comm.category}
-                  </Badge>
-                  <span className="text-[11px] text-neutral-500">
-                    {comm.memberCount.toLocaleString()} members
-                  </span>
+        userCommunities.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {userCommunities.map((comm) => (
+              <div
+                key={comm.id}
+                className="bg-white dark:bg-neutral-900 rounded-2xl p-4 border border-neutral-200 dark:border-neutral-800 flex items-center gap-3"
+              >
+                <Avatar src={comm.profileImage} alt={comm.name} size="lg" />
+                <div className="flex-1">
+                  <Link
+                    href={`/communities/${comm.id}`}
+                    className="font-bold text-sm text-neutral-900 dark:text-white hover:text-[#087443] transition"
+                  >
+                    {comm.name}
+                  </Link>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Badge variant="gold" size="sm">
+                      {comm.category}
+                    </Badge>
+                    <span className="text-[11px] text-neutral-500">
+                      {comm.memberCount.toLocaleString()} members
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-surface-0 rounded-3xl border border-neutral-200/80 dark:border-white/[0.04]">
+            <EmptyState
+              preset="community-members"
+              title="No communities yet"
+              description={`${user.fullName} has not joined any communities yet.`}
+              actionLabel={null}
+            />
+          </div>
+        )
       )}
     </div>
   );

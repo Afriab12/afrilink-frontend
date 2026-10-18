@@ -31,6 +31,7 @@ import {
   SEARCH_SUGGESTION_CHIPS,
   SearchIconType,
 } from '@/lib/search-utils';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export interface SearchOverlayProps {
   isOpen: boolean;
@@ -570,16 +571,11 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
           {/* Empty Search State */}
           {debouncedQuery && flatResults.length === 0 && !isSearching && (
-            <div className="py-10 text-center space-y-3">
-              <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center mx-auto text-white/40">
-                <Search className="h-5 w-5" strokeWidth={1.75} />
-              </div>
-              <p className="font-semibold text-sm text-white/90 font-sora">
-                No matching results found
-              </p>
-              <p className="text-xs text-white/40 max-w-sm mx-auto">
-                No results for &ldquo;{debouncedQuery}&rdquo;. Try searching for a person, community, or Pan-African topic.
-              </p>
+            <EmptyState
+              preset="search"
+              title="No results found"
+              description={`No results for "${debouncedQuery}". Try searching for a person, community, or Pan-African topic.`}
+            >
               <div className="pt-2 flex flex-wrap justify-center gap-1.5 max-w-md mx-auto">
                 {SEARCH_SUGGESTION_CHIPS.slice(0, 5).map((chip) => (
                   <button
@@ -592,7 +588,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                   </button>
                 ))}
               </div>
-            </div>
+            </EmptyState>
           )}
         </div>
 

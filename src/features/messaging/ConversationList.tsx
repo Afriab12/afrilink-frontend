@@ -14,6 +14,7 @@ import {
 import { formatTime } from '@/lib/utils';
 import { NewChatModal } from './NewChatModal';
 import { ConversationRowSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -198,16 +199,29 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             );
           })
         ) : (
-          <div className="p-8 text-center text-xs text-white/30 space-y-2">
-            <MessageSquare className="h-6 w-6 mx-auto text-white/20" strokeWidth={1.75} />
-            <p>
-              {searchQuery
-                ? `No messages matching "${searchQuery}"`
+          <EmptyState
+            preset="messages"
+            title={
+              searchQuery
+                ? 'No messages found'
                 : activeTab === 'requests'
-                ? 'No pending message requests'
-                : 'No active conversations yet'}
-            </p>
-          </div>
+                ? 'No message requests'
+                : undefined
+            }
+            description={
+              searchQuery
+                ? `No conversations matching "${searchQuery}".`
+                : activeTab === 'requests'
+                ? 'No pending message requests from other members.'
+                : undefined
+            }
+            actionLabel={searchQuery || activeTab === 'requests' ? undefined : 'Find People'}
+            onAction={
+              searchQuery || activeTab === 'requests'
+                ? undefined
+                : () => setIsNewChatModalOpen(true)
+            }
+          />
         )}
       </div>
 

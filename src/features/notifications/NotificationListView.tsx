@@ -20,6 +20,7 @@ import { Badge } from '@/components/ui/Badge';
 import { useSocial } from '@/stores/socialContext';
 import { formatDate } from '@/lib/utils';
 import { REACTION_CONFIG } from '@/features/posts/ReactionPicker';
+import { EmptyState } from '@/components/ui/empty-state';
 
 export const NotificationListView: React.FC = () => {
   const {
@@ -212,10 +213,15 @@ export const NotificationListView: React.FC = () => {
             </div>
           ))
         ) : (
-          <div className="p-12 text-center text-neutral-400">
-            <Bell className="w-10 h-10 mx-auto text-neutral-300 dark:text-neutral-700 mb-2" />
-            <p className="text-sm font-semibold">No notifications in this filter.</p>
-          </div>
+          <EmptyState
+            preset="notifications"
+            title={filter === 'all' ? undefined : 'No notifications in this filter'}
+            description={
+              filter === 'all'
+                ? undefined
+                : 'Check back later or switch tabs to see your other alerts.'
+            }
+          />
         )}
       </div>
     </div>

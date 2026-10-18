@@ -5,8 +5,9 @@ import { Community, Post } from '@/types';
 import { PostComposer } from '@/features/posts/PostComposer';
 import { PostCard } from '@/features/posts/PostCard';
 import { Button } from '@/components/ui/Button';
-import { Lock, MessageSquare, Sparkles } from 'lucide-react';
+import { Lock, Sparkles } from 'lucide-react';
 import { useSocial } from '@/stores/socialContext';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface CommunityFeedProps {
   community: Community;
@@ -69,16 +70,13 @@ export const CommunityFeed: React.FC<CommunityFeedProps> = ({
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-10 text-center border border-neutral-200/80 dark:border-neutral-800 shadow-sm space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] mx-auto flex items-center justify-center">
-            <MessageSquare className="w-6 h-6" />
-          </div>
-          <h3 className="text-base font-bold text-neutral-900 dark:text-white font-sora">
-            No Discussions Yet
-          </h3>
-          <p className="text-xs text-neutral-500 max-w-sm mx-auto leading-relaxed">
-            Be the first to spark a dialogue in &ldquo;{community.name}&rdquo;. Share an initiative, ask a question, or introduce your work!
-          </p>
+        <div className="bg-white dark:bg-surface-0 rounded-3xl border border-neutral-200/80 dark:border-white/[0.04]">
+          <EmptyState
+            preset="feed"
+            title="No Discussions Yet"
+            description={`Be the first to spark a dialogue in "${community.name}". Share an initiative, ask a question, or introduce your work!`}
+            actionLabel={null}
+          />
         </div>
       )}
     </div>

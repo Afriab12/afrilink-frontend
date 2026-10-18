@@ -7,12 +7,15 @@ import { communityService } from '@/services/communityService';
 import { Avatar } from '@/components/ui/Avatar';
 import { Badge } from '@/components/ui/Badge';
 import { ShieldCheck, Search, Users, Crown, ShieldAlert } from 'lucide-react';
+import { useSocial } from '@/stores/socialContext';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface CommunityMembersListProps {
   community: Community;
 }
 
 export const CommunityMembersList: React.FC<CommunityMembersListProps> = ({ community }) => {
+  const { joinCommunity } = useSocial();
   const [members, setMembers] = useState<CommunityMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState<'all' | 'leaders' | 'members'>('all');
@@ -168,11 +171,18 @@ export const CommunityMembersList: React.FC<CommunityMembersListProps> = ({ comm
           ))}
         </div>
       ) : (
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl p-10 text-center border border-neutral-200 dark:border-neutral-800">
-          <Users className="w-8 h-8 text-neutral-400 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-400">
-            No community members match your filter criteria.
-          </p>
+        <div className="bg-white dark:bg-surface-0 rounded-3xl border border-neutral-200 dark:border-white/[0.04]">
+          <EmptyState
+            preset="community-members"
+            title={members.length === 0 ? undefined : 'No matching members'}
+            description={
+              members.length === 0
+                ? undefined
+                : 'No community members match your filter or search criteria.'
+            }
+            actionLabel={members.length === 0 ? 'Join' : undefined}
+            onAction={members.length === 0 ? () => joinCommunity(community.id) : undefined}
+          />
         </div>
       )}
     </div>
