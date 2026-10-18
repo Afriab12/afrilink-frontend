@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import {
   Send,
-  Image as ImageIcon,
   MoreVertical,
-  Check,
   CheckCheck,
   ShieldAlert,
   Ban,
@@ -14,15 +13,18 @@ import {
   X,
   Sparkles,
   Paperclip,
+  Smile,
+  ImagePlus,
+  Phone,
+  Video,
+  Languages,
 } from 'lucide-react';
 import { Conversation, Message, User } from '@/types';
-import { Avatar } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { ReportModal } from '@/features/moderation/ReportModal';
 import { BlockUserModal } from '@/features/moderation/BlockUserModal';
 import { useChat } from '@/stores/chatContext';
 import { useAuth } from '@/stores/authContext';
-import dynamic from 'next/dynamic';
 import { formatTime, formatDate } from '@/lib/utils';
 import { ConversationList } from './ConversationList';
 import { TranslateButton } from './TranslateButton';
@@ -32,6 +34,7 @@ import { languageService } from '@/services/languageService';
 import { voiceService } from '@/services/voiceService';
 import { EmojiPickerPopover } from '@/components/ui/EmojiPickerPopover';
 
+// Phase 0: Lazy-load VoiceRecorder chunk to keep shared bundles ultralight
 const VoiceRecorder = dynamic(
   () => import('./VoiceRecorder').then((m) => m.VoiceRecorder),
   { ssr: false }
@@ -59,6 +62,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
   const [mediaUrlInput, setMediaUrlInput] = useState('');
   const [showMediaInput, setShowMediaInput] = useState(false);
   const [isPartnerTyping, setIsPartnerTyping] = useState(false);
+  const [isRecordingActive, setIsRecordingActive] = useState(false);
 
   // Translation & Voice State
   const [userLangPrefs] = useState(() => languageService.getUserLanguagePreferences());
@@ -70,6 +74,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<any>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Auto-select initial conversation if provided
   useEffect(() => {
@@ -97,8 +102,14 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
     };
   }, [activeConversation]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessageText(e.target.value);
+
+    // Auto-grow textarea height
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 120)}px`;
+    }
 
     if (activeConversation) {
       messagingService.sendTypingStatus(activeConversation.id, true);
@@ -109,8 +120,15 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
     }
   };
 
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  const handleSendMessage = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     if (!messageText.trim() && !mediaUrlInput.trim()) return;
 
     if (activeConversation) {
@@ -121,6 +139,10 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
     setMessageText('');
     setMediaUrlInput('');
     setShowMediaInput(false);
+
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+    }
   };
 
   const handleToggleTranslation = async (msg: Message) => {
@@ -173,10 +195,16 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
     }
   };
 
+  const hasContent = Boolean(messageText.trim() || mediaUrlInput.trim());
+
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-200/80 dark:border-neutral-800 h-[calc(100vh-140px)] min-h-[580px] w-full max-w-full overflow-hidden flex flex-1 min-w-0">
-      {/* Left Column: Conversations List */}
-      <div className={`w-full md:w-80 lg:w-96 flex-shrink-0 ${activeConversation ? 'hidden md:flex' : 'flex'}`}>
+    <div className="w-full max-w-full min-w-0 flex flex-1 h-[calc(100vh-120px)] min-h-[580px] rounded-2xl border border-white/[0.06] bg-surface-1/40 overflow-hidden shadow-2xl">
+      {/* LEFT COLUMN: CONVERSATIONS LIST (w-80 flex-shrink-0 border-r border-white/[0.06]) */}
+      <div
+        className={`w-full md:w-80 flex-shrink-0 border-r border-white/[0.06] ${
+          activeConversation ? 'hidden md:flex' : 'flex'
+        } flex-col h-full bg-surface-1`}
+      >
         <ConversationList
           conversations={conversations}
           activeConversationId={activeConversation?.id || null}
@@ -185,235 +213,267 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
         />
       </div>
 
-      {/* Right Column: Active Chat Stream */}
+      {/* RIGHT COLUMN: ACTIVE CHAT STREAM (flex-1 min-w-0 flex flex-col) */}
       <div
-        className={`flex-1 min-w-0 flex flex-col bg-neutral-50/50 dark:bg-neutral-950/40 ${
+        className={`flex-1 min-w-0 flex flex-col h-full bg-surface-0 ${
           activeConversation ? 'flex' : 'hidden md:flex'
         }`}
       >
         {activeConversation ? (
           <>
-            {/* Chat Header */}
-            <div className="p-4 bg-white dark:bg-neutral-900 border-b border-neutral-200/80 dark:border-neutral-800 flex items-center justify-between shadow-sm z-10">
-              <div className="flex items-center gap-3">
-                {/* Mobile Back Button */}
+            {/* THREAD HEADER (h-14 avatar 32px, name, status text, Phone Video MoreVertical h-4 w-4) */}
+            <div className="h-14 px-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-1/40 backdrop-blur-sm z-10 shrink-0 select-none">
+              <div className="flex items-center gap-3 min-w-0">
+                {/* Mobile Back Button to conversation list */}
                 <button
+                  type="button"
                   onClick={() => setActiveConversationId(null)}
-                  className="md:hidden p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-600 dark:text-neutral-300 transition"
+                  className="md:hidden p-1.5 -ml-1 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
                   aria-label="Back to conversations"
                 >
-                  <ArrowLeft className="w-5 h-5" />
+                  <ArrowLeft className="h-5 w-5" strokeWidth={1.75} />
                 </button>
 
-                <div className="relative">
-                  <Avatar
-                    src={activeConversation.participant.avatarUrl}
-                    alt={activeConversation.participant.fullName}
-                    size="md"
-                    className="ring-1 ring-emerald-500/20"
-                  />
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white dark:border-neutral-900" />
-                </div>
+                {/* Avatar 32px */}
+                <UserAvatar
+                  src={activeConversation.participant.avatarUrl}
+                  alt={activeConversation.participant.fullName}
+                  username={activeConversation.participant.username}
+                  userId={activeConversation.participant.id}
+                  size="sm"
+                  className="w-8 h-8 rounded-full ring-1 ring-white/10 shrink-0"
+                />
 
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <Link
                       href={`/profile/${activeConversation.participant.username}`}
-                      className="font-bold text-sm text-neutral-900 dark:text-white hover:text-[#087443] transition font-sora"
+                      className="text-sm font-semibold text-white/90 hover:text-emerald-400 transition-colors font-sora truncate block"
                     >
                       {activeConversation.participant.fullName}
                     </Link>
-                    {activeConversation.participant.isVerified && (
-                      <span className="text-[#D9A441] text-xs" title="Verified African Changemaker">
-                        ★
-                      </span>
-                    )}
                   </div>
-                  <p className="text-[11px] text-neutral-500">
-                    @{activeConversation.participant.username} • {activeConversation.participant.country}
+                  {/* Status text */}
+                  <p className="text-[11px] text-emerald-400 flex items-center gap-1 leading-none">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Active now</span>
                   </p>
                 </div>
               </div>
 
-              {/* Header Action Menu */}
-              <div className="relative">
+              {/* Thread Action Controls: Phone, Video, MoreVertical h-4 w-4 */}
+              <div className="flex items-center gap-1 shrink-0">
                 <button
-                  onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}
-                  className="p-2 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 transition"
-                  aria-label="Conversation options"
+                  type="button"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                  title="Voice call"
+                  aria-label="Voice call"
                 >
-                  <MoreVertical className="w-4 h-4" />
+                  <Phone className="h-4 w-4" strokeWidth={1.75} />
+                </button>
+                <button
+                  type="button"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                  title="Video call"
+                  aria-label="Video call"
+                >
+                  <Video className="h-4 w-4" strokeWidth={1.75} />
                 </button>
 
-                {showOptionsDropdown && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-900 rounded-2xl shadow-xl border border-neutral-200 dark:border-neutral-800 py-1.5 z-50 text-xs">
-                    <Link
-                      href={`/profile/${activeConversation.participant.username}`}
-                      className="flex items-center gap-2 px-3.5 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                      onClick={() => setShowOptionsDropdown(false)}
-                    >
-                      <span>View African Profile</span>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setShowOptionsDropdown(false);
-                        setIsReportModalOpen(true);
-                      }}
-                      className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
-                    >
-                      <ShieldAlert className="w-3.5 h-3.5 text-neutral-500" />
-                      <span>Report Dialogue</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowOptionsDropdown(false);
-                        setIsBlockModalOpen(true);
-                      }}
-                      className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                    >
-                      <Ban className="w-3.5 h-3.5" />
-                      <span>Block User</span>
-                    </button>
-                  </div>
-                )}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    aria-label="Conversation options"
+                  >
+                    <MoreVertical className="h-4 w-4" strokeWidth={1.75} />
+                  </button>
+
+                  {showOptionsDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-surface-4 rounded-xl shadow-2xl border border-white/[0.08] py-1.5 z-50 text-xs">
+                      <Link
+                        href={`/profile/${activeConversation.participant.username}`}
+                        className="flex items-center gap-2 px-3.5 py-2 text-white/70 hover:text-white hover:bg-white/[0.04]"
+                        onClick={() => setShowOptionsDropdown(false)}
+                      >
+                        <span>View African Profile</span>
+                      </Link>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowOptionsDropdown(false);
+                          setIsReportModalOpen(true);
+                        }}
+                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-white/70 hover:text-white hover:bg-white/[0.04]"
+                      >
+                        <ShieldAlert className="h-3.5 w-3.5 text-white/40" strokeWidth={1.75} />
+                        <span>Report Dialogue</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowOptionsDropdown(false);
+                          setIsBlockModalOpen(true);
+                        }}
+                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-red-400 hover:bg-red-500/10"
+                      >
+                        <Ban className="h-3.5 w-3.5" strokeWidth={1.75} />
+                        <span>Block User</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
-            {/* Message Thread History */}
+            {/* MESSAGE THREAD HISTORY */}
             <div
-              className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4"
+              className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3"
               role="log"
               aria-live="polite"
             >
-              {/* Privacy Notice Banner */}
-              <div className="max-w-md mx-auto text-center py-2 px-4 bg-white/70 dark:bg-neutral-900/60 rounded-2xl border border-neutral-200/50 dark:border-neutral-800 text-[11px] text-neutral-500 shadow-xs">
-                🔒 Messages are private between you and {activeConversation.participant.fullName}. Rooted in African integrity.
-              </div>
-
               {messages.length > 0 ? (
-                messages.map((msg) => {
+                messages.map((msg, index) => {
                   const isMine = msg.senderId === currentUser?.id || msg.sender?.id === currentUser?.id;
                   const isTranslated = messageViewModes[msg.id] === 'translated';
                   const translation = translatedMessages[msg.id];
                   const displayContent = isTranslated && translation ? translation.translatedText : msg.content;
                   const targetLangObj = languageService.getLanguageByCode(userLangPrefs.preferredLanguage);
                   const isAudio =
-                    msg.audioUrl ||
-                    (msg.mediaUrl &&
-                      (msg.mediaUrl.startsWith('blob:') ||
-                        msg.mediaUrl.includes('voice') ||
-                        msg.mediaUrl.includes('audio')));
+                    Boolean(msg.audioUrl) ||
+                    Boolean(
+                      msg.mediaUrl &&
+                        (msg.mediaUrl.startsWith('blob:') ||
+                          msg.mediaUrl.includes('voice') ||
+                          msg.mediaUrl.includes('audio'))
+                    );
+
+                  // Date Separator calculation
+                  const prevMsg = index > 0 ? messages[index - 1] : null;
+                  const showDateSeparator =
+                    !prevMsg ||
+                    new Date(msg.createdAt).toDateString() !== new Date(prevMsg.createdAt).toDateString();
 
                   return (
-                    <div
-                      key={msg.id}
-                      className={`flex flex-col ${isMine ? 'items-end' : 'items-start'}`}
-                    >
-                      <div
-                        className={`max-w-[85%] sm:max-w-md p-3.5 rounded-3xl shadow-xs text-xs sm:text-sm leading-relaxed ${
-                          isMine
-                            ? 'bg-[#087443] text-white rounded-br-xs shadow-emerald-900/10'
-                            : 'bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 rounded-bl-xs border border-neutral-200/70 dark:border-neutral-800'
-                        }`}
-                      >
-                        {msg.mediaUrl && !isAudio && (
-                          <div className="mb-2 rounded-2xl overflow-hidden max-h-60 bg-black/10">
-                            <img
-                              src={msg.mediaUrl}
-                              alt="Attached African media"
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        )}
+                    <React.Fragment key={msg.id}>
+                      {/* Date separators text-[10px] text-white/15 */}
+                      {showDateSeparator && (
+                        <div className="flex items-center justify-center my-4">
+                          <span className="text-[10px] text-white/15 px-3 py-0.5 rounded-full bg-white/[0.02] border border-white/[0.04] font-medium select-none">
+                            {formatDate(msg.createdAt)}
+                          </span>
+                        </div>
+                      )}
 
-                        {/* Audio Note Attachment */}
-                        {isAudio && (
-                          <div
-                            className={`mb-2 p-2.5 rounded-2xl flex items-center gap-2.5 ${
-                              isMine ? 'bg-emerald-900/40 text-emerald-100' : 'bg-neutral-100 dark:bg-neutral-800'
-                            }`}
-                          >
-                            <AudioPlayer audioUrl={msg.audioUrl || msg.mediaUrl} isMine={isMine} />
-                            <div className="flex-1">
-                              <p className="text-[11px] font-bold font-mono">Voice Recording</p>
-                              <div className="flex items-center gap-1 mt-0.5">
-                                <span className="w-1 h-2 bg-[#D9A441] rounded-full animate-pulse" />
-                                <span className="w-1 h-3 bg-[#D9A441] rounded-full animate-pulse delay-75" />
-                                <span className="w-1 h-1.5 bg-[#D9A441] rounded-full animate-pulse delay-150" />
+                      {/* BUBBLE ROW */}
+                      <div className={`flex flex-col ${isMine ? 'items-end' : 'items-start'} mb-1`}>
+                        <div
+                          className={`leading-relaxed ${
+                            isMine
+                              ? 'self-end max-w-[75%] bg-emerald-700/40 rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white/90'
+                              : 'self-start max-w-[75%] bg-white/[0.06] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm text-white/80'
+                          }`}
+                        >
+                          {/* Attached Image (if present and not audio) */}
+                          {msg.mediaUrl && !isAudio && (
+                            <div className="mb-2 rounded-xl overflow-hidden max-h-60 bg-black/20">
+                              <img
+                                src={msg.mediaUrl}
+                                alt="Attached media"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+
+                          {/* VOICE BUBBLE: Play 32x32 rounded-full; CSS waveform bars; duration */}
+                          {isAudio ? (
+                            <div>
+                              <AudioPlayer
+                                audioUrl={msg.audioUrl || msg.mediaUrl}
+                                isMine={isMine}
+                                duration="0:32"
+                              />
+
+                              {/* Translation row below: border-t border-white/[0.04] mt-2 pt-2 */}
+                              <div className="border-t border-white/[0.04] mt-2 pt-2 flex items-start gap-2">
+                                <Languages className="h-3.5 w-3.5 text-amber-400/60 shrink-0 mt-0.5" strokeWidth={1.75} />
+                                <div className="flex-1 min-w-0">
+                                  <p className="italic text-xs text-white/40 leading-relaxed">
+                                    {isTranslated && translation ? translation.translatedText : msg.content}
+                                  </p>
+                                </div>
+                                <span className="text-[9px] bg-amber-500/10 text-amber-400/60 px-1.5 py-0.5 rounded font-mono shrink-0">
+                                  Yoruba → English
+                                </span>
                               </div>
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div>
+                              <p className="whitespace-pre-wrap break-words">{displayContent}</p>
 
-                        {/* Translation Notice Badge */}
-                        {isTranslated && translation && (
-                          <div
-                            className={`mb-1 text-[10px] font-bold flex items-center gap-1 ${
-                              isMine ? 'text-emerald-200' : 'text-[#087443] dark:text-emerald-400'
-                            }`}
-                          >
-                            <span>
-                              Translated to {targetLangObj?.name || userLangPrefs.preferredLanguage}
-                            </span>
-                          </div>
-                        )}
+                              {/* Translation row if text is translated */}
+                              {isTranslated && translation && (
+                                <div className="border-t border-white/[0.04] mt-2 pt-2 flex items-start gap-2">
+                                  <Languages className="h-3.5 w-3.5 text-amber-400/60 shrink-0 mt-0.5" strokeWidth={1.75} />
+                                  <p className="italic text-xs text-white/40 leading-relaxed flex-1">
+                                    {translation.translatedText}
+                                  </p>
+                                  <span className="text-[9px] bg-amber-500/10 text-amber-400/60 px-1.5 py-0.5 rounded font-mono shrink-0">
+                                    Yoruba → English
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
 
-                        <p className="whitespace-pre-wrap break-words">{displayContent}</p>
+                        {/* Metadata: Timestamp text-[9px] text-white/15; outgoing CheckCheck h-3 w-3 read=emerald / delivered=muted */}
+                        <div
+                          className={`flex items-center gap-1.5 mt-1 px-1 text-[9px] text-white/15 select-none ${
+                            isMine ? 'justify-end' : 'justify-start'
+                          }`}
+                        >
+                          <span>{formatTime(msg.createdAt)}</span>
+                          {isMine && (
+                            <CheckCheck
+                              className={`h-3 w-3 ${msg.isRead ? 'text-emerald-400' : 'text-white/30'}`}
+                              strokeWidth={1.75}
+                            />
+                          )}
+
+                          {/* Quick Translate toggle for text messages */}
+                          {!isAudio && (
+                            <TranslateButton
+                              isTranslated={isTranslated}
+                              isLoading={translatingIds[msg.id]}
+                              targetLanguageName={targetLangObj?.name || 'English'}
+                              onClick={() => handleToggleTranslation(msg)}
+                              isMine={isMine}
+                            />
+                          )}
+                        </div>
                       </div>
-
-                      {/* Timestamp, Read Receipt & Action Buttons */}
-                      <div className="flex items-center flex-wrap gap-1.5 mt-1 px-1 text-[10px] text-neutral-400">
-                        <span>{formatTime(msg.createdAt)}</span>
-                        {isMine && (
-                          <span>
-                            {msg.isRead ? (
-                              <CheckCheck className="w-3 h-3 text-[#087443]" />
-                            ) : (
-                              <Check className="w-3 h-3" />
-                            )}
-                          </span>
-                        )}
-
-                        {/* Translate Toggle */}
-                        <TranslateButton
-                          isTranslated={isTranslated}
-                          isLoading={translatingIds[msg.id]}
-                          targetLanguageName={targetLangObj?.name || 'My Language'}
-                          onClick={() => handleToggleTranslation(msg)}
-                          isMine={isMine}
-                        />
-
-                        {/* Audio Text-to-Speech Player */}
-                        <AudioPlayer
-                          textToSpeak={displayContent}
-                          languageCode={
-                            isTranslated
-                              ? userLangPrefs.preferredLanguage
-                              : userLangPrefs.nativeLanguage
-                          }
-                          isMine={isMine}
-                        />
-                      </div>
-                    </div>
+                    </React.Fragment>
                   );
                 })
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-neutral-400 space-y-2">
-                  <div className="w-12 h-12 rounded-3xl bg-emerald-50 dark:bg-emerald-950/40 text-[#087443] flex items-center justify-center">
-                    <Sparkles className="w-6 h-6" />
+                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-white/30 space-y-2 select-none">
+                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-emerald-400 flex items-center justify-center">
+                    <Sparkles className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <h3 className="font-bold text-sm text-neutral-800 dark:text-neutral-200 font-sora">
+                  <h3 className="font-semibold text-sm text-white/90 font-sora">
                     Start Dialogue
                   </h3>
-                  <p className="text-xs text-neutral-500 max-w-xs">
-                    Send a greeting to {activeConversation.participant.fullName} to spark collaboration or friendship!
+                  <p className="text-xs text-white/40 max-w-xs">
+                    Send a direct note to {activeConversation.participant.fullName} across borders.
                   </p>
                 </div>
               )}
 
               {/* Typing indicator bubble */}
               {isPartnerTyping && (
-                <div className="flex items-center gap-2 text-xs text-neutral-500 italic p-2 bg-white/60 dark:bg-neutral-900/60 rounded-2xl w-fit">
+                <div className="flex items-center gap-2 text-xs text-white/40 italic p-2 bg-white/[0.04] rounded-xl w-fit">
                   <span className="flex gap-1 items-center">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-100" />
@@ -426,90 +486,129 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Media URL Input Box (if opened) */}
+            {/* Media URL Input Box (if opened via ImagePlus) */}
             {showMediaInput && (
-              <div className="px-4 py-2 bg-white dark:bg-neutral-900 border-t border-neutral-100 dark:border-neutral-800 flex items-center gap-2">
+              <div className="px-4 py-2 bg-surface-1 border-t border-white/[0.06] flex items-center gap-2 shrink-0">
                 <input
                   type="url"
-                  placeholder="Paste image or media URL..."
+                  placeholder="Paste media link URL..."
                   value={mediaUrlInput}
                   onChange={(e) => setMediaUrlInput(e.target.value)}
-                  className="flex-1 text-xs px-3 py-1.5 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-none focus:border-[#087443]"
+                  className="flex-1 text-xs px-3 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] text-white focus:outline-none focus:border-emerald-500/50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowMediaInput(false)}
-                  className="text-neutral-400 hover:text-neutral-600 p-1"
+                  className="text-white/40 hover:text-white p-1"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="h-4 w-4" strokeWidth={1.75} />
                 </button>
               </div>
             )}
 
-            {/* Message Composer */}
-            <form
-              onSubmit={handleSendMessage}
-              className="p-3 sm:p-4 bg-white dark:bg-neutral-900 border-t border-neutral-200/80 dark:border-neutral-800 flex items-center gap-2 w-full max-w-full"
-            >
-              {/* Media Attachment & Emoji Picker */}
-              <div className="flex-shrink-0 flex items-center gap-1 sm:gap-1.5 z-10">
-                <button
-                  type="button"
-                  onClick={() => setShowMediaInput(!showMediaInput)}
-                  className={`p-2.5 rounded-full transition pointer-events-auto cursor-pointer ${
-                    showMediaInput || mediaUrlInput
-                      ? 'bg-emerald-50 text-[#087443] dark:bg-emerald-950/40'
-                      : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-                  }`}
-                  title="Attach image or media"
-                  aria-label="Attach media"
-                >
-                  <ImageIcon className="w-5 h-5" />
-                </button>
+            {/* FLOATING INPUT CONSOLE (default vs recording state) */}
+            {/* transform bar, do not animate height */}
+            <div className="shrink-0 flex-1 min-w-0 max-h-[140px]">
+              <div
+                className={`mx-4 mb-4 rounded-2xl flex items-end gap-2 p-2 min-h-[48px] pointer-events-auto transition-colors ${
+                  isRecordingActive
+                    ? 'border border-red-500/20 bg-red-500/5'
+                    : 'bg-white/[0.04] border border-white/[0.06]'
+                }`}
+              >
+                {isRecordingActive ? (
+                  // RECORDING STATE (transform bar, do not animate height)
+                  <VoiceRecorder
+                    onSendVoice={handleSendVoice}
+                    disabled={!activeConversation}
+                    onRecordingStateChange={setIsRecordingActive}
+                  />
+                ) : (
+                  // DEFAULT INPUT CONSOLE:
+                  // Left: Smile ImagePlus Paperclip h-4 w-4 in 32x32 hit targets
+                  // Textarea flex-1 min-h-[32px] max-h-[120px] resize-none bg-transparent
+                  // Right: empty → Mic in 36x36 bg-emerald-600/20; has text → Send 36x36 bg-emerald-600
+                  <>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      {/* Smile in 32x32 hit target with EmojiPicker */}
+                      <EmojiPickerPopover
+                        onSelectEmoji={(emoji) => setMessageText((prev) => prev + emoji)}
+                        placement="top"
+                        buttonClassName="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors p-0"
+                      />
 
-                <EmojiPickerPopover
-                  onSelectEmoji={(emoji) => setMessageText((prev) => prev + emoji)}
-                  placement="top"
-                />
+                      {/* ImagePlus in 32x32 hit target */}
+                      <button
+                        type="button"
+                        onClick={() => setShowMediaInput(!showMediaInput)}
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                          showMediaInput || mediaUrlInput
+                            ? 'bg-emerald-500/20 text-emerald-400'
+                            : 'text-white/50 hover:text-white hover:bg-white/[0.06]'
+                        }`}
+                        title="Attach image"
+                        aria-label="Attach image"
+                      >
+                        <ImagePlus className="h-4 w-4" strokeWidth={1.75} />
+                      </button>
+
+                      {/* Paperclip in 32x32 hit target */}
+                      <button
+                        type="button"
+                        onClick={() => setShowMediaInput(!showMediaInput)}
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        title="Attach file"
+                        aria-label="Attach file"
+                      >
+                        <Paperclip className="h-4 w-4" strokeWidth={1.75} />
+                      </button>
+                    </div>
+
+                    {/* Textarea flex-1 min-h-[32px] max-h-[120px] resize-none bg-transparent */}
+                    <textarea
+                      ref={textareaRef}
+                      rows={1}
+                      placeholder={`Message ${activeConversation.participant.fullName}...`}
+                      value={messageText}
+                      onChange={handleTextareaChange}
+                      onKeyDown={handleKeyDown}
+                      className="flex-1 min-h-[32px] max-h-[120px] resize-none bg-transparent text-sm text-white placeholder:text-white/25 focus:outline-none py-1.5 px-2 leading-relaxed"
+                    />
+
+                    {/* Right Action: empty → Mic in 36x36 bg-emerald-600/20; has text → Send 36x36 bg-emerald-600 */}
+                    <div className="shrink-0 flex items-center">
+                      {hasContent ? (
+                        <button
+                          type="button"
+                          onClick={() => handleSendMessage()}
+                          className="w-9 h-9 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 flex items-center justify-center transition-all active:scale-95 pointer-events-auto cursor-pointer"
+                          aria-label="Send message"
+                          title="Send message"
+                        >
+                          <Send className="h-4 w-4" strokeWidth={1.75} />
+                        </button>
+                      ) : (
+                        <VoiceRecorder
+                          onSendVoice={handleSendVoice}
+                          disabled={!activeConversation}
+                          onRecordingStateChange={setIsRecordingActive}
+                        />
+                      )}
+                    </div>
+                  </>
+                )}
               </div>
-
-              {/* Dynamic Text Input Field */}
-              <div className="flex-1 min-w-0">
-                <input
-                  type="text"
-                  placeholder={`Message ${activeConversation.participant.fullName}...`}
-                  value={messageText}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-2.5 bg-neutral-50 dark:bg-neutral-800 rounded-2xl text-xs sm:text-sm text-neutral-900 dark:text-white placeholder-neutral-400 border border-transparent focus:border-[#087443] focus:outline-none transition"
-                />
-              </div>
-
-              {/* Action Controls: Voice Recorder + Send Button */}
-              <div className="flex-shrink-0 flex items-center gap-1.5 sm:gap-2 z-10 pointer-events-auto">
-                <VoiceRecorder onSendVoice={handleSendVoice} disabled={!activeConversation} />
-
-                <Button
-                  type="submit"
-                  size="md"
-                  variant="primary"
-                  disabled={!messageText.trim() && !mediaUrlInput.trim()}
-                  className="rounded-full p-2.5 px-3 font-bold shadow-sm pointer-events-auto cursor-pointer"
-                  aria-label="Send message"
-                >
-                  <Send className="w-4 h-4" />
-                </Button>
-              </div>
-            </form>
+            </div>
           </>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-8 text-neutral-400 space-y-3">
-            <div className="w-16 h-16 rounded-3xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400">
-              <Sparkles className="w-8 h-8 text-[#D9A441]" />
+          <div className="h-full flex flex-col items-center justify-center text-center p-8 text-white/30 space-y-3 select-none">
+            <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-emerald-400">
+              <Sparkles className="h-8 w-8 text-[#D9A441]" strokeWidth={1.75} />
             </div>
-            <h3 className="text-base font-bold text-neutral-800 dark:text-neutral-200 font-sora">
+            <h3 className="text-base font-bold text-white/90 font-sora">
               Select an African Dialogue
             </h3>
-            <p className="text-xs text-neutral-500 max-w-xs leading-relaxed">
+            <p className="text-xs text-white/40 max-w-xs leading-relaxed">
               Choose an existing conversation from the list or start a fresh connection across borders.
             </p>
           </div>

@@ -1,17 +1,19 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, Square, Trash2, Send, AlertCircle, Loader2 } from 'lucide-react';
+import { Mic, Trash2, Send, AlertCircle } from 'lucide-react';
 import { voiceService } from '@/services/voiceService';
 
 interface VoiceRecorderProps {
   onSendVoice: (audioBlob: Blob, durationSeconds: number) => void;
   disabled?: boolean;
+  onRecordingStateChange?: (isRecording: boolean) => void;
 }
 
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   onSendVoice,
   disabled = false,
+  onRecordingStateChange,
 }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
@@ -30,6 +32,11 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     };
   }, []);
 
+  const updateRecordingState = (recording: boolean) => {
+    setIsRecording(recording);
+    onRecordingStateChange?.(recording);
+  };
+
   const cleanupRecording = () => {
     if (timerRef.current) {
       clearInterval(timerRef.current);
@@ -47,7 +54,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       streamRef.current = null;
     }
     audioChunksRef.current = [];
-    setIsRecording(false);
+    updateRecordingState(false);
   };
 
   const startRecording = async () => {
@@ -61,7 +68,6 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
-      // Select supported audio mime type
       let mimeType = 'audio/webm';
       if (typeof MediaRecorder !== 'undefined') {
         if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
@@ -83,14 +89,13 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         }
       };
 
-      recorder.start(100); // 100ms chunks
-      setIsRecording(true);
+      recorder.start(100);
+      updateRecordingState(true);
       setRecordingSeconds(0);
 
       timerRef.current = setInterval(() => {
         setRecordingSeconds((prev) => {
           if (prev >= 120) {
-            // Auto-stop at 2 minutes limit
             stopAndSend();
             return prev;
           }
@@ -127,7 +132,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         timerRef.current = null;
       }
 
-      setIsRecording(false);
+      updateRecordingState(false);
       setRecordingSeconds(0);
 
       if (audioBlob.size > 0) {
@@ -156,15 +161,15 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           type="button"
           onClick={startRecording}
           disabled={disabled || !isSupported}
-          className="p-2.5 rounded-full text-neutral-500 hover:text-[#087443] hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition active:scale-95 disabled:opacity-40 disabled:hover:bg-transparent pointer-events-auto cursor-pointer flex-shrink-0"
+          className="w-9 h-9 rounded-xl bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 flex items-center justify-center transition-all disabled:opacity-40 disabled:cursor-not-allowed pointer-events-auto cursor-pointer"
           title={isSupported ? 'Record voice message' : 'Voice not supported in this browser'}
           aria-label="Record voice message"
         >
-          <Mic className="w-5 h-5" />
+          <Mic className="h-4 w-4" strokeWidth={1.75} />
         </button>
         {errorMessage && (
-          <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-red-600 text-white text-[11px] px-3 py-1.5 rounded-xl shadow-lg whitespace-nowrap z-50 flex items-center gap-1.5 animate-fadeIn">
-            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+          <div className="absolute bottom-full mb-2 right-0 bg-red-600 text-white text-[11px] px-3 py-1.5 rounded-xl shadow-lg whitespace-nowrap z-50 flex items-center gap-1.5 animate-fadeIn">
+            <AlertCircle className="h-3.5 w-3.5 shrink-0" strokeWidth={1.75} />
             <span>{errorMessage}</span>
           </div>
         )}
@@ -172,46 +177,54 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     );
   }
 
-  // Active recording bar replacing or overlaying input controls
+  // RECORDING STATE (transform bar, do not animate height):
+  // border-red-500/20 bg-red-500/5
+  // Left Trash2 cancel; center pulse dot + mono timer + live bars; right Send
+  // Pulse via opacity; motion-reduce static
   return (
-    <div className="flex items-center gap-2 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 px-3 py-1.5 rounded-2xl animate-fadeIn pointer-events-auto flex-shrink-0 z-20">
-      {/* Recording Pulsing Dot & Timer */}
-      <div className="flex items-center gap-1.5">
-        <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-        <span className="text-xs font-mono font-bold text-neutral-800 dark:text-neutral-200">
-          {formatSeconds(recordingSeconds)}
-        </span>
-      </div>
-
-      {/* Animated Soundwave Visualizer */}
-      <div className="flex items-center gap-0.5 h-4 px-2">
-        <span className="w-1 h-2 bg-[#087443] rounded-full animate-bounce" />
-        <span className="w-1 h-4 bg-[#087443] rounded-full animate-pulse delay-75" />
-        <span className="w-1 h-3 bg-[#087443] rounded-full animate-bounce delay-150" />
-        <span className="w-1 h-5 bg-[#087443] rounded-full animate-pulse delay-100" />
-        <span className="w-1 h-2 bg-[#087443] rounded-full animate-bounce delay-200" />
-      </div>
-
-      {/* Discard / Cancel Button */}
+    <div className="flex-1 flex items-center justify-between gap-2 px-1 py-0.5 pointer-events-auto select-none min-h-[32px]">
+      {/* Left Trash2 cancel */}
       <button
         type="button"
         onClick={cancelRecording}
-        className="p-1.5 rounded-xl text-neutral-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition pointer-events-auto cursor-pointer"
-        title="Discard recording"
-        aria-label="Discard recording"
+        className="w-8 h-8 rounded-lg flex items-center justify-center text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors pointer-events-auto cursor-pointer"
+        title="Cancel recording"
+        aria-label="Cancel recording"
       >
-        <Trash2 className="w-4 h-4" />
+        <Trash2 className="h-4 w-4" strokeWidth={1.75} />
       </button>
 
-      {/* Finish & Send Voice Note */}
+      {/* Center: pulse dot + mono timer + live bars */}
+      <div className="flex items-center gap-3">
+        <span
+          className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse motion-reduce:animate-none"
+          aria-hidden="true"
+        />
+        <span className="font-mono text-xs font-semibold text-white/80 tabular-nums">
+          {formatSeconds(recordingSeconds)}
+        </span>
+
+        {/* Live animated waveform bars */}
+        <div className="flex items-center gap-0.5 h-4 px-1" aria-hidden="true">
+          <span className="w-0.5 h-2 bg-red-400 rounded-full animate-pulse motion-reduce:animate-none" />
+          <span className="w-0.5 h-3.5 bg-red-400 rounded-full animate-pulse delay-75 motion-reduce:animate-none" />
+          <span className="w-0.5 h-1.5 bg-red-400 rounded-full animate-pulse delay-150 motion-reduce:animate-none" />
+          <span className="w-0.5 h-4 bg-red-400 rounded-full animate-pulse delay-100 motion-reduce:animate-none" />
+          <span className="w-0.5 h-2.5 bg-red-400 rounded-full animate-pulse delay-200 motion-reduce:animate-none" />
+          <span className="w-0.5 h-3 bg-red-400 rounded-full animate-pulse delay-300 motion-reduce:animate-none" />
+          <span className="w-0.5 h-1.5 bg-red-400 rounded-full animate-pulse delay-75 motion-reduce:animate-none" />
+        </div>
+      </div>
+
+      {/* Right Send */}
       <button
         type="button"
         onClick={stopAndSend}
-        className="px-3 py-1 bg-[#087443] hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-1 pointer-events-auto cursor-pointer"
-        aria-label="Send voice message"
+        className="w-9 h-9 rounded-xl bg-emerald-600 text-white hover:bg-emerald-500 flex items-center justify-center transition-all active:scale-95 pointer-events-auto cursor-pointer"
+        title="Send voice note"
+        aria-label="Send voice note"
       >
-        <Send className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Send</span>
+        <Send className="h-4 w-4" strokeWidth={1.75} />
       </button>
     </div>
   );

@@ -2,10 +2,15 @@
 
 import React, { useState } from 'react';
 import { Conversation, User } from '@/types';
-import { Avatar } from '@/components/ui/Avatar';
-import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
-import { Search, UserPlus, MessageSquare, Check, CheckCheck, Inbox, ShieldAlert } from 'lucide-react';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import {
+  Search,
+  PenSquare,
+  MessageSquare,
+  CheckCheck,
+  Inbox,
+  ShieldAlert,
+} from 'lucide-react';
 import { formatTime } from '@/lib/utils';
 import { NewChatModal } from './NewChatModal';
 import { ConversationRowSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
@@ -47,70 +52,77 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   });
 
   return (
-    <div className="w-full flex-1 border-r border-neutral-200/80 dark:border-neutral-800 flex flex-col h-full bg-white dark:bg-neutral-900">
-      {/* Header */}
-      <div className="p-4 border-b border-neutral-100 dark:border-neutral-800 flex items-center justify-between">
+    <div className="w-full flex-1 flex flex-col h-full bg-surface-1 select-none">
+      {/* Header h-14 */}
+      <div className="h-14 px-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
         <div>
-          <h2 className="font-extrabold text-base text-neutral-900 dark:text-white font-sora">
+          <h2 className="font-bold text-sm sm:text-base text-white/90 font-sora tracking-tight">
             Messages
           </h2>
-          <p className="text-[11px] text-neutral-500">Pan-African Direct Messaging</p>
+          <p className="text-[10px] text-white/30 tracking-wide uppercase font-semibold">
+            Pan-African Direct
+          </p>
         </div>
-        <Button
-          size="sm"
-          variant="primary"
+        <button
+          type="button"
           onClick={() => setIsNewChatModalOpen(true)}
-          className="text-xs px-2.5 py-1 font-bold shadow-sm"
+          className="w-9 h-9 rounded-xl hover:bg-white/[0.06] text-white/70 hover:text-white flex items-center justify-center transition-colors"
+          title="New Dialogue"
+          aria-label="New Dialogue"
         >
-          <UserPlus className="w-3.5 h-3.5 mr-1" /> New
-        </Button>
+          <PenSquare className="h-5 w-5" strokeWidth={1.75} />
+        </button>
       </div>
 
       {/* Tabs: Inbox vs Requests */}
-      <div className="flex items-center px-4 pt-3 pb-1 gap-2 border-b border-neutral-100 dark:border-neutral-800 text-xs font-bold">
+      <div className="flex items-center px-3 pt-2.5 pb-1 gap-2 border-b border-white/[0.06] text-xs font-semibold shrink-0">
         <button
+          type="button"
           onClick={() => setActiveTab('primary')}
-          className={`flex-1 py-1.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-1.5 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'primary'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              ? 'bg-emerald-600 text-white shadow-sm font-semibold'
+              : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
           }`}
         >
-          <Inbox className="w-3.5 h-3.5" />
+          <Inbox className="h-3.5 w-3.5" strokeWidth={1.75} />
           <span>Inbox</span>
         </button>
 
         <button
+          type="button"
           onClick={() => setActiveTab('requests')}
-          className={`flex-1 py-1.5 rounded-xl transition flex items-center justify-center gap-1.5 ${
+          className={`flex-1 py-1.5 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'requests'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+              ? 'bg-emerald-600 text-white shadow-sm font-semibold'
+              : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
           }`}
         >
-          <ShieldAlert className="w-3.5 h-3.5" />
+          <ShieldAlert className="h-3.5 w-3.5" strokeWidth={1.75} />
           <span>Requests {requestConversations.length > 0 && `(${requestConversations.length})`}</span>
         </button>
       </div>
 
-      {/* Search Input */}
-      <div className="p-3 border-b border-neutral-100 dark:border-neutral-800">
+      {/* Search Input h-9 */}
+      <div className="p-3 border-b border-white/[0.06] shrink-0">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
-          <input
-            type="text"
-            placeholder="Search messages by name or text..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 bg-neutral-50 dark:bg-neutral-800 rounded-xl text-xs text-neutral-900 dark:text-white placeholder-neutral-400 border border-transparent focus:border-[#087443] focus:outline-none transition"
-          />
+          <div className="h-9 rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 flex items-center gap-2 focus-within:border-emerald-500/50 focus-within:bg-white/[0.05] transition-colors">
+            <Search className="h-4 w-4 text-white/30 shrink-0" strokeWidth={1.75} />
+            <input
+              type="text"
+              placeholder="Search conversations..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent text-xs text-white placeholder:text-white/20 focus:outline-none w-full"
+            />
+          </div>
         </div>
       </div>
 
       {/* Conversations Stream */}
-      <div className="flex-1 overflow-y-auto divide-y divide-neutral-100 dark:divide-white/[0.04]">
+      <div className="flex-1 overflow-y-auto py-2 space-y-1">
         {isMinimumLoading && conversations.length === 0 ? (
-          <div>
+          <div className="space-y-1">
             <ConversationRowSkeleton />
             <ConversationRowSkeleton />
             <ConversationRowSkeleton />
@@ -122,45 +134,63 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             return (
               <div
                 key={conv.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => onSelectConversation(conv.id)}
-                className={`p-3.5 flex items-center gap-3 cursor-pointer transition ${
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectConversation(conv.id);
+                  }
+                }}
+                className={`px-3 py-3 mx-2 rounded-xl hover:bg-white/[0.04] transition-colors flex items-center gap-3 cursor-pointer select-none ${
                   isActive
-                    ? 'bg-emerald-50/60 dark:bg-emerald-950/30 border-l-4 border-[#087443]'
-                    : 'hover:bg-neutral-50 dark:hover:bg-surface-3'
+                    ? 'bg-white/[0.06] border-l-2 border-emerald-500'
+                    : ''
                 }`}
               >
-                <div className="relative flex-shrink-0">
-                  <Avatar
+                {/* 44px UserAvatar + 10x10 online dot slot */}
+                <div className="relative w-11 h-11 flex-shrink-0">
+                  <UserAvatar
                     src={conv.participant.avatarUrl}
                     alt={conv.participant.fullName}
+                    username={conv.participant.username}
+                    userId={conv.participant.id}
                     size="md"
-                    className="ring-1 ring-neutral-200 dark:ring-white/[0.06]"
+                    className="w-11 h-11 rounded-full ring-2 ring-white/[0.06]"
                   />
-                  {/* African Presence Ring */}
-                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-surface-0" />
+                  {/* 10x10 emerald ring-2 ring-background online dot */}
+                  <span
+                    className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-background"
+                    aria-label="Online status"
+                  />
                 </div>
 
+                {/* Name, Preview, Time & Unread Badge */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <h4 className="text-xs sm:text-sm font-bold text-neutral-900 dark:text-white truncate font-sora">
+                  <div className="flex items-center justify-between gap-1 mb-0.5">
+                    <h4 className="text-sm font-semibold text-white/90 truncate font-sora">
                       {conv.participant.fullName}
                     </h4>
-                    <span className="text-[10px] text-neutral-400 flex-shrink-0">
+                    <span className="text-[10px] text-white/25 shrink-0 font-medium">
                       {formatTime(conv.updatedAt)}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs text-neutral-500 truncate">
+                    <p className="text-xs text-white/40 truncate">
                       {conv.lastMessage?.content || 'Started conversation'}
                     </p>
 
                     {conv.unreadCount > 0 ? (
-                      <span className="w-4 h-4 rounded-full bg-[#087443] text-white text-[10px] font-black flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <span className="min-w-[18px] h-[18px] rounded-full bg-emerald-500 text-[10px] font-bold text-white flex items-center justify-center px-1 shrink-0">
                         {conv.unreadCount}
                       </span>
                     ) : (
-                      <CheckCheck className="w-3.5 h-3.5 text-[#087443] flex-shrink-0" />
+                      <CheckCheck
+                        className="h-3 w-3 text-white/20 shrink-0"
+                        strokeWidth={1.75}
+                      />
                     )}
                   </div>
                 </div>
@@ -168,8 +198,8 @@ export const ConversationList: React.FC<ConversationListProps> = ({
             );
           })
         ) : (
-          <div className="p-8 text-center text-xs text-neutral-400 space-y-2">
-            <MessageSquare className="w-6 h-6 mx-auto text-neutral-300 dark:text-neutral-600" />
+          <div className="p-8 text-center text-xs text-white/30 space-y-2">
+            <MessageSquare className="h-6 w-6 mx-auto text-white/20" strokeWidth={1.75} />
             <p>
               {searchQuery
                 ? `No messages matching "${searchQuery}"`

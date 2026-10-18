@@ -26,31 +26,27 @@ export const TranslateButton: React.FC<TranslateButtonProps> = ({
         onClick();
       }}
       disabled={isLoading}
-      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-xl text-[11px] font-medium transition active:scale-95 touch-manipulation focus:outline-none focus:ring-1 focus:ring-[#D9A441] ${
-        isMine
-          ? isTranslated
-            ? 'bg-emerald-800/80 text-emerald-100 hover:bg-emerald-800'
-            : 'bg-emerald-700/60 text-white/90 hover:bg-emerald-700'
-          : isTranslated
-          ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60'
-          : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-700'
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium transition-colors active:scale-95 pointer-events-auto cursor-pointer ${
+        isTranslated
+          ? 'bg-amber-500/10 text-amber-400/80 border border-amber-500/20'
+          : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
       }`}
       aria-label={isTranslated ? 'Show original text' : `Translate to ${targetLanguageName}`}
       title={isTranslated ? 'Show original text' : `Translate to ${targetLanguageName}`}
     >
       {isLoading ? (
         <>
-          <Loader2 className="w-3 h-3 animate-spin text-current" />
+          <Loader2 className="h-3 w-3 animate-spin text-current" strokeWidth={1.75} />
           <span>Translating...</span>
         </>
       ) : isTranslated ? (
         <>
-          <Undo2 className="w-3 h-3 text-current" />
+          <Undo2 className="h-3 w-3 text-current" strokeWidth={1.75} />
           <span>Original</span>
         </>
       ) : (
         <>
-          <Languages className="w-3 h-3 text-current" />
+          <Languages className="h-3 w-3 text-current" strokeWidth={1.75} />
           <span>Translate</span>
         </>
       )}
