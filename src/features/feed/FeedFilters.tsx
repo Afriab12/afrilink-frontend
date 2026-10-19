@@ -15,14 +15,14 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({
   onFilterChange,
 }) => {
   return (
-    <div className="flex items-center gap-2 mt-4 mb-2 overflow-x-auto scrollbar-hidden px-0">
+    <div className="w-full overflow-x-auto scrollbar-hidden flex items-center gap-2 py-2 -mx-4 px-4 sm:mx-0 sm:px-0 scroll-smooth mt-4 mb-2">
       <button
         type="button"
         onClick={() => onFilterChange('all')}
-        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 ${
+        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 shrink-0 ${
           currentFilter === 'all'
             ? 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20'
-            : 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10'
+            : 'bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
         }`}
       >
         <Sparkles className="h-4 w-4 shrink-0" strokeWidth={1.75} />
@@ -32,10 +32,10 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({
       <button
         type="button"
         onClick={() => onFilterChange('friends')}
-        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 ${
+        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 shrink-0 ${
           currentFilter === 'friends'
             ? 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20'
-            : 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10'
+            : 'bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
         }`}
       >
         <Users className="h-4 w-4 shrink-0" strokeWidth={1.75} />
@@ -45,10 +45,10 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({
       <button
         type="button"
         onClick={() => onFilterChange('communities')}
-        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 ${
+        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 shrink-0 ${
           currentFilter === 'communities'
             ? 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20'
-            : 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10'
+            : 'bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
         }`}
       >
         <Building2 className="h-4 w-4 shrink-0" strokeWidth={1.75} />
@@ -58,10 +58,10 @@ export const FeedFilters: React.FC<FeedFiltersProps> = ({
       <button
         type="button"
         onClick={() => onFilterChange('media')}
-        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 ${
+        className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-150 flex items-center gap-1.5 shrink-0 ${
           currentFilter === 'media'
             ? 'bg-emerald-600 text-white border-transparent shadow-sm shadow-emerald-600/20'
-            : 'bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white/60 hover:bg-slate-50 dark:hover:bg-white/10'
+            : 'bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white/60 hover:bg-slate-200 dark:hover:bg-white/10'
         }`}
       >
         <Flame className="h-4 w-4 shrink-0" strokeWidth={1.75} />

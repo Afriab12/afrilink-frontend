@@ -252,10 +252,10 @@ describe('Prompt 19 — UI Polish, Centering, Dropdown & Dual-Mode Contrast Gate
   });
 
   describe('5. Home Feed Filter Chips — Balanced Alignment', () => {
-    it('should render filter track container with px-0 and matching left edge', () => {
+    it('should render filter track container with overflow-x-auto and scrollbar-hidden', () => {
       assert.match(
         feedFiltersSource,
-        /flex\s+items-center\s+gap-2\s+mt-4\s+mb-2\s+overflow-x-auto\s+scrollbar-hidden\s+px-0/
+        /(flex\s+items-center\s+gap-2.*overflow-x-auto\s+scrollbar-hidden|overflow-x-auto\s+scrollbar-hidden.*flex\s+items-center\s+gap-2)/
       );
     });
 
@@ -270,7 +270,7 @@ describe('Prompt 19 — UI Polish, Centering, Dropdown & Dual-Mode Contrast Gate
       );
       assert.match(
         feedFiltersSource,
-        /bg-white\s+dark:bg-white\/5\s+border\s+border-slate-200\s+dark:border-white\/10\s+text-slate-600\s+dark:text-white\/60\s+hover:bg-slate-50\s+dark:hover:bg-white\/10/
+        /(bg-white|bg-slate-100)\s+dark:bg-white\/5\s+border\s+border-slate-200\s+dark:border-white\/10\s+(text-slate-600|text-slate-700)\s+dark:text-white\/60\s+hover:(bg-slate-50|bg-slate-200)\s+dark:hover:bg-white\/10/
       );
     });
 

@@ -392,11 +392,11 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
         aria-modal="true"
         aria-label="Search AfriLink"
         onKeyDown={handleKeyDown}
-        className={`w-full max-w-2xl bg-surface-4 border border-white/[0.08] shadow-2xl overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl max-h-[calc(100vh-env(safe-area-inset-bottom)-56px)] sm:max-h-[85vh] p-4 sm:p-6 ${cardAnimation}`}
+        className={`w-full max-w-2xl bg-white dark:bg-[#0F1A13] dark:bg-surface-4 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white shadow-2xl overflow-hidden flex flex-col rounded-t-2xl sm:rounded-2xl max-h-[calc(100vh-env(safe-area-inset-bottom)-56px)] sm:max-h-[85vh] p-4 sm:p-6 ${cardAnimation}`}
       >
-        {/* Search Input Bar (h-12 rounded-xl bg-white/5 border border-white/10 px-4) */}
-        <div className="relative flex items-center h-12 rounded-xl bg-white/5 border border-white/10 px-4 focus-within:border-[#087443] focus-within:ring-1 focus-within:ring-[#087443] transition-all duration-200 shrink-0">
-          <Search className="h-4 w-4 text-white/40 shrink-0 mr-3" strokeWidth={1.75} />
+        {/* Search Input Bar (h-12 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-4) */}
+        <div className="relative flex items-center h-12 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-4 focus-within:border-emerald-600 dark:focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-600 dark:focus-within:ring-emerald-500 transition-all duration-200 shrink-0">
+          <Search className="h-4 w-4 text-slate-400 dark:text-white/40 shrink-0 mr-3" strokeWidth={1.75} />
           <input
             ref={inputRef}
             type="text"
@@ -408,11 +408,11 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
             placeholder="Search people, communities, topics…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 min-w-0 bg-transparent text-sm text-white/90 placeholder:text-white/40 focus:outline-none"
+            className="flex-1 min-w-0 bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none"
           />
 
           {isSearching && (
-            <Loader2 className="h-4 w-4 animate-spin text-[#087443] shrink-0 mr-2" strokeWidth={1.75} />
+            <Loader2 className="h-4 w-4 animate-spin text-emerald-600 dark:text-emerald-500 shrink-0 mr-2" strokeWidth={1.75} />
           )}
 
           {query ? (
@@ -420,7 +420,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
               type="button"
               onClick={() => setQuery('')}
               aria-label="Clear search input"
-              className="p-1 rounded-md text-white/40 hover:text-white/80 transition-colors"
+              className="p-1 rounded-md text-slate-400 dark:text-white/40 hover:text-slate-600 dark:hover:text-white/80 transition-colors"
             >
               <X className="h-4 w-4" strokeWidth={1.75} />
             </button>
@@ -429,7 +429,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
               type="button"
               onClick={handleClose}
               aria-label="Close search"
-              className="text-[10px] font-mono text-white/40 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded shadow-sm hover:text-white/80 transition-colors"
+              className="text-[10px] font-mono text-slate-500 dark:text-white/40 bg-slate-200/80 dark:bg-white/5 border border-slate-300 dark:border-white/10 px-1.5 py-0.5 rounded shadow-sm hover:text-slate-800 dark:hover:text-white/80 transition-colors"
             >
               ESC
             </button>
@@ -446,7 +446,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
           {!debouncedQuery && (
             <div className="space-y-4">
               <div>
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 px-3 mb-2">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-white/30 px-3 mb-2">
                   TRENDING ACROSS AFRICA
                 </p>
                 <div className="space-y-1">
@@ -463,21 +463,21 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                           setQuery(item.tag);
                         }}
                         onMouseEnter={() => setActiveIndex(idx)}
-                        className={`flex items-center justify-between gap-3 py-2.5 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer ${
-                          isActive ? 'bg-white/10 ring-1 ring-[#087443]/50' : ''
+                        className={`flex items-center justify-between gap-3 py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer ${
+                          isActive ? 'bg-slate-100 dark:bg-white/10 ring-1 ring-emerald-600/50 dark:ring-[#087443]/50' : ''
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           {/* 32x32 Icon Box */}
-                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                             <SearchCategoryIcon type={iconType} />
                           </div>
                           <div className="truncate">
-                            <p className="text-xs font-semibold text-white/90 truncate">{item.tag}</p>
-                            <p className="text-[11px] text-white/40 truncate">{item.count} • Explore topic</p>
+                            <p className="text-xs font-semibold text-slate-900 dark:text-white/90 truncate">{item.tag}</p>
+                            <p className="text-[11px] text-slate-500 dark:text-white/40 truncate">{item.count} • Explore topic</p>
                           </div>
                         </div>
-                        <ArrowRight className="h-4 w-4 text-white/20 shrink-0" strokeWidth={1.75} />
+                        <ArrowRight className="h-4 w-4 text-slate-400 dark:text-white/20 shrink-0" strokeWidth={1.75} />
                       </div>
                     );
                   })}
@@ -486,7 +486,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
               {/* Suggestion Chips */}
               <div className="pt-2 px-1">
-                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 mb-2">
+                <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-white/30 mb-2">
                   POPULAR SEARCHES
                 </p>
                 <div className="flex flex-wrap gap-1.5">
@@ -495,7 +495,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                       key={chip}
                       type="button"
                       onClick={() => setQuery(chip)}
-                      className="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/60 hover:text-white/90 transition-all duration-150"
+                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white/90 transition-all duration-150"
                     >
                       {chip}
                     </button>
@@ -515,7 +515,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
 
                 return (
                   <div key={cat}>
-                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/30 px-3 mb-2">
+                    <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 dark:text-white/30 px-3 mb-2">
                       {cat}
                     </p>
                     <div className="space-y-1">
@@ -534,8 +534,8 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                               handleClose();
                             }}
                             onMouseEnter={() => setActiveIndex(globalIndex)}
-                            className={`flex items-center justify-between gap-3 py-2.5 px-3 rounded-lg hover:bg-white/5 transition-colors cursor-pointer ${
-                              isActive ? 'bg-white/10 ring-1 ring-[#087443]/50' : ''
+                            className={`flex items-center justify-between gap-3 py-2.5 px-3 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors cursor-pointer ${
+                              isActive ? 'bg-slate-100 dark:bg-white/10 ring-1 ring-emerald-600/50 dark:ring-[#087443]/50' : ''
                             }`}
                           >
                             <div className="flex items-center gap-3 min-w-0">
@@ -547,18 +547,18 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                               ) : item.avatarUrl ? (
                                 <Avatar src={item.avatarUrl} alt={item.title} size="sm" />
                               ) : (
-                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+                                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
                                   <SearchCategoryIcon type={item.iconType} />
                                 </div>
                               )}
 
                               <div className="truncate">
-                                <p className="text-xs font-semibold text-white/90 truncate">{item.title}</p>
-                                <p className="text-[11px] text-white/40 truncate">{item.subtitle}</p>
+                                <p className="text-xs font-semibold text-slate-900 dark:text-white/90 truncate">{item.title}</p>
+                                <p className="text-[11px] text-slate-500 dark:text-white/40 truncate">{item.subtitle}</p>
                               </div>
                             </div>
 
-                            <ArrowRight className="h-4 w-4 text-white/20 shrink-0" strokeWidth={1.75} />
+                            <ArrowRight className="h-4 w-4 text-slate-400 dark:text-white/20 shrink-0" strokeWidth={1.75} />
                           </div>
                         );
                       })}
@@ -582,7 +582,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
                     key={chip}
                     type="button"
                     onClick={() => setQuery(chip)}
-                    className="px-3 py-1 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-white/60 hover:text-white/90 transition-all duration-150"
+                    className="px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white/90 transition-all duration-150"
                   >
                     {chip}
                   </button>
@@ -593,13 +593,13 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({
         </div>
 
         {/* Footer shortcuts hint */}
-        <div className="border-t border-white/[0.08] pt-3 mt-2 flex items-center justify-between text-[11px] text-white/30 hidden sm:flex">
+        <div className="border-t border-slate-200 dark:border-white/[0.08] pt-3 mt-2 flex items-center justify-between text-[11px] text-slate-500 dark:text-white/30 hidden sm:flex">
           <div className="flex items-center gap-3">
-            <span><kbd className="px-1 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px]">↑</kbd> <kbd className="px-1 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px]">↓</kbd> Navigate</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px]">↵</kbd> Select</span>
-            <span><kbd className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 font-mono text-[9px]">ESC</kbd> Close</span>
+            <span><kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-[9px] text-slate-600 dark:text-white/50">↑</kbd> <kbd className="px-1 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-[9px] text-slate-600 dark:text-white/50">↓</kbd> Navigate</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-[9px] text-slate-600 dark:text-white/50">↵</kbd> Select</span>
+            <span><kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-mono text-[9px] text-slate-600 dark:text-white/50">ESC</kbd> Close</span>
           </div>
-          <span className="text-[10px] text-white/20">AfriLink Fast Search</span>
+          <span className="text-[10px] text-slate-400 dark:text-white/20">AfriLink Fast Search</span>
         </div>
       </div>
     </div>

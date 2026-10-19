@@ -47,8 +47,8 @@ export const MobileNav: React.FC = () => {
   ];
 
   return (
-    <nav className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-surface-1/95 backdrop-blur-lg border-t border-neutral-200/80 dark:border-white/[0.04] z-40 px-2 py-1.5 safe-area-pb">
-      <div className="flex items-center justify-around">
+    <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-16 bg-white dark:bg-[#0F1A13] border-t border-slate-200 dark:border-white/10 transition-colors duration-200 px-2 py-1.5 safe-area-pb">
+      <div className="flex items-center justify-around h-full">
         {links.map((link) => {
           const isActive =
             link.href === '/'
@@ -65,12 +65,12 @@ export const MobileNav: React.FC = () => {
                 type="button"
                 onClick={link.onClick}
                 aria-label={link.label}
-                className="flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white/90"
+                className="flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white"
               >
                 <div className="relative">
                   <Icon className="h-5 w-5 transition-all duration-200" strokeWidth={1.75} />
                 </div>
-                <span className="text-[10px] mt-0.5 font-medium font-sora">{link.label}</span>
+                <span className="text-[10px] tracking-tight mt-0.5 font-medium font-sora">{link.label}</span>
               </button>
             );
           }
@@ -81,19 +81,19 @@ export const MobileNav: React.FC = () => {
               href={link.href || '#'}
               className={`flex flex-col items-center justify-center p-2 rounded-2xl relative transition-all duration-200 ${
                 isActive
-                  ? 'text-[#087443] font-bold'
-                  : 'text-neutral-500 dark:text-white/60 hover:text-neutral-900 dark:hover:text-white/90'
+                  ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                  : 'text-slate-500 dark:text-white/50 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <div className="relative">
                 <Icon className="h-5 w-5 transition-all duration-200" strokeWidth={1.75} />
                 {link.badge !== undefined && link.badge > 0 && (
-                  <span className="absolute -top-1 -right-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#087443] px-1 text-[10px] font-bold text-white leading-none">
+                  <span className="absolute -top-1 -right-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white leading-none">
                     {link.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] mt-0.5 font-medium font-sora">{link.label}</span>
+              <span className="text-[10px] tracking-tight mt-0.5 font-medium font-sora">{link.label}</span>
             </Link>
           );
         })}

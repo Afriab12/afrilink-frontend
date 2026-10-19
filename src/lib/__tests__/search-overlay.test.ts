@@ -109,16 +109,16 @@ describe('Phase 2A — Search Entry & Modal Search Overlay System', () => {
       assert.ok(strokeMatches.length >= 4, 'Every Lucide icon in SearchOverlay must enforce strokeWidth={1.75}');
     });
 
-    it('should enforce 32x32 icon box (w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400)', () => {
-      assert.match(overlaySource, /w-8\s+h-8\s+rounded-lg\s+bg-emerald-500\/10\s+text-emerald-400/);
+    it('should enforce 32x32 icon box (w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400)', () => {
+      assert.match(overlaySource, /w-8\s+h-8\s+rounded-lg\s+bg-emerald-500\/10\s+(text-emerald-400|text-emerald-600\s+dark:text-emerald-400)/);
     });
 
-    it('should enforce input styling: h-12 rounded-xl bg-white/5 border border-white/10 px-4', () => {
-      assert.match(overlaySource, /h-12\s+rounded-xl\s+bg-white\/5\s+border\s+border-white\/10\s+px-4/);
+    it('should enforce input styling: h-12 rounded-xl with dual-mode border and background', () => {
+      assert.match(overlaySource, /h-12\s+rounded-xl\s+(bg-white\/5|bg-slate-100\s+dark:bg-white\/5)\s+border\s+(border-white\/10|border-slate-200\s+dark:border-white\/10)\s+px-4/);
     });
 
-    it('should enforce section headers: text-[10px] font-bold tracking-[0.2em] uppercase text-white/30', () => {
-      assert.match(overlaySource, /text-\[10px\]\s+font-bold\s+tracking-\[0\.2em\]\s+uppercase\s+text-white\/30/);
+    it('should enforce section headers: text-[10px] font-bold uppercase with dual-mode text color', () => {
+      assert.match(overlaySource, /text-\[10px\]\s+font-bold\s+tracking-\[0\.2em\]\s+uppercase\s+(text-white\/30|text-slate-500\s+dark:text-white\/30)/);
     });
 
     it('should enforce surface-4 elevation and backdrop blur on overlay', () => {
