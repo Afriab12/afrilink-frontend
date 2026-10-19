@@ -8,10 +8,11 @@ import { useSocial } from '@/stores/socialContext';
 import { Sparkles, Users, Building2, Flame, Loader2 } from 'lucide-react';
 import { FeedPostSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/empty-state';
+import { FeedFilters, FeedFilterType } from './FeedFilters';
 
 export const FeedList: React.FC = () => {
   const { posts, isLoadingPosts, hasMorePosts, loadMorePosts } = useSocial();
-  const [feedFilter, setFeedFilter] = useState<'all' | 'friends' | 'communities' | 'media'>('all');
+  const [feedFilter, setFeedFilter] = useState<FeedFilterType>('all');
   const isMinimumLoading = useMinimumLoading(isLoadingPosts, 300);
 
   const filteredPosts = posts.filter((post) => {
@@ -26,52 +27,8 @@ export const FeedList: React.FC = () => {
       {/* Post Composer */}
       <PostComposer />
 
-      {/* Feed Category Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-        <button
-          onClick={() => setFeedFilter('all')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
-            feedFilter === 'all'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300'
-          }`}
-        >
-          <Sparkles className="w-3.5 h-3.5" /> For Africa
-        </button>
-
-        <button
-          onClick={() => setFeedFilter('friends')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
-            feedFilter === 'friends'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300'
-          }`}
-        >
-          <Users className="w-3.5 h-3.5" /> Friends
-        </button>
-
-        <button
-          onClick={() => setFeedFilter('communities')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
-            feedFilter === 'communities'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300'
-          }`}
-        >
-          <Building2 className="w-3.5 h-3.5" /> Communities
-        </button>
-
-        <button
-          onClick={() => setFeedFilter('media')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
-            feedFilter === 'media'
-              ? 'bg-[#087443] text-white shadow-sm'
-              : 'bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-300'
-          }`}
-        >
-          <Flame className="w-3.5 h-3.5 text-[#D9A441]" /> Photos & Video
-        </button>
-      </div>
+      {/* Feed Category Tabs / Filter Chips */}
+      <FeedFilters currentFilter={feedFilter} onFilterChange={setFeedFilter} />
 
       {/* Posts Stream */}
       {isMinimumLoading && posts.length === 0 ? (

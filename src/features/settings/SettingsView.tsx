@@ -272,10 +272,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
     <div className="w-full max-w-3xl mx-auto px-4 sm:px-0 py-4 sm:py-8">
       {/* Sub-Nav Header */}
       <div className="mb-6">
-        <h1 className="text-xl sm:text-2xl font-black text-white font-sora tracking-tight">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white font-sora tracking-tight">
           Settings & Preferences
         </h1>
-        <p className="text-xs text-white/40 mt-1">
+        <p className="text-sm text-slate-500 dark:text-white/50 mt-1">
           Manage your account credentials, regional preferences, and security settings.
         </p>
       </div>
@@ -285,7 +285,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         <div
           role="tablist"
           aria-label="Settings sections"
-          className="flex items-center gap-6 overflow-x-auto no-scrollbar border-b border-white/[0.06] pr-8"
+          className="flex items-center gap-6 overflow-x-auto no-scrollbar border-b border-slate-200 dark:border-white/10 pr-8"
         >
           {SETTINGS_TABS.map((tab) => {
             const isActive = activeTab === tab.id;
@@ -300,8 +300,8 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-3 px-1 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 select-none ${
                   isActive
-                    ? 'text-white border-b-2 border-emerald-500 -mb-px font-semibold'
-                    : 'text-white/40 hover:text-white/70'
+                    ? 'text-emerald-700 dark:text-emerald-400 border-b-2 border-emerald-600 dark:border-emerald-500 -mb-px font-semibold'
+                    : 'text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white/70'
                 }`}
               >
                 {renderTabIcon(tab.iconName)}
@@ -314,7 +314,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {/* Mobile Gradient Overflow Signal */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#0B130E] to-transparent sm:hidden"
+          className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-50 dark:from-[#0B130E] to-transparent sm:hidden"
         />
       </div>
 
@@ -324,7 +324,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {activeTab === 'account' && (
           <div role="tabpanel" id="tabpanel-account" aria-labelledby="tab-account" className="space-y-6">
             <form onSubmit={handleSaveAccount} className="space-y-5">
-              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
                 ACCOUNT CREDENTIALS
               </h2>
 
@@ -332,7 +332,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
               <div>
                 <label
                   htmlFor="settings-username"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   USERNAME
                 </label>
@@ -345,12 +345,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     if (accountErrors.username) setAccountErrors((prev) => ({ ...prev, username: undefined }));
                   }}
                   placeholder="e.g. kwame_mensah"
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     accountErrors.username
                       ? 'border-red-500/50'
                       : accountSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {accountErrors.username ? (
@@ -359,7 +359,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     <span>{accountErrors.username}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-white/20 mt-1.5">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1.5">
                     Your unique AfriLink identity visible across hubs and direct messaging.
                   </p>
                 )}
@@ -369,7 +369,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
               <div>
                 <label
                   htmlFor="settings-email"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   EMAIL ADDRESS
                 </label>
@@ -382,12 +382,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     if (accountErrors.email) setAccountErrors((prev) => ({ ...prev, email: undefined }));
                   }}
                   placeholder="your.email@example.com"
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     accountErrors.email
                       ? 'border-red-500/50'
                       : accountSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {accountErrors.email ? (
@@ -396,7 +396,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     <span>{accountErrors.email}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-white/20 mt-1.5">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1.5">
                     Used for essential account recovery, security alerts, and system notices.
                   </p>
                 )}
@@ -406,7 +406,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
               <div>
                 <label
                   htmlFor="settings-phone"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   PHONE NUMBER
                 </label>
@@ -419,12 +419,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     if (accountErrors.phone) setAccountErrors((prev) => ({ ...prev, phone: undefined }));
                   }}
                   placeholder="+234 80 1234 5678"
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     accountErrors.phone
                       ? 'border-red-500/50'
                       : accountSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {accountErrors.phone ? (
@@ -433,7 +433,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     <span>{accountErrors.phone}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-white/20 mt-1.5">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1.5">
                     Optional mobile number for SMS 2FA verification.
                   </p>
                 )}
@@ -459,17 +459,17 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
             </form>
 
             {/* DANGER ZONE */}
-            <div className="mt-12 border-t border-red-500/10 pt-6">
-              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-red-400/80 mb-2">
+            <div className="mt-12 border-t border-red-500/20 dark:border-red-500/10 pt-6">
+              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-red-600 dark:text-red-400/80 mb-2">
                 DANGER ZONE
               </h2>
-              <p className="text-xs text-white/30 mb-4">
+              <p className="text-xs text-slate-500 dark:text-white/40 mb-4">
                 Permanently delete your profile, posts, communities, and message history. This action cannot be reversed.
               </p>
               <button
                 type="button"
                 onClick={() => setIsDeleteModalOpen(true)}
-                className="border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all duration-150 flex items-center gap-2 select-none"
+                className="border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl px-4 py-2.5 text-xs font-semibold transition-all duration-150 flex items-center gap-2 select-none"
               >
                 <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} />
                 <span>Delete Account</span>
@@ -481,45 +481,45 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {/* TAB: PRIVACY & SAFETY */}
         {activeTab === 'privacy' && (
           <div role="tabpanel" id="tabpanel-privacy" aria-labelledby="tab-privacy" className="space-y-6">
-            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
               PROFILE & VISIBILITY CONTROLS
             </h2>
 
             <div className="space-y-4">
               <div>
-                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block">
                   PROFILE VISIBILITY
                 </label>
                 <select
                   value={profileVisibility}
                   onChange={(e) => setProfileVisibility(e.target.value as any)}
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
-                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-white/[0.06]'
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-slate-200 dark:border-white/10'
                   }`}
                 >
-                  <option value="public" className="bg-[#0B130E] text-white">Public (Entire Pan-African Network)</option>
-                  <option value="friends" className="bg-[#0B130E] text-white">Friends Only</option>
-                  <option value="private" className="bg-[#0B130E] text-white">Private</option>
+                  <option value="public" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">Public (Entire Pan-African Network)</option>
+                  <option value="friends" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">Friends Only</option>
+                  <option value="private" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">Private</option>
                 </select>
-                <p className="text-[11px] text-white/20 mt-1.5">
+                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1.5">
                   Controls who can discover and view your profile bio and activity.
                 </p>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block">
                   DIRECT MESSAGES
                 </label>
                 <select
                   value={allowMessages}
                   onChange={(e) => setAllowMessages(e.target.value as any)}
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
-                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-white/[0.06]'
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                    privacySuccessFlash ? 'border-emerald-500/30' : 'border-slate-200 dark:border-white/10'
                   }`}
                 >
-                  <option value="everyone" className="bg-[#0B130E] text-white">Everyone</option>
-                  <option value="friends" className="bg-[#0B130E] text-white">Friends Only</option>
-                  <option value="none" className="bg-[#0B130E] text-white">No One</option>
+                  <option value="everyone" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">Everyone</option>
+                  <option value="friends" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">Friends Only</option>
+                  <option value="none" className="bg-white dark:bg-[#0B130E] text-slate-900 dark:text-white">No One</option>
                 </select>
               </div>
 
@@ -543,21 +543,21 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
 
               {/* Blocked Users */}
               {blockedUsers.length > 0 && (
-                <div className="mt-8 border-t border-white/[0.06] pt-5">
-                  <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-3">
+                <div className="mt-8 border-t border-slate-200 dark:border-white/10 pt-5">
+                  <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-3">
                     BLOCKED ACCOUNTS ({blockedUsers.length})
                   </h3>
                   <div className="space-y-2">
                     {blockedUsers.map((u) => (
-                      <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]">
+                      <div key={u.id} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06]">
                         <div>
-                          <p className="text-xs font-semibold text-white/90">{u.fullName}</p>
-                          <p className="text-[10px] text-white/30">@{u.username}</p>
+                          <p className="text-xs font-semibold text-slate-900 dark:text-white">{u.fullName}</p>
+                          <p className="text-[10px] text-slate-500 dark:text-white/40">@{u.username}</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleUnblockUser(u.id)}
-                          className="px-3 py-1 rounded-lg border border-white/10 text-xs text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+                          className="px-3 py-1 rounded-lg border border-slate-200 dark:border-white/10 text-xs text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                         >
                           Unblock
                         </button>
@@ -573,15 +573,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {/* TAB: NOTIFICATIONS */}
         {activeTab === 'notifications' && (
           <div role="tabpanel" id="tabpanel-notifications" aria-labelledby="tab-notifications" className="space-y-6">
-            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
               NOTIFICATION CHANNELS
             </h2>
 
             <div className="space-y-3">
-              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+              <label className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] cursor-pointer hover:bg-slate-100/60 dark:hover:bg-white/[0.04] transition-colors">
                 <div>
-                  <p className="text-sm font-semibold text-white/90">Push Notifications</p>
-                  <p className="text-[11px] text-white/30">Receive instant alerts for chats, mentions, and community events.</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Push Notifications</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40">Receive instant alerts for chats, mentions, and community events.</p>
                 </div>
                 <input
                   type="checkbox"
@@ -591,10 +591,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 />
               </label>
 
-              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+              <label className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] cursor-pointer hover:bg-slate-100/60 dark:hover:bg-white/[0.04] transition-colors">
                 <div>
-                  <p className="text-sm font-semibold text-white/90">Email Digest</p>
-                  <p className="text-[11px] text-white/30">Weekly summary of trending discussions in your African country hub.</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Email Digest</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40">Weekly summary of trending discussions in your African country hub.</p>
                 </div>
                 <input
                   type="checkbox"
@@ -604,10 +604,10 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 />
               </label>
 
-              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+              <label className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] cursor-pointer hover:bg-slate-100/60 dark:hover:bg-white/[0.04] transition-colors">
                 <div>
-                  <p className="text-sm font-semibold text-white/90">Community Announcements</p>
-                  <p className="text-[11px] text-white/30">Official updates from creators and hubs you follow.</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Community Announcements</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40">Official updates from creators and hubs you follow.</p>
                 </div>
                 <input
                   type="checkbox"
@@ -641,13 +641,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {/* TAB: LANGUAGE & REGION */}
         {activeTab === 'language' && (
           <div role="tabpanel" id="tabpanel-language" aria-labelledby="tab-language" className="space-y-6">
-            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
               LOCAL LANGUAGE & TRANSLATION ENGINE
             </h2>
 
             <div className="space-y-5">
               <div>
-                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block">
                   NATIVE AFRICAN LANGUAGE
                 </label>
                 <LanguageSelector
@@ -655,13 +655,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                   onChange={setNativeLanguage}
                   label=""
                 />
-                <p className="text-[11px] text-white/20 mt-1.5">
+                <p className="text-sm text-slate-500 dark:text-white/45 mt-1.5">
                   Your primary African dialect for voice transcription and audio messages.
                 </p>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block">
                   DISPLAY & TRANSLATION TARGET
                 </label>
                 <LanguageSelector
@@ -669,13 +669,13 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                   onChange={setPreferredLanguage}
                   label=""
                 />
-                <p className="text-[11px] text-white/20 mt-1.5">
+                <p className="text-sm text-slate-500 dark:text-white/45 mt-1.5">
                   Languages you wish to read posts and incoming messages in.
                 </p>
               </div>
 
               <div>
-                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block">
+                <label className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block">
                   VOICE SPEECH RATE ({voiceSpeechRate}x)
                 </label>
                 <input
@@ -685,7 +685,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                   step="0.05"
                   value={voiceSpeechRate}
                   onChange={(e) => setVoiceSpeechRate(parseFloat(e.target.value))}
-                  className="w-full accent-emerald-500 cursor-pointer"
+                  className="w-full bg-slate-200 dark:bg-white/10 accent-emerald-600 rounded-lg cursor-pointer h-2"
                 />
               </div>
 
@@ -713,7 +713,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {/* TAB: APPEARANCE */}
         {activeTab === 'appearance' && (
           <div role="tabpanel" id="tabpanel-appearance" aria-labelledby="tab-appearance" className="space-y-6">
-            <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+            <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
               THEME & DISPLAY MODE
             </h2>
 
@@ -727,15 +727,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 }}
                 className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
                   theme === 'dark'
-                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
-                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.05]'
                 }`}
               >
                 <div className="w-8 h-8 rounded-lg bg-[#0B130E] border border-white/10 flex items-center justify-center text-emerald-400 mb-3">
                   <Moon className="h-4 w-4" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm font-semibold text-white/90">Obsidian Green</p>
-                <p className="text-[11px] text-white/40 mt-0.5">High-contrast 6-layer dark mode for AMOLED screens.</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Obsidian Green</p>
+                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">High-contrast 6-layer dark mode for AMOLED screens.</p>
               </button>
 
               {/* Soft Neutral Light */}
@@ -747,15 +747,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 }}
                 className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
                   theme === 'light'
-                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
-                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.05]'
                 }`}
               >
-                <div className="w-8 h-8 rounded-lg bg-[#F5F7F6] border border-black/10 flex items-center justify-center text-neutral-800 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-[#131F17] border border-amber-200 dark:border-white/10 flex items-center justify-center text-amber-600 dark:text-amber-400 mb-3">
                   <Sun className="h-4 w-4" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm font-semibold text-white/90">Soft Neutral</p>
-                <p className="text-[11px] text-white/40 mt-0.5">Clean light palette engineered for daytime clarity.</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">Soft Neutral</p>
+                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Clean light palette engineered for daytime clarity.</p>
               </button>
 
               {/* System Match */}
@@ -767,15 +767,15 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                 }}
                 className={`p-4 rounded-xl border text-left transition-all duration-200 select-none ${
                   theme === 'system'
-                    ? 'bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
-                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05]'
+                    ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-500/50 ring-1 ring-emerald-500/30'
+                    : 'bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:bg-slate-50 dark:hover:bg-white/[0.05]'
                 }`}
               >
-                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-white/70 mb-3">
+                <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-700 dark:text-white/70 mb-3">
                   <Laptop className="h-4 w-4" strokeWidth={1.75} />
                 </div>
-                <p className="text-sm font-semibold text-white/90">System Default</p>
-                <p className="text-[11px] text-white/40 mt-0.5">Syncs dynamically with your device operating system.</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">System Default</p>
+                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">Syncs dynamically with your device operating system.</p>
               </button>
             </div>
           </div>
@@ -785,14 +785,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         {activeTab === 'security' && (
           <div role="tabpanel" id="tabpanel-security" aria-labelledby="tab-security" className="space-y-6">
             <form onSubmit={handleSavePassword} className="space-y-4">
-              <h2 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-4 mt-8">
+              <h2 className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 mt-8">
                 UPDATE PASSWORD
               </h2>
 
               <div>
                 <label
                   htmlFor="security-curr-pw"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   CURRENT PASSWORD
                 </label>
@@ -804,12 +804,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     setCurrentPassword(e.target.value);
                     if (passwordErrors.currentPassword) setPasswordErrors((prev) => ({ ...prev, currentPassword: undefined }));
                   }}
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     passwordErrors.currentPassword
                       ? 'border-red-500/50'
                       : passwordSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {passwordErrors.currentPassword && (
@@ -823,7 +823,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
               <div>
                 <label
                   htmlFor="security-new-pw"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   NEW PASSWORD
                 </label>
@@ -835,12 +835,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     setNewPassword(e.target.value);
                     if (passwordErrors.newPassword) setPasswordErrors((prev) => ({ ...prev, newPassword: undefined }));
                   }}
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     passwordErrors.newPassword
                       ? 'border-red-500/50'
                       : passwordSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {passwordErrors.newPassword ? (
@@ -849,7 +849,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     <span>{passwordErrors.newPassword}</span>
                   </p>
                 ) : (
-                  <p className="text-[11px] text-white/20 mt-1.5">
+                  <p className="text-[11px] text-slate-500 dark:text-white/40 mt-1.5">
                     Minimum 8 characters with a mix of letters and numbers.
                   </p>
                 )}
@@ -858,7 +858,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
               <div>
                 <label
                   htmlFor="security-confirm-pw"
-                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 mb-2 block"
+                  className="text-[10px] font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/35 mb-2 block"
                 >
                   CONFIRM NEW PASSWORD
                 </label>
@@ -870,12 +870,12 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
                     setConfirmPassword(e.target.value);
                     if (passwordErrors.confirmPassword) setPasswordErrors((prev) => ({ ...prev, confirmPassword: undefined }));
                   }}
-                  className={`h-11 w-full px-4 rounded-xl bg-white/[0.03] border text-sm text-white placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white/[0.05] transition-all duration-200 outline-none ${
+                  className={`h-11 w-full px-4 rounded-xl bg-white dark:bg-white/[0.04] border text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 focus:bg-white dark:focus:bg-white/[0.05] transition-all duration-200 outline-none ${
                     passwordErrors.confirmPassword
                       ? 'border-red-500/50'
                       : passwordSuccessFlash
                       ? 'border-emerald-500/30'
-                      : 'border-white/[0.06]'
+                      : 'border-slate-200 dark:border-white/10'
                   }`}
                 />
                 {passwordErrors.confirmPassword && (
@@ -905,14 +905,14 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
             </form>
 
             {/* 2FA Toggle */}
-            <div className="mt-8 border-t border-white/[0.06] pt-5">
-              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-white/25 mb-3">
+            <div className="mt-8 border-t border-slate-200 dark:border-white/10 pt-5">
+              <h3 className="text-xs font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-3">
                 TWO-FACTOR AUTHENTICATION
               </h3>
-              <label className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] cursor-pointer hover:bg-white/[0.04] transition-colors">
+              <label className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] cursor-pointer hover:bg-slate-100/60 dark:hover:bg-white/[0.04] transition-colors">
                 <div>
-                  <p className="text-sm font-semibold text-white/90">Two-Factor Authentication (2FA)</p>
-                  <p className="text-[11px] text-white/30">Protect your AfriLink profile with authenticator app codes on login.</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-white">Two-Factor Authentication (2FA)</p>
+                  <p className="text-[11px] text-slate-500 dark:text-white/40">Protect your AfriLink profile with authenticator app codes on login.</p>
                 </div>
                 <input
                   type="checkbox"
@@ -941,7 +941,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
         description="Are you absolutely sure you want to delete your account? This action is permanent and cannot be undone."
       >
         <div className="space-y-4 pt-2">
-          <p className="text-xs text-white/40 leading-relaxed">
+          <p className="text-xs text-slate-600 dark:text-white/60 leading-relaxed">
             All your posts, stories, community contributions, and messages will be permanently scheduled for deletion.
           </p>
 
@@ -949,7 +949,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ isLoading = false })
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
-              className="px-4 py-2 rounded-xl border border-white/10 text-xs font-semibold text-white/60 hover:text-white hover:bg-white/5 transition-colors"
+              className="px-4 py-2 rounded-xl border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-700 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>

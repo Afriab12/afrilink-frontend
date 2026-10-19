@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { User } from '@/types';
 import { Avatar } from '@/components/ui/Avatar';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { EditProfileModal } from './EditProfileModal';
@@ -92,21 +93,20 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = 
   }
 
   return (
-    <div className="bg-white dark:bg-surface-0 rounded-3xl overflow-hidden shadow-sm border border-neutral-200/80 dark:border-white/[0.04] mb-6">
+    <div className="bg-white dark:bg-[#0F1A13] rounded-3xl overflow-hidden shadow-sm border border-slate-200 dark:border-white/10 mb-6">
       {/* Cover Image Banner */}
-      <div className="relative h-44 sm:h-64 w-full bg-neutral-200 dark:bg-surface-2">
-        <img
-          src={user.coverImageUrl || 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=80'}
-          alt="Cover banner"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
-      </div>
+      <div className="relative">
+        <div className="relative w-full h-48 md:h-56 rounded-2xl overflow-hidden bg-slate-200 dark:bg-[#131F17]">
+          <img
+            src={user.coverImageUrl || 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1200&q=80'}
+            alt="Cover banner"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
+        </div>
 
-      {/* Main Profile Info */}
-      <div className="px-5 sm:px-8 pb-6 pt-0 relative">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between -mt-16 sm:-mt-20 mb-4 gap-4">
-          {/* Avatar with country flag and S3 upload trigger if owner */}
+        {/* Avatar placement (pins avatar so half overlaps cover bottom edge, left-padded) */}
+        <div className="absolute left-6 md:left-8 bottom-0 translate-y-1/2 z-10">
           <div className="relative">
             {isMe && (
               <input
@@ -122,24 +122,38 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = 
               onClick={() => isMe && !isUploadingAvatar && avatarInputRef.current?.click()}
               className={`relative ${isMe ? 'group cursor-pointer' : ''}`}
             >
-              <Avatar
-                src={user.avatarUrl}
-                alt={user.fullName}
-                size="2xl"
-                className="border-4 border-white dark:border-surface-0 shadow-xl"
-                countryFlag={countryObj?.flag || (user.countryCode === 'GH' ? '🇬🇭' : '🇳🇬')}
-              />
-              {isMe && (
-                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  {isUploadingAvatar ? (
-                    <Loader2 className="w-8 h-8 text-white animate-spin" />
-                  ) : (
-                    <Camera className="w-7 h-7 text-white" />
-                  )}
-                </div>
-              )}
+              <div className="h-24 w-24 md:h-28 md:w-28 rounded-full ring-[4px] ring-white dark:ring-[#0B130E] bg-slate-100 dark:bg-[#131F17] overflow-hidden shadow-lg relative flex items-center justify-center">
+                <UserAvatar
+                  src={user.avatarUrl}
+                  alt={user.fullName}
+                  username={user.username}
+                  userId={user.id}
+                  size="2xl"
+                  className="w-full h-full object-cover object-center"
+                />
+                {isMe && (
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    {isUploadingAvatar ? (
+                      <Loader2 className="w-8 h-8 text-white animate-spin" />
+                    ) : (
+                      <Camera className="w-7 h-7 text-white" />
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Country badge (e.g. GH) */}
+              <span className="absolute bottom-1 right-1 h-6 min-w-[24px] px-1.5 rounded-full bg-white dark:bg-[#0F1A13] border border-slate-200 dark:border-white/15 text-[10px] font-bold text-slate-700 dark:text-white/80 flex items-center justify-center shadow-xs">
+                {user.countryCode || 'GH'}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Main Profile Info with clearance for the half-overlapping avatar */}
+      <div className="pt-16 md:pt-20 px-6 pb-6 relative">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
 
           {/* Action Buttons */}
           <div className="flex items-center gap-2 flex-wrap">
@@ -265,7 +279,7 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = 
         {/* Name & Bio */}
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-xl sm:text-2xl font-black text-neutral-900 dark:text-white font-sora">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white font-sora">
               {user.fullName}
             </h1>
             {user.isVerified && (
@@ -277,15 +291,15 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = 
               {user.role === 'creator' ? 'African Creator' : user.role === 'admin' ? 'AfriLink Admin' : 'Community Member'}
             </Badge>
           </div>
-          <p className="text-xs text-neutral-400 mt-0.5">@{user.username}</p>
+          <p className="text-xs text-slate-500 dark:text-white/50 mt-0.5">@{user.username}</p>
 
-          <p className="text-sm text-neutral-700 dark:text-neutral-300 mt-3 max-w-2xl leading-relaxed">
+          <p className="text-sm text-slate-700 dark:text-white/80 mt-3 max-w-2xl leading-relaxed">
             {user.bio}
           </p>
 
           {/* Details Bar: Country, City, Joined */}
-          <div className="flex items-center gap-4 mt-4 text-xs text-neutral-500 flex-wrap">
-            <div className="flex items-center gap-1 font-semibold text-neutral-700 dark:text-neutral-300">
+          <div className="flex items-center gap-4 mt-4 text-xs text-slate-500 dark:text-white/50 flex-wrap">
+            <div className="flex items-center gap-1 font-semibold text-slate-700 dark:text-white/80">
               <span>{countryObj?.flag || '🌍'}</span>
               <span>{user.country}</span>
               {user.city && <span>• {user.city}</span>}
@@ -298,24 +312,24 @@ export const ProfileHeader: React.FC<ProfileHeaderProps> = ({ user, isLoading = 
           </div>
 
           {/* Social Stats: Followers, Following, Friends */}
-          <div className="flex items-center gap-6 mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 text-sm">
+          <div className="flex items-center gap-6 mt-4 pt-3 border-t border-slate-200 dark:border-white/10 text-sm">
             <div>
-              <span className="font-extrabold text-neutral-900 dark:text-white">
+              <span className="font-extrabold text-slate-900 dark:text-white">
                 {user.friendsCount.toLocaleString()}
               </span>{' '}
-              <span className="text-neutral-500 text-xs">Friends</span>
+              <span className="text-slate-500 dark:text-white/40 text-xs">Friends</span>
             </div>
             <div>
-              <span className="font-extrabold text-neutral-900 dark:text-white">
+              <span className="font-extrabold text-slate-900 dark:text-white">
                 {user.followersCount.toLocaleString()}
               </span>{' '}
-              <span className="text-neutral-500 text-xs">Followers</span>
+              <span className="text-slate-500 dark:text-white/40 text-xs">Followers</span>
             </div>
             <div>
-              <span className="font-extrabold text-neutral-900 dark:text-white">
+              <span className="font-extrabold text-slate-900 dark:text-white">
                 {user.followingCount.toLocaleString()}
               </span>{' '}
-              <span className="text-neutral-500 text-xs">Following</span>
+              <span className="text-slate-500 dark:text-white/40 text-xs">Following</span>
             </div>
           </div>
 

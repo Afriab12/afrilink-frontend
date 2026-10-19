@@ -156,28 +156,28 @@ describe('Phase 2D — Settings & Account Preferences Dashboard', () => {
       );
     });
 
-    it('should enforce horizontal tab strip border-b border-white/[0.06]', () => {
+    it('should enforce horizontal tab strip border-b border-white/[0.06] or border-slate-200 dark:border-white/10', () => {
       assert.match(
         settingsSource,
         /role=["']tablist["']/
       );
       assert.match(
         settingsSource,
-        /border-b\s+border-white\/\[0\.06\]/
+        /border-b\s+(border-white\/\[0\.06\]|border-slate-200\s+dark:border-white\/10)/
       );
     });
 
     it('should enforce tab item styling and active/inactive states', () => {
-      // Inactive: text-white/40 hover:text-white/70
-      assert.match(settingsSource, /text-white\/40\s+hover:text-white\/70/);
-      // Active: text-white border-b-2 border-emerald-500 -mb-px
-      assert.match(settingsSource, /text-white\s+border-b-2\s+border-emerald-500\s+-mb-px/);
+      // Inactive: text-white/40 hover:text-white/70 or dual-mode
+      assert.match(settingsSource, /(text-white\/40\s+hover:text-white\/70|text-slate-500\s+dark:text-white\/40\s+hover:text-slate-800\s+dark:hover:text-white\/70)/);
+      // Active: text-white border-b-2 border-emerald-500 -mb-px or dual-mode
+      assert.match(settingsSource, /(text-white\s+border-b-2\s+border-emerald-500\s+-mb-px|text-emerald-700\s+dark:text-emerald-400\s+border-b-2\s+border-emerald-600\s+dark:border-emerald-500\s+-mb-px)/);
     });
 
     it('should include trailing gradient fade for mobile horizontal scrolling', () => {
       assert.match(
         settingsSource,
-        /bg-gradient-to-l\s+from-\[#0B130E\]\s+to-transparent\s+sm:hidden/
+        /bg-gradient-to-l\s+(from-\[#0B130E\]|from-slate-50\s+dark:from-\[#0B130E\])\s+to-transparent\s+sm:hidden/
       );
     });
 
@@ -188,33 +188,33 @@ describe('Phase 2D — Settings & Account Preferences Dashboard', () => {
   });
 
   describe('Form Fields, Validation States & Visual Tokens', () => {
-    it('should enforce uppercase section headers with tracking-[0.15em] text-white/25', () => {
+    it('should enforce uppercase section headers with tracking-[0.15em]', () => {
       assert.match(
         settingsSource,
-        /text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-white\/25\s+mb-4\s+mt-8/
+        /(text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-white\/25\s+mb-4\s+mt-8|text-\[10px\]\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-slate-500\s+dark:text-white\/30\s+mb-4\s+mt-8)/
       );
     });
 
-    it('should enforce uppercase labels: text-[10px] font-bold tracking-[0.15em] uppercase text-white/30', () => {
+    it('should enforce uppercase labels: text-[10px] font-bold tracking-[0.15em] uppercase', () => {
       assert.match(
         settingsSource,
-        /text-\[10px\]\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-white\/30\s+mb-2\s+block/
+        /text-\[10px\]\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+(text-white\/30|text-slate-500\s+dark:text-white\/35)\s+mb-2\s+block/
       );
     });
 
-    it('should enforce soft inputs: h-11 w-full px-4 rounded-xl bg-white/[0.03] border', () => {
+    it('should enforce soft inputs: h-11 w-full px-4 rounded-xl bg-white border', () => {
       assert.match(
         settingsSource,
-        /h-11\s+w-full\s+px-4\s+rounded-xl\s+bg-white\/\[0\.03\]\s+border/
+        /h-11\s+w-full\s+px-4\s+rounded-xl\s+(bg-white\/\[0\.03\]|bg-white\s+dark:bg-white\/\[0\.04\])\s+border/
       );
       assert.match(
         settingsSource,
-        /focus:border-emerald-500\/50\s+focus:ring-1\s+focus:ring-emerald-500\/20\s+focus:bg-white\/\[0\.05\]/
+        /(focus:border-emerald-500\/50\s+focus:ring-1\s+focus:ring-emerald-500\/20\s+focus:bg-white\/\[0\.05\]|focus:border-emerald-500\/50\s+focus:ring-1\s+focus:ring-emerald-500\/20\s+focus:bg-white\s+dark:focus:bg-white\/\[0\.05\])/
       );
     });
 
-    it('should enforce helper text: text-[11px] text-white/20 mt-1.5', () => {
-      assert.match(settingsSource, /text-\[11px\]\s+text-white\/20\s+mt-1\.5/);
+    it('should enforce helper text: text-[11px] mt-1.5', () => {
+      assert.match(settingsSource, /(text-\[11px\]\s+text-white\/20\s+mt-1\.5|text-\[11px\]\s+text-slate-500\s+dark:text-white\/40\s+mt-1\.5)/);
     });
 
     it('should enforce error state: border-red-500/50 + text-[11px] text-red-400 with AlertCircle h-3 w-3', () => {
@@ -244,15 +244,15 @@ describe('Phase 2D — Settings & Account Preferences Dashboard', () => {
   });
 
   describe('Danger Zone & Loading Architecture', () => {
-    it('should enforce danger zone styling: mt-12 border-t border-red-500/10 pt-6 with destructive delete button', () => {
-      assert.match(settingsSource, /mt-12\s+border-t\s+border-red-500\/10\s+pt-6/);
+    it('should enforce danger zone styling: mt-12 border-t border-red-500 pt-6 with destructive delete button', () => {
+      assert.match(settingsSource, /mt-12\s+border-t\s+(border-red-500\/10|border-red-500\/20\s+dark:border-red-500\/10)\s+pt-6/);
       assert.match(
         settingsSource,
-        /text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-red-400\/80\s+mb-2/
+        /text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+(text-red-400\/80|text-red-600\s+dark:text-red-400\/80)\s+mb-2/
       );
       assert.match(
         settingsSource,
-        /border\s+border-red-500\/30\s+text-red-400\s+hover:bg-red-500\/10\s+rounded-xl\s+px-4\s+py-2\.5/
+        /border\s+border-red-500\/30\s+(text-red-400\s+hover:bg-red-500\/10|text-red-600\s+dark:text-red-400\s+hover:bg-red-50\s+dark:hover:bg-red-500\/10)\s+rounded-xl\s+px-4\s+py-2\.5/
       );
       assert.match(settingsSource, /<Trash2\s+className=["']h-3\.5\s+w-3\.5["']\s+strokeWidth=\{1\.75\}/);
     });
