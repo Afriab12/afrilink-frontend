@@ -51,21 +51,21 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-surface-1/90 backdrop-blur-md border-b border-neutral-200/80 dark:border-white/[0.04] transition-colors">
+      <header className="sticky top-0 z-40 bg-white dark:bg-[#0F1A13] border-b border-slate-200 dark:border-white/10 transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-6">
             <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-10 h-10 rounded-2xl bg-[#087443] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition-transform duration-200">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
                 <span className="font-extrabold text-xl font-sora">A</span>
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-black text-neutral-900 dark:text-white tracking-tight font-sora flex items-center gap-1">
+                <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight font-sora flex items-center gap-1">
                   AfriLink
                   <span className="w-2 h-2 rounded-full bg-[#D9A441]" />
                 </span>
-                <span className="text-[9px] font-bold text-[#087443] tracking-widest uppercase -mt-1 hidden sm:block">
-                  Connected Africa
+                <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 tracking-widest uppercase -mt-1 hidden sm:block">
+                  CONNECTED AFRICA
                 </span>
               </div>
             </Link>
@@ -75,12 +75,12 @@ export const Navbar: React.FC = () => {
           <div className="flex-1 max-w-md hidden md:block">
             <button
               onClick={() => openSearch()}
-              className="w-full flex items-center justify-between px-4 py-2 bg-neutral-100 hover:bg-neutral-200/70 dark:bg-surface-0 dark:border-white/[0.04] dark:hover:border-[#087443] rounded-2xl text-xs transition-all duration-200 border border-transparent hover:border-neutral-300 focus:outline-none focus:ring-2 focus:ring-[#087443]"
+              className="w-full flex items-center justify-between px-4 py-2 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 rounded-2xl text-xs transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500"
               aria-label="Search AfriLink"
             >
               <div className="flex items-center gap-2.5">
-                <Search className="h-4 w-4 text-neutral-500 dark:text-neutral-400" strokeWidth={1.75} />
-                <span className="text-gray-600 dark:text-white/60 font-medium">Search African people, topics, countries...</span>
+                <Search className="h-4 w-4 text-slate-400 dark:text-white/40" strokeWidth={1.75} />
+                <span className="text-slate-400 dark:text-white/40 font-medium">Search African people, topics, countries...</span>
               </div>
               <ShortcutHint shortcut="⌘K" className="hidden lg:inline-flex" />
             </button>
@@ -91,7 +91,7 @@ export const Navbar: React.FC = () => {
             {/* Mobile Search Button */}
             <button
               onClick={() => openSearch()}
-              className="md:hidden p-2 rounded-full text-neutral-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 transition-all duration-200"
+              className="md:hidden p-2 rounded-full text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all duration-200"
               aria-label="Search"
             >
               <Search className="h-5 w-5" strokeWidth={1.75} />
@@ -102,8 +102,8 @@ export const Navbar: React.FC = () => {
               href="/discover"
               className={`p-2 rounded-full transition-all duration-200 relative hidden sm:flex ${
                 isDiscoverActive
-                  ? 'bg-emerald-50 dark:bg-surface-3 text-[#087443]'
-                  : 'text-neutral-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3'
+                  ? 'bg-emerald-50 dark:bg-white/10 text-emerald-600 dark:text-emerald-400'
+                  : 'text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
               }`}
               title="Explore Africa"
               aria-label="Explore Africa"
@@ -116,15 +116,15 @@ export const Navbar: React.FC = () => {
               href="/messages"
               className={`p-2 rounded-full transition-all duration-200 relative ${
                 isMessagesActive
-                  ? 'bg-emerald-50 dark:bg-surface-3 text-[#087443]'
-                  : 'text-neutral-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3'
+                  ? 'bg-emerald-50 dark:bg-white/10 text-emerald-600 dark:text-emerald-400'
+                  : 'text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
               }`}
               title="Messages"
               aria-label="Messages"
             >
               <MessageSquare className="h-5 w-5" strokeWidth={1.75} />
               {unreadMessagesCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#087443] px-1 text-[10px] font-bold text-white leading-none">
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white leading-none">
                   {unreadMessagesCount}
                 </span>
               )}
@@ -135,22 +135,22 @@ export const Navbar: React.FC = () => {
               href="/notifications"
               className={`p-2 rounded-full transition-all duration-200 relative ${
                 isNotifsActive
-                  ? 'bg-emerald-50 dark:bg-surface-3 text-[#087443]'
-                  : 'text-neutral-600 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3'
+                  ? 'bg-emerald-50 dark:bg-white/10 text-emerald-600 dark:text-emerald-400'
+                  : 'text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'
               }`}
               title="Notifications"
               aria-label="Notifications"
             >
               <Bell className="h-5 w-5" strokeWidth={1.75} />
               {unreadNotifsCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#087443] px-1 text-[10px] font-bold text-white leading-none">
+                <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-bold text-white leading-none">
                   {unreadNotifsCount}
                 </span>
               )}
             </Link>
 
             {/* Afro-Futurist Dark / Light Mode Toggle */}
-            <ThemeToggle />
+            <ThemeToggle className="text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5" />
 
             {/* Profile Avatar & Menu */}
             {currentUser && (
@@ -171,12 +171,12 @@ export const Navbar: React.FC = () => {
                 </button>
 
                 {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-surface-4 rounded-3xl shadow-2xl border border-neutral-200 dark:border-white/[0.08] p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
-                    <div className="px-3 py-2 border-b border-neutral-100 dark:border-white/[0.08] mb-1">
-                      <p className="font-bold text-xs text-neutral-900 dark:text-white/90 truncate">
+                  <div className="absolute right-0 mt-2 w-56 bg-white dark:bg-surface-4 rounded-3xl shadow-2xl border border-slate-200 dark:border-white/[0.08] p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                    <div className="px-3 py-2 border-b border-slate-100 dark:border-white/[0.08] mb-1">
+                      <p className="font-bold text-xs text-slate-900 dark:text-white/90 truncate">
                         {currentUser.fullName}
                       </p>
-                      <p className="text-[10px] text-neutral-400 dark:text-white/35 truncate">
+                      <p className="text-[10px] text-slate-500 dark:text-white/35 truncate">
                         @{currentUser.username} • {currentUser.country}
                       </p>
                     </div>
@@ -184,7 +184,7 @@ export const Navbar: React.FC = () => {
                     <Link
                       href={`/profile/${currentUser.username}`}
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-neutral-700 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
                     >
                       <User className="h-4 w-4" strokeWidth={1.75} /> My Profile
                     </Link>
@@ -192,7 +192,7 @@ export const Navbar: React.FC = () => {
                     <Link
                       href="/settings"
                       onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-neutral-700 dark:text-white/60 hover:bg-neutral-100 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
+                      className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-white/60 hover:bg-slate-100 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
                     >
                       <Settings className="h-4 w-4" strokeWidth={1.75} /> Settings & Privacy
                     </Link>
@@ -201,13 +201,13 @@ export const Navbar: React.FC = () => {
                       <Link
                         href="/admin"
                         onClick={() => setIsUserMenuOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[#087443] dark:text-[#0e9357] hover:bg-emerald-50 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
+                        className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-surface-3 rounded-xl transition-all duration-200"
                       >
                         <ShieldAlert className="h-4 w-4" strokeWidth={1.75} /> Trust & Admin Ops
                       </Link>
                     )}
 
-                    <div className="my-1 border-t border-neutral-100 dark:border-white/[0.08]" />
+                    <div className="my-1 border-t border-slate-100 dark:border-white/[0.08]" />
 
                     <button
                       onClick={handleLogout}

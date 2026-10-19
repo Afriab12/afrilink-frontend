@@ -61,7 +61,7 @@ export function getFollowButtonConfig(
   if (isFollowing) {
     return {
       label: isHovered ? 'Unfollow' : 'Following',
-      className: `${base} bg-transparent border border-white/15 text-white/50 hover:border-red-500/50 hover:text-red-400 hover:bg-red-500/5`,
+      className: `${base} bg-slate-100 dark:bg-transparent border border-slate-300 dark:border-white/15 text-slate-700 dark:text-white/60 hover:border-red-500/50 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/5`,
       variant: 'following',
     };
   }

@@ -58,8 +58,9 @@ describe('Phase 2C — Connect Across Borders Sidebar Redesign', () => {
       const normalConfig = getFollowButtonConfig(true, false, false);
       assert.strictEqual(normalConfig.label, 'Following');
       assert.strictEqual(normalConfig.variant, 'following');
-      assert.match(normalConfig.className, /border-white\/15\s+text-white\/50/);
-      assert.match(normalConfig.className, /hover:border-red-500\/50\s+hover:text-red-400/);
+      assert.match(normalConfig.className, /border-slate-300\s+dark:border-white\/15/);
+      assert.match(normalConfig.className, /text-slate-700\s+dark:text-white\/60/);
+      assert.match(normalConfig.className, /hover:border-red-500\/50\s+hover:text-red-500\s+dark:hover:text-red-400/);
 
       const hoverConfig = getFollowButtonConfig(true, false, true);
       assert.strictEqual(hoverConfig.label, 'Unfollow', 'Must show Unfollow intent when hovered');
@@ -74,24 +75,24 @@ describe('Phase 2C — Connect Across Borders Sidebar Redesign', () => {
   });
 
   describe('Section Container & Layout Architecture', () => {
-    it('should enforce container styling: rounded-2xl p-4 border border-white/[0.06] bg-white/[0.02]', () => {
+    it('should enforce container styling: rounded-2xl p-4 border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-white/[0.02]', () => {
       assert.match(
         sidebarSource,
-        /rounded-2xl\s+p-4\s+border\s+border-white\/\[0\.06\]\s+bg-white\/\[0\.02\]/
+        /rounded-2xl\s+p-4\s+bg-white\s+dark:bg-white\/\[0\.02\]\s+border\s+border-slate-200\s+dark:border-white\/\[0\.06\]/
       );
     });
 
-    it('should enforce section title: text-xs font-bold tracking-[0.15em] uppercase text-white/30 mb-4 "CONNECT ACROSS BORDERS"', () => {
+    it('should enforce section title: text-xs font-bold tracking-[0.15em] uppercase text-slate-500 dark:text-white/30 mb-4 "CONNECT ACROSS BORDERS"', () => {
       assert.match(
         sidebarSource,
-        /text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-white\/30\s+mb-4/
+        /text-xs\s+font-bold\s+tracking-\[0\.15em\]\s+uppercase\s+text-slate-500\s+dark:text-white\/30\s+mb-4/
       );
       assert.match(sidebarSource, /CONNECT ACROSS BORDERS/);
     });
 
-    it('should enforce footer: "See more" text-xs text-emerald-400 with ChevronRight h-3 w-3', () => {
+    it('should enforce footer: "See more" text-xs text-emerald-600 dark:text-emerald-400 with ChevronRight h-3 w-3', () => {
       assert.match(sidebarSource, /See more/);
-      assert.match(sidebarSource, /text-xs\s+font-semibold\s+text-emerald-400/);
+      assert.match(sidebarSource, /text-xs\s+font-semibold\s+text-emerald-600\s+dark:text-emerald-400/);
       assert.match(sidebarSource, /<ChevronRight\s+className=["']h-3\s+w-3["']/);
     });
 
@@ -101,18 +102,18 @@ describe('Phase 2C — Connect Across Borders Sidebar Redesign', () => {
   });
 
   describe('User Row Architecture & Inline Verification', () => {
-    it('should enforce user row styling: flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-white/[0.04]', () => {
+    it('should enforce user row styling: flex items-center gap-3 py-2.5 px-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.04]', () => {
       assert.match(
         rowSource,
-        /flex\s+items-center\s+justify-between\s+gap-3\s+py-2\.5\s+px-2\s+rounded-xl\s+hover:bg-white\/\[0\.04\]/
+        /flex\s+items-center\s+justify-between\s+gap-3\s+py-2\.5\s+px-2\s+rounded-xl\s+hover:bg-slate-100\s+dark:hover:bg-white\/\[0\.04\]/
       );
       assert.match(rowSource, /hover:-translate-y-\[1px\]/);
     });
 
-    it('should enforce 40px UserAvatar with ring-2 ring-white/[0.06] and group-hover ring-emerald-500/30', () => {
+    it('should enforce 40px UserAvatar with ring-2 ring-slate-200 dark:ring-white/[0.06] and group-hover ring-emerald-500/30', () => {
       assert.match(rowSource, /<UserAvatar/);
       assert.match(rowSource, /size="md"/);
-      assert.match(rowSource, /ring-2\s+ring-white\/\[0\.06\]/);
+      assert.match(rowSource, /ring-2\s+ring-slate-200\s+dark:ring-white\/\[0\.06\]/);
       assert.match(rowSource, /group-hover:ring-emerald-500\/30/);
     });
 
@@ -123,17 +124,17 @@ describe('Phase 2C — Connect Across Borders Sidebar Redesign', () => {
       );
       assert.match(
         rowSource,
-        /<BadgeCheck[\s\S]*?className=["']h-3\.5\s+w-3\.5\s+text-emerald-400\s+shrink-0\s+inline-block["']/
+        /<BadgeCheck[\s\S]*?className=["']h-3\.5\s+w-3\.5\s+text-emerald-600\s+dark:text-emerald-400\s+shrink-0\s+inline-block["']/
       );
     });
 
     it('should enforce name row constraints: max-w-[120px] and truncate', () => {
-      assert.match(rowSource, /text-sm\s+font-semibold\s+text-white\/90\s+truncate\s+max-w-\[120px\]/);
+      assert.match(rowSource, /text-sm\s+font-semibold\s+text-slate-900\s+dark:text-white\s+truncate\s+max-w-\[120px\]/);
     });
 
     it('should enforce handle and context line typography', () => {
-      assert.match(rowSource, /text-xs\s+text-white\/30\s+truncate/);
-      assert.match(rowSource, /text-\[10px\]\s+text-white\/25\s+truncate/);
+      assert.match(rowSource, /text-xs\s+text-slate-500\s+dark:text-white\/40\s+truncate/);
+      assert.match(rowSource, /text-\[10px\]\s+text-slate-400\s+dark:text-white\/30\s+truncate/);
     });
 
     it('should integrate Phase 1C toast notifications on follow/unfollow toggle', () => {

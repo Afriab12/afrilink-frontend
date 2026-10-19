@@ -9,6 +9,10 @@ describe('Phase 2B — Regional Navigation Track & Country Shorthand Cards', () 
     path.resolve(process.cwd(), 'src/features/countries/CountryExplorer.tsx'),
     'utf-8'
   );
+  const trackSource = fs.readFileSync(
+    path.resolve(process.cwd(), 'src/features/countries/RegionTrack.tsx'),
+    'utf-8'
+  );
   const cardSource = fs.readFileSync(
     path.resolve(process.cwd(), 'src/features/countries/CountryCard.tsx'),
     'utf-8'
@@ -34,52 +38,52 @@ describe('Phase 2B — Regional Navigation Track & Country Shorthand Cards', () 
     });
 
     it('should implement horizontal scroll track with mandatory scroll snap and no scrollbars', () => {
-      assert.match(explorerSource, /overflow-x-auto/);
-      assert.match(explorerSource, /no-scrollbar/);
-      assert.match(explorerSource, /\[scroll-snap-type:x_mandatory\]/);
+      assert.match(trackSource, /overflow-x-auto/);
+      assert.match(trackSource, /no-scrollbar/);
+      assert.match(trackSource, /\[scroll-snap-type:x_mandatory\]/);
     });
 
     it('should implement trailing 24px gradient mask signalling overflow', () => {
       // w-6 in Tailwind equals 24px
-      assert.match(explorerSource, /w-6\s+bg-gradient-to-l/);
-      assert.match(explorerSource, /pointer-events-none\s+absolute\s+right-0/);
+      assert.match(trackSource, /w-6\s+bg-gradient-to-l/);
+      assert.match(trackSource, /pointer-events-none\s+absolute\s+right-0/);
     });
   });
 
   describe('Tab Styling & Emerald Active States', () => {
     it('should enforce base tab styles: h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap', () => {
-      assert.match(explorerSource, /h-9\s+px-4\s+rounded-full\s+text-sm\s+font-medium\s+whitespace-nowrap/);
+      assert.match(trackSource, /h-9\s+px-4\s+rounded-full\s+text-sm\s+font-medium\s+whitespace-nowrap/);
     });
 
     it('should enforce emerald-600 active tab style with shadow glow', () => {
       assert.match(
-        explorerSource,
-        /bg-emerald-600\s+text-white\s+font-semibold\s+shadow-\[0_0_12px_rgba\(8,116,67,0\.3\)\]/
+        trackSource,
+        /bg-emerald-600\s+text-white\s+font-semibold\s+shadow-sm/
       );
     });
 
     it('should strictly eliminate gold ring or border from active tabs', () => {
       assert.doesNotMatch(
-        explorerSource,
+        trackSource,
         /ring-\[#D9A441\]/,
         'Active tabs must not contain African Gold ring'
       );
       assert.doesNotMatch(
-        explorerSource,
+        trackSource,
         /border-\[#D9A441\]/,
         'Active tabs must not contain African Gold border'
       );
     });
 
-    it('should enforce inactive tab style: bg-white/5 border border-white/[0.08] text-white/50', () => {
+    it('should enforce inactive tab style: bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/8 text-slate-700 dark:text-white/50', () => {
       assert.match(
-        explorerSource,
-        /bg-white\/5\s+border\s+border-white\/\[0\.08\]\s+text-white\/50/
+        trackSource,
+        /bg-slate-100\s+dark:bg-white\/5\s+border\s+border-slate-200\s+dark:border-white\/8\s+text-slate-700\s+dark:text-white\/50/
       );
     });
 
     it('should inherit muted opacity on region count badges', () => {
-      assert.match(explorerSource, /opacity-60\s+ml-1\s+font-normal/);
+      assert.match(trackSource, /opacity-60\s+ml-1\s+font-normal/);
     });
   });
 
@@ -91,32 +95,31 @@ describe('Phase 2B — Regional Navigation Track & Country Shorthand Cards', () 
       );
     });
 
-    it('should enforce card styling: rounded-2xl p-4 bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05]', () => {
-      assert.match(cardSource, /rounded-2xl\s+p-4\s+bg-white\/\[0\.03\]\s+border\s+border-white\/\[0\.06\]/);
-      assert.match(cardSource, /hover:bg-white\/\[0\.05\]/);
-      assert.match(cardSource, /hover:border-white\/\[0\.10\]/);
+    it('should enforce card styling: rounded-2xl p-4 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06]', () => {
+      assert.match(cardSource, /rounded-2xl\s+p-4\s+bg-white\s+dark:bg-white\/\[0\.03\]\s+border\s+border-slate-200\s+dark:border-white\/\[0\.06\]/);
+      assert.match(cardSource, /hover:border-slate-300\s+dark:hover:border-white\/20/);
       assert.match(cardSource, /hover:-translate-y-\[2px\]/);
     });
 
-    it('should enforce 40x40 typographic badge (h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-400)', () => {
+    it('should enforce 40x40 typographic badge (h-10 w-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400)', () => {
       assert.match(cardSource, /h-10\s+w-10\s+rounded-xl\s+bg-emerald-500\/10/);
-      assert.match(cardSource, /text-sm\s+font-bold\s+tracking-wide\s+text-emerald-400/);
+      assert.match(cardSource, /text-sm\s+font-bold\s+tracking-wide\s+text-emerald-600\s+dark:text-emerald-400/);
       assert.match(cardSource, /font-mono/);
     });
 
-    it('should enforce country name typography: text-sm font-semibold text-white mt-3', () => {
-      assert.match(cardSource, /text-sm\s+font-semibold\s+text-white\s+mt-3/);
+    it('should enforce country name typography: text-sm font-semibold text-slate-900 dark:text-white mt-3', () => {
+      assert.match(cardSource, /text-sm\s+font-semibold\s+text-slate-900\s+dark:text-white\s+mt-3/);
     });
 
-    it('should enforce language tags: text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-white/40 border border-white/[0.06]', () => {
+    it('should enforce language tags: text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-white/50 border border-slate-200 dark:border-white/[0.06]', () => {
       assert.match(
         cardSource,
-        /text-\[10px\]\s+px-2\s+py-0\.5\s+rounded-full\s+bg-white\/\[0\.04\]\s+text-white\/40\s+border\s+border-white\/\[0\.06\]/
+        /text-\[10px\]\s+px-2\s+py-0\.5\s+rounded-full\s+bg-slate-100\s+dark:bg-white\/\[0\.04\]\s+text-slate-600\s+dark:text-white\/50\s+border\s+border-slate-200\s+dark:border-white\/\[0\.06\]/
       );
     });
 
     it('should enforce active count indicator with pulse dot and motion-reduce safeguard', () => {
-      assert.match(cardSource, /text-\[10px\]\s+text-emerald-400\/60/);
+      assert.match(cardSource, /text-\[10px\]\s+text-emerald-600\s+dark:text-emerald-400\/60/);
       assert.match(cardSource, /animate-ping\s+motion-reduce:animate-none/);
     });
 

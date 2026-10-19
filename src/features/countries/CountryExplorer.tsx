@@ -7,6 +7,8 @@ import { AfricanRegion } from '@/types';
 import { Compass } from 'lucide-react';
 import { CountryCardSkeleton, useMinimumLoading } from '@/components/ui/skeleton';
 
+import { RegionTrack } from './RegionTrack';
+
 interface CountryExplorerProps {
   isLoading?: boolean;
 }
@@ -39,54 +41,10 @@ export const CountryExplorer: React.FC<CountryExplorerProps> = ({ isLoading = fa
       </div>
 
       {/* Regional Navigation Track */}
-      <div className="relative">
-        <div
-          data-testid="region-track"
-          className="flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth [scroll-snap-type:x_mandatory] pb-1 pr-8"
-        >
-          {/* All 5 Regions Tab */}
-          <button
-            type="button"
-            data-testid="region-tab-all"
-            onClick={() => setSelectedRegion('All')}
-            className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 [scroll-snap-align:start] transition-all duration-200 ${
-              selectedRegion === 'All'
-                ? 'bg-emerald-600 text-white font-semibold shadow-[0_0_12px_rgba(8,116,67,0.3)]'
-                : 'bg-white/5 border border-white/[0.08] text-white/50 hover:bg-white/[0.08] hover:text-white/70'
-            }`}
-          >
-            All 5 Regions <span className="opacity-60 ml-1 font-normal">({AFRICAN_COUNTRIES.length})</span>
-          </button>
-
-          {/* Regional Tabs in strict geographical order */}
-          {AFRICAN_REGIONS.map((region) => {
-            const regionCount = AFRICAN_COUNTRIES.filter((c) => c.region === region).length;
-            const isActive = selectedRegion === region;
-
-            return (
-              <button
-                key={region}
-                type="button"
-                data-testid={`region-tab-${region.toLowerCase().replace(/\s+/g, '-')}`}
-                onClick={() => setSelectedRegion(region)}
-                className={`h-9 px-4 rounded-full text-sm font-medium whitespace-nowrap flex-shrink-0 [scroll-snap-align:start] transition-all duration-200 ${
-                  isActive
-                    ? 'bg-emerald-600 text-white font-semibold shadow-[0_0_12px_rgba(8,116,67,0.3)]'
-                    : 'bg-white/5 border border-white/[0.08] text-white/50 hover:bg-white/[0.08] hover:text-white/70'
-                }`}
-              >
-                {region} <span className="opacity-60 ml-1 font-normal">({regionCount})</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Trailing 24px gradient mask signalling overflow (w-6 = 24px) */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute right-0 top-0 bottom-1 w-6 bg-gradient-to-l from-[#0B130E] dark:from-surface-0 to-transparent"
-        />
-      </div>
+      <RegionTrack
+        selectedRegion={selectedRegion}
+        onSelectRegion={setSelectedRegion}
+      />
 
       {/* Country Cards Grid: 2 cols mobile | 3 cols tablet | 4 cols desktop; gap-3 */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">

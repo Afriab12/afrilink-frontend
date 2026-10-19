@@ -15,7 +15,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
   return (
     <Link
       href={`/discover/${country.code.toLowerCase()}`}
-      className="group rounded-2xl p-4 bg-white/[0.03] border border-white/[0.06] hover:bg-white/[0.05] hover:border-white/[0.10] hover:-translate-y-[2px] transition duration-200 flex flex-col justify-between"
+      className="group rounded-2xl p-4 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] hover:border-slate-300 dark:hover:border-white/20 hover:-translate-y-[2px] transition duration-200 flex flex-col justify-between"
     >
       <div>
         {/* Top Header: 40x40 Typographic Badge + Active Count Indicator */}
@@ -25,13 +25,13 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
             data-testid={`country-badge-${isoCode}`}
             className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center flex-shrink-0 select-none border border-emerald-500/20"
           >
-            <span className="text-sm font-bold tracking-wide text-emerald-400 font-mono">
+            <span className="text-sm font-bold tracking-wide text-emerald-600 dark:text-emerald-400 font-mono">
               {isoCode}
             </span>
           </div>
 
           {/* Active indicator with pulse dot */}
-          <div className="flex items-center gap-1.5 text-[10px] text-emerald-400/60 font-medium select-none">
+          <div className="flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400/60 font-medium select-none">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping motion-reduce:animate-none absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
@@ -40,22 +40,23 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
           </div>
         </div>
 
-        {/* Country Name (text-sm font-semibold text-white mt-3) */}
-        <h3 className="text-sm font-semibold text-white mt-3 truncate group-hover:text-emerald-400 transition-colors font-sora">
+        {/* Country Name (text-slate-900 dark:text-white font-semibold) */}
+        <h3 className="text-sm font-semibold text-slate-900 dark:text-white mt-3 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors font-sora">
           {country.name}
         </h3>
 
-        <p className="text-[11px] text-white/40 mt-0.5 truncate">
+        {/* Capital & Population subtext (text-slate-500 dark:text-white/40) */}
+        <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5 truncate">
           {country.capital} • {country.population}
         </p>
 
-        {/* Language tags (text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-white/40 border border-white/[0.06]) */}
+        {/* Language tags (bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-white/50 border border-slate-200 dark:border-white/[0.06]) */}
         {country.majorLanguages && country.majorLanguages.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-3">
             {country.majorLanguages.slice(0, 3).map((lang) => (
               <span
                 key={lang}
-                className="text-[10px] px-2 py-0.5 rounded-full bg-white/[0.04] text-white/40 border border-white/[0.06] font-medium truncate max-w-[100px]"
+                className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.04] text-slate-600 dark:text-white/50 border border-slate-200 dark:border-white/[0.06] font-medium truncate max-w-[100px]"
               >
                 {lang}
               </span>
@@ -65,7 +66,7 @@ export const CountryCard: React.FC<CountryCardProps> = ({ country }) => {
       </div>
 
       {/* Footer Explore Affordance */}
-      <div className="mt-4 pt-2.5 border-t border-white/[0.04] flex items-center justify-between text-[11px] text-emerald-400/70 font-medium">
+      <div className="mt-4 pt-2.5 border-t border-slate-100 dark:border-white/[0.04] flex items-center justify-between text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
         <span>Explore hub</span>
         <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" strokeWidth={1.75} />
       </div>

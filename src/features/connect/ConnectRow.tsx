@@ -29,7 +29,7 @@ export const ConnectRow: React.FC<ConnectRowProps> = ({
   return (
     <div
       data-testid={`connect-row-${user.id}`}
-      className="flex items-center justify-between gap-3 py-2.5 px-2 rounded-xl hover:bg-white/[0.04] hover:-translate-y-[1px] transition-all duration-200 group"
+      className="flex items-center justify-between gap-3 py-2.5 px-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.04] hover:-translate-y-[1px] transition-all duration-200 group"
     >
       {/* User Avatar + Metadata Link */}
       <Link
@@ -44,31 +44,31 @@ export const ConnectRow: React.FC<ConnectRowProps> = ({
           userId={user.id}
           size="md"
           isOnline={user.status === 'active' || Boolean(user.isOnline)}
-          className="rounded-full ring-2 ring-white/[0.06] group-hover:ring-emerald-500/30 transition-all duration-200"
+          className="rounded-full ring-2 ring-slate-200 dark:ring-white/[0.06] group-hover:ring-emerald-500/30 transition-all duration-200"
         />
 
         <div className="min-w-0 flex-1">
           {/* Name Row: display name + inline BadgeCheck */}
           <div className="flex items-center gap-1 min-w-0">
-            <p className="text-sm font-semibold text-white/90 truncate max-w-[120px] group-hover:text-emerald-400 transition-colors">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white truncate max-w-[120px] group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
               {user.fullName}
             </p>
             {user.isVerified && (
               <BadgeCheck
                 data-testid="inline-badge-check"
-                className="h-3.5 w-3.5 text-emerald-400 shrink-0 inline-block"
+                className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0 inline-block"
                 strokeWidth={1.75}
               />
             )}
           </div>
 
           {/* Handle */}
-          <p className="text-xs text-white/30 truncate">
+          <p className="text-xs text-slate-500 dark:text-white/40 truncate">
             @{user.username}
           </p>
 
           {/* Context Line (Social proof): "8 mutual connections" | "Popular in Lagos" etc. */}
-          <p className="text-[10px] text-white/25 truncate mt-0.5">
+          <p className="text-[10px] text-slate-400 dark:text-white/30 truncate mt-0.5">
             {socialProof}
           </p>
         </div>
