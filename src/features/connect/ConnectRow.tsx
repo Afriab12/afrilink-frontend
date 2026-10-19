@@ -82,6 +82,7 @@ export const ConnectRow: React.FC<ConnectRowProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => onToggleFollow(user)}
+        aria-label={`${buttonConfig.label} ${user.fullName}`}
         className={buttonConfig.className}
       >
         {buttonConfig.label}

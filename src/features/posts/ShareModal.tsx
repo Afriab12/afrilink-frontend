@@ -74,6 +74,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ post, isOpen, onClose })
           <button
             type="button"
             onClick={() => setSelectedDestination('feed')}
+            aria-label="Share to My Feed"
             className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1.5 transition ${
               selectedDestination === 'feed'
                 ? 'border-[#087443] bg-emerald-50 dark:bg-emerald-950/40 text-[#087443]'
@@ -87,6 +88,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ post, isOpen, onClose })
           <button
             type="button"
             onClick={() => setSelectedDestination('community')}
+            aria-label="Share to Community"
             className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1.5 transition ${
               selectedDestination === 'community'
                 ? 'border-[#087443] bg-emerald-50 dark:bg-emerald-950/40 text-[#087443]'
@@ -100,6 +102,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ post, isOpen, onClose })
           <button
             type="button"
             onClick={() => setSelectedDestination('dm')}
+            aria-label="Share via Direct Message"
             className={`p-2.5 rounded-xl border text-center flex flex-col items-center gap-1.5 transition ${
               selectedDestination === 'dm'
                 ? 'border-[#087443] bg-emerald-50 dark:bg-emerald-950/40 text-[#087443]'
@@ -113,6 +116,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ post, isOpen, onClose })
           <button
             type="button"
             onClick={handleCopyLink}
+            aria-label="Copy link to post"
             className="p-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:border-neutral-300 text-center flex flex-col items-center gap-1.5 transition"
           >
             {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
