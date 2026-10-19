@@ -118,6 +118,8 @@ export interface CreateCommunityInput {
   rules: string[];
   profileImage?: string;
   coverImage?: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
 }
 
 export interface Community {
@@ -130,6 +132,8 @@ export interface Community {
   countryCode?: string;
   profileImage: string;
   coverImage: string;
+  avatarUrl?: string;
+  bannerUrl?: string;
   isPrivate: boolean;
   memberCount: number;
   creatorId: string;

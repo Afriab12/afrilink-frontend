@@ -23,7 +23,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ community }) => {
       {/* Cover Image */}
       <div className="relative h-28 sm:h-32 w-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden">
         <img
-          src={community.coverImage}
+          src={community.bannerUrl || community.coverImage}
           alt={community.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
@@ -57,7 +57,7 @@ export const CommunityCard: React.FC<CommunityCardProps> = ({ community }) => {
           {/* Avatar floating */}
           <div className="-mt-8 mb-3">
             <Avatar
-              src={community.profileImage}
+              src={community.avatarUrl || community.profileImage}
               alt={community.name}
               size="lg"
               className="border-2 border-white dark:border-neutral-900 shadow-md ring-1 ring-emerald-500/20"

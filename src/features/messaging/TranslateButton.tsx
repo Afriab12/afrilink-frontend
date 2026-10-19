@@ -28,8 +28,8 @@ export const TranslateButton: React.FC<TranslateButtonProps> = ({
       disabled={isLoading}
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-medium transition-colors active:scale-95 pointer-events-auto cursor-pointer ${
         isTranslated
-          ? 'bg-amber-500/10 text-amber-400/80 border border-amber-500/20'
-          : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
+          ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400/80 border border-amber-500/20'
+          : 'text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
       }`}
       aria-label={isTranslated ? 'Show original text' : `Translate to ${targetLanguageName}`}
       title={isTranslated ? 'Show original text' : `Translate to ${targetLanguageName}`}

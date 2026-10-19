@@ -34,10 +34,10 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
       assert.match(rightSidebarSource, /return\s+null;/);
     });
 
-    it('should enforce Desktop two-column layout: left w-80 flex-shrink-0 border-r border-white/[0.06] and right flex-1 min-w-0 flex flex-col', () => {
+    it('should enforce Desktop two-column layout: left w-80 flex-shrink-0 border-r border-slate-200 dark:border-white/[0.06] and right flex-1 min-w-0 flex flex-col', () => {
       assert.match(
         chatViewSource,
-        /w-full\s+md:w-80\s+flex-shrink-0\s+border-r\s+border-white\/\[0\.06\]/
+        /w-full\s+md:w-80\s+flex-shrink-0\s+border-r\s+border-slate-200\s+dark:border-white\/\[0\.06\]/
       );
       assert.match(
         chatViewSource,
@@ -65,7 +65,7 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
     it('should enforce header h-14 with PenSquare h-5 w-5 for new message affordance', () => {
       assert.match(
         convListSource,
-        /h-14\s+px-4\s+border-b\s+border-white\/\[0\.06\]\s+flex\s+items-center\s+justify-between/
+        /h-14\s+px-4\s+border-b\s+border-slate-200\s+dark:border-white\/10\s+flex\s+items-center\s+justify-between/
       );
       assert.match(
         convListSource,
@@ -73,25 +73,25 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
       );
     });
 
-    it('should enforce search input styling: h-9 rounded-lg bg-white/[0.03]', () => {
+    it('should enforce search input styling: h-9 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10', () => {
       assert.match(
         convListSource,
-        /h-9\s+rounded-lg\s+bg-white\/\[0\.03\]\s+border\s+border-white\/\[0\.06\]/
+        /h-9\s+rounded-lg\s+bg-slate-100\s+dark:bg-white\/5\s+border\s+border-slate-200\s+dark:border-white\/10/
       );
       assert.match(
         convListSource,
-        /<Search\s+className=["']h-4\s+w-4\s+text-white\/30\s+shrink-0["']\s+strokeWidth=\{1\.75\}/
+        /<Search\s+className=["']h-4\s+w-4\s+text-slate-400\s+dark:text-white\/30\s+shrink-0["']\s+strokeWidth=\{1\.75\}/
       );
     });
 
     it('should enforce conversation row styling and active border-l-2 border-emerald-500', () => {
       assert.match(
         convListSource,
-        /px-3\s+py-3\s+mx-2\s+rounded-xl\s+hover:bg-white\/\[0\.04\]/
+        /px-3\s+py-3\s+mx-2\s+rounded-xl\s+hover:bg-slate-100\s+dark:hover:bg-white\/\[0\.04\]/
       );
       assert.match(
         convListSource,
-        /bg-white\/\[0\.06\]\s+border-l-2\s+border-emerald-500/
+        /bg-slate-100\s+dark:bg-white\/\[0\.06\]\s+border-l-2\s+border-emerald-500/
       );
     });
 
@@ -102,7 +102,7 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
       );
       assert.match(
         convListSource,
-        /w-2\.5\s+h-2\.5\s+rounded-full\s+bg-emerald-500\s+ring-2\s+ring-background/
+        /w-2\.5\s+h-2\.5\s+rounded-full\s+bg-emerald-500\s+ring-2\s+ring-white\s+dark:ring-background/
       );
     });
 
@@ -122,7 +122,7 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
     it('should enforce thread header h-14 with 32px avatar and action controls Phone Video MoreVertical h-4 w-4', () => {
       assert.match(
         chatViewSource,
-        /h-14\s+px-4\s+border-b\s+border-white\/\[0\.06\]\s+flex\s+items-center\s+justify-between/
+        /h-14\s+px-4\s+border-b\s+border-slate-200\s+dark:border-white\/10\s+flex\s+items-center\s+justify-between/
       );
       assert.match(
         chatViewSource,
@@ -144,32 +144,32 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
   });
 
   describe('Speech Bubbles, Timestamps & Date Separators', () => {
-    it('should enforce incoming bubble styling: self-start max-w-[75%] bg-white/[0.06] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm text-white/80', () => {
+    it('should enforce incoming bubble styling: self-start max-w-[75%] bg-slate-100 text-slate-900 dark:bg-white/[0.06] dark:text-white/90 border border-slate-200 dark:border-white/5 rounded-2xl rounded-bl-md px-4 py-2.5 text-sm', () => {
       assert.match(
         chatViewSource,
-        /self-start\s+max-w-\[75%\]\s+bg-white\/\[0\.06\]\s+rounded-2xl\s+rounded-bl-md\s+px-4\s+py-2\.5\s+text-sm\s+text-white\/80/
+        /self-start\s+max-w-\[75%\]\s+bg-slate-100\s+text-slate-900\s+dark:bg-white\/\[0\.06\]\s+dark:text-white\/90\s+border\s+border-slate-200\s+dark:border-white\/5\s+rounded-2xl\s+rounded-bl-md\s+px-4\s+py-2\.5\s+text-sm/
       );
     });
 
-    it('should enforce outgoing bubble styling: self-end max-w-[75%] bg-emerald-700/40 rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white/90', () => {
+    it('should enforce outgoing bubble styling: self-end max-w-[75%] bg-emerald-600 text-white dark:bg-emerald-700/60 dark:text-white rounded-2xl rounded-br-md px-4 py-2.5 text-sm', () => {
       assert.match(
         chatViewSource,
-        /self-end\s+max-w-\[75%\]\s+bg-emerald-700\/40\s+rounded-2xl\s+rounded-br-md\s+px-4\s+py-2\.5\s+text-sm\s+text-white\/90/
+        /self-end\s+max-w-\[75%\]\s+bg-emerald-600\s+text-white\s+dark:bg-emerald-700\/60\s+dark:text-white\s+rounded-2xl\s+rounded-br-md\s+px-4\s+py-2\.5\s+text-sm/
       );
     });
 
-    it('should enforce timestamp text-[9px] text-white/15 and CheckCheck h-3 w-3 read=emerald / delivered=muted', () => {
-      assert.match(chatViewSource, /text-\[9px\]\s+text-white\/15/);
+    it('should enforce timestamp text-[10px] text-slate-500 dark:text-white/40 and CheckCheck h-3 w-3 read=emerald / delivered=muted', () => {
+      assert.match(chatViewSource, /text-\[10px\]\s+text-slate-500\s+dark:text-white\/40/);
       assert.match(
         chatViewSource,
-        /<CheckCheck[\s\S]*?h-3\s+w-3[\s\S]*?text-emerald-400[\s\S]*?text-white\/30[\s\S]*?strokeWidth=\{1\.75\}/
+        /<CheckCheck[\s\S]*?h-3\s+w-3[\s\S]*?text-emerald-600\s+dark:text-emerald-400[\s\S]*?text-slate-400\s+dark:text-white\/30[\s\S]*?strokeWidth=\{1\.75\}/
       );
     });
 
-    it('should enforce date separators text-[10px] text-white/15', () => {
+    it('should enforce date separators text-[10px] text-slate-400 dark:text-white/30', () => {
       assert.match(
         chatViewSource,
-        /text-\[10px\]\s+text-white\/15\s+px-3\s+py-0\.5\s+rounded-full\s+bg-white\/\[0\.02\]\s+border\s+border-white\/\[0\.04\]/
+        /text-\[10px\]\s+text-slate-400\s+dark:text-white\/30\s+px-3\s+py-0\.5\s+rounded-full\s+bg-slate-100\s+dark:bg-white\/\[0\.02\]\s+border\s+border-slate-200\s+dark:border-white\/\[0\.04\]/
       );
     });
   });
@@ -178,7 +178,7 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
     it('should enforce Play 32x32 rounded-full with CSS waveform bars and duration', () => {
       assert.match(
         audioPlayerSource,
-        /w-8\s+h-8\s+rounded-full\s+bg-white\/10\s+hover:bg-white\/15\s+text-white\s+flex\s+items-center\s+justify-center/
+        /w-8\s+h-8\s+rounded-full\s+\$\{playBtnClass\}\s+flex\s+items-center\s+justify-center/
       );
       assert.match(
         audioPlayerSource,
@@ -186,26 +186,26 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
       );
       assert.match(
         audioPlayerSource,
-        /text-xs\s+font-mono\s+text-white\/60/
+        /text-xs\s+font-mono/
       );
     });
 
-    it('should enforce translation row: border-t border-white/[0.04] mt-2 pt-2 with Languages h-3.5 w-3.5 text-amber-400/60, italic text-xs text-white/40, and lang badge', () => {
+    it('should enforce translation row: border-t border-slate-200 dark:border-white/10 mt-2 pt-2 with Languages h-3.5 w-3.5 text-amber-500 dark:text-amber-400/80, italic text-xs text-slate-600 dark:text-white/60, and lang badge', () => {
       assert.match(
         chatViewSource,
-        /border-t\s+border-white\/\[0\.04\]\s+mt-2\s+pt-2/
+        /border-t\s+border-slate-200\s+dark:border-white\/10\s+mt-2\s+pt-2/
       );
       assert.match(
         chatViewSource,
-        /<Languages\s+className=["']h-3\.5\s+w-3\.5\s+text-amber-400\/60\s+shrink-0\s+mt-0\.5["']\s+strokeWidth=\{1\.75\}/
+        /<Languages\s+className=["']h-3\.5\s+w-3\.5\s+text-amber-500\s+dark:text-amber-400\/80\s+shrink-0\s+mt-0\.5["']\s+strokeWidth=\{1\.75\}/
       );
       assert.match(
         chatViewSource,
-        /italic\s+text-xs\s+text-white\/40\s+leading-relaxed/
+        /italic\s+text-xs\s+text-slate-600\s+dark:text-white\/60\s+leading-relaxed/
       );
       assert.match(
         chatViewSource,
-        /text-\[9px\]\s+bg-amber-500\/10\s+text-amber-400\/60\s+px-1\.5\s+py-0\.5\s+rounded\s+font-mono\s+shrink-0/
+        /text-\[9px\]\s+bg-amber-500\/10\s+text-amber-600\s+dark:text-amber-400\s+px-1\.5\s+py-0\.5\s+rounded\s+font-mono\s+shrink-0/
       );
       assert.match(
         chatViewSource,
@@ -215,14 +215,14 @@ describe('Phase 2E — Two-Column Chat & Messaging Workspace Redesign', () => {
   });
 
   describe('Floating Input Console & Recording State', () => {
-    it('should enforce default input console styling: mx-4 mb-4 rounded-2xl bg-white/[0.04] border border-white/[0.06] flex items-end gap-2 p-2 min-h-[48px]', () => {
+    it('should enforce default input console styling: mx-4 mb-4 rounded-2xl bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10 flex items-end gap-2 p-2 min-h-[48px]', () => {
       assert.match(
         chatViewSource,
         /mx-4\s+mb-4\s+rounded-2xl/
       );
       assert.match(
         chatViewSource,
-        /bg-white\/\[0\.04\]\s+border\s+border-white\/\[0\.06\]/
+        /bg-slate-100\s+dark:bg-white\/\[0\.04\]\s+border\s+border-slate-200\s+dark:border-white\/10/
       );
       assert.match(
         chatViewSource,

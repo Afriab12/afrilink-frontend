@@ -53,21 +53,21 @@ export const ConversationList: React.FC<ConversationListProps> = ({
   });
 
   return (
-    <div className="w-full flex-1 flex flex-col h-full bg-surface-1 select-none">
+    <div className="w-full flex-1 flex flex-col h-full bg-white dark:bg-[#0F1A13] border-r border-slate-200 dark:border-white/10 select-none">
       {/* Header h-14 */}
-      <div className="h-14 px-4 border-b border-white/[0.06] flex items-center justify-between shrink-0">
+      <div className="h-14 px-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between shrink-0">
         <div>
-          <h2 className="font-bold text-sm sm:text-base text-white/90 font-sora tracking-tight">
+          <h2 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white font-sora tracking-tight">
             Messages
           </h2>
-          <p className="text-[10px] text-white/30 tracking-wide uppercase font-semibold">
+          <p className="text-[10px] text-slate-500 dark:text-white/30 tracking-wide uppercase font-semibold">
             Pan-African Direct
           </p>
         </div>
         <button
           type="button"
           onClick={() => setIsNewChatModalOpen(true)}
-          className="w-9 h-9 rounded-xl hover:bg-white/[0.06] text-white/70 hover:text-white flex items-center justify-center transition-colors"
+          className="w-9 h-9 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.06] text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white flex items-center justify-center transition-colors"
           title="New Dialogue"
           aria-label="New Dialogue"
         >
@@ -76,14 +76,14 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       </div>
 
       {/* Tabs: Inbox vs Requests */}
-      <div className="flex items-center px-3 pt-2.5 pb-1 gap-2 border-b border-white/[0.06] text-xs font-semibold shrink-0">
+      <div className="flex items-center px-3 pt-2.5 pb-1 gap-2 border-b border-slate-200 dark:border-white/10 text-xs font-semibold shrink-0">
         <button
           type="button"
           onClick={() => setActiveTab('primary')}
           className={`flex-1 py-1.5 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'primary'
               ? 'bg-emerald-600 text-white shadow-sm font-semibold'
-              : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
+              : 'text-slate-600 dark:text-white/40 hover:text-slate-900 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
           }`}
         >
           <Inbox className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -96,7 +96,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
           className={`flex-1 py-1.5 px-3 rounded-lg transition-colors flex items-center justify-center gap-1.5 ${
             activeTab === 'requests'
               ? 'bg-emerald-600 text-white shadow-sm font-semibold'
-              : 'text-white/40 hover:text-white/70 hover:bg-white/[0.04]'
+              : 'text-slate-600 dark:text-white/40 hover:text-slate-900 dark:hover:text-white/70 hover:bg-slate-100 dark:hover:bg-white/[0.04]'
           }`}
         >
           <ShieldAlert className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -105,16 +105,16 @@ export const ConversationList: React.FC<ConversationListProps> = ({
       </div>
 
       {/* Search Input h-9 */}
-      <div className="p-3 border-b border-white/[0.06] shrink-0">
+      <div className="p-3 border-b border-slate-200 dark:border-white/10 shrink-0">
         <div className="relative">
-          <div className="h-9 rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 flex items-center gap-2 focus-within:border-emerald-500/50 focus-within:bg-white/[0.05] transition-colors">
-            <Search className="h-4 w-4 text-white/30 shrink-0" strokeWidth={1.75} />
+          <div className="h-9 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 px-3 flex items-center gap-2 focus-within:border-emerald-500/50 focus-within:bg-white dark:focus-within:bg-white/[0.05] transition-colors">
+            <Search className="h-4 w-4 text-slate-400 dark:text-white/30 shrink-0" strokeWidth={1.75} />
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-xs text-white placeholder:text-white/20 focus:outline-none w-full"
+              className="bg-transparent text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none w-full"
             />
           </div>
         </div>
@@ -144,9 +144,9 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     onSelectConversation(conv.id);
                   }
                 }}
-                className={`px-3 py-3 mx-2 rounded-xl hover:bg-white/[0.04] transition-colors flex items-center gap-3 cursor-pointer select-none ${
+                className={`px-3 py-3 mx-2 rounded-xl hover:bg-slate-100 dark:hover:bg-white/[0.04] transition-colors flex items-center gap-3 cursor-pointer select-none ${
                   isActive
-                    ? 'bg-white/[0.06] border-l-2 border-emerald-500'
+                    ? 'bg-slate-100 dark:bg-white/[0.06] border-l-2 border-emerald-500'
                     : ''
                 }`}
               >
@@ -158,11 +158,11 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                     username={conv.participant.username}
                     userId={conv.participant.id}
                     size="md"
-                    className="w-11 h-11 rounded-full ring-2 ring-white/[0.06]"
+                    className="w-11 h-11 rounded-full ring-2 ring-slate-200 dark:ring-white/[0.06]"
                   />
                   {/* 10x10 emerald ring-2 ring-background online dot */}
                   <span
-                    className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-background"
+                    className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-background"
                     aria-label="Online status"
                   />
                 </div>
@@ -170,16 +170,16 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                 {/* Name, Preview, Time & Unread Badge */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <h4 className="text-sm font-semibold text-white/90 truncate font-sora">
+                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white truncate font-sora">
                       {conv.participant.fullName}
                     </h4>
-                    <span className="text-[10px] text-white/25 shrink-0 font-medium">
+                    <span className="text-[10px] text-slate-400 dark:text-white/30 shrink-0 font-medium">
                       {formatTime(conv.updatedAt)}
                     </span>
                   </div>
 
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs text-white/40 truncate">
+                    <p className="text-xs text-slate-500 dark:text-white/40 truncate">
                       {conv.lastMessage?.content || 'Started conversation'}
                     </p>
 
@@ -189,7 +189,7 @@ export const ConversationList: React.FC<ConversationListProps> = ({
                       </span>
                     ) : (
                       <CheckCheck
-                        className="h-3 w-3 text-white/20 shrink-0"
+                        className="h-3 w-3 text-slate-400 dark:text-white/20 shrink-0"
                         strokeWidth={1.75}
                       />
                     )}

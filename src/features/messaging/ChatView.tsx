@@ -198,12 +198,12 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
   const hasContent = Boolean(messageText.trim() || mediaUrlInput.trim());
 
   return (
-    <div className="w-full max-w-full min-w-0 flex flex-1 h-[calc(100vh-120px)] min-h-[580px] rounded-2xl border border-white/[0.06] bg-surface-1/40 overflow-hidden shadow-2xl">
-      {/* LEFT COLUMN: CONVERSATIONS LIST (w-80 flex-shrink-0 border-r border-white/[0.06]) */}
+    <div className="w-full max-w-full min-w-0 flex flex-1 h-[calc(100vh-120px)] min-h-[580px] rounded-2xl border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-surface-1/40 overflow-hidden shadow-2xl">
+      {/* LEFT COLUMN: CONVERSATIONS LIST (w-80 flex-shrink-0 border-r border-slate-200 dark:border-white/[0.06]) */}
       <div
-        className={`w-full md:w-80 flex-shrink-0 border-r border-white/[0.06] ${
+        className={`w-full md:w-80 flex-shrink-0 border-r border-slate-200 dark:border-white/[0.06] ${
           activeConversation ? 'hidden md:flex' : 'flex'
-        } flex-col h-full bg-surface-1`}
+        } flex-col h-full bg-white dark:bg-surface-1`}
       >
         <ConversationList
           conversations={conversations}
@@ -215,20 +215,20 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
       {/* RIGHT COLUMN: ACTIVE CHAT STREAM (flex-1 min-w-0 flex flex-col) */}
       <div
-        className={`flex-1 min-w-0 flex flex-col h-full bg-surface-0 ${
+        className={`flex-1 min-w-0 flex flex-col h-full bg-slate-50/50 dark:bg-surface-0 ${
           activeConversation ? 'flex' : 'hidden md:flex'
         }`}
       >
         {activeConversation ? (
           <>
             {/* THREAD HEADER (h-14 avatar 32px, name, status text, Phone Video MoreVertical h-4 w-4) */}
-            <div className="h-14 px-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-1/40 backdrop-blur-sm z-10 shrink-0 select-none">
+            <div className="h-14 px-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-white dark:bg-[#0B130E] backdrop-blur-sm z-10 shrink-0 select-none">
               <div className="flex items-center gap-3 min-w-0">
                 {/* Mobile Back Button to conversation list */}
                 <button
                   type="button"
                   onClick={() => setActiveConversationId(null)}
-                  className="md:hidden p-1.5 -ml-1 rounded-lg text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                  className="md:hidden p-1.5 -ml-1 rounded-lg text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
                   aria-label="Back to conversations"
                 >
                   <ArrowLeft className="h-5 w-5" strokeWidth={1.75} />
@@ -241,20 +241,20 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                   username={activeConversation.participant.username}
                   userId={activeConversation.participant.id}
                   size="sm"
-                  className="w-8 h-8 rounded-full ring-1 ring-white/10 shrink-0"
+                  className="w-8 h-8 rounded-full ring-1 ring-slate-200 dark:ring-white/10 shrink-0"
                 />
 
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <Link
                       href={`/profile/${activeConversation.participant.username}`}
-                      className="text-sm font-semibold text-white/90 hover:text-emerald-400 transition-colors font-sora truncate block"
+                      className="text-sm font-semibold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-sora truncate block"
                     >
                       {activeConversation.participant.fullName}
                     </Link>
                   </div>
                   {/* Status text */}
-                  <p className="text-[11px] text-emerald-400 flex items-center gap-1 leading-none">
+                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1 leading-none">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>Active now</span>
                   </p>
@@ -265,7 +265,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   type="button"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
                   title="Voice call"
                   aria-label="Voice call"
                 >
@@ -273,7 +273,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                 </button>
                 <button
                   type="button"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
                   title="Video call"
                   aria-label="Video call"
                 >
@@ -284,17 +284,17 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                   <button
                     type="button"
                     onClick={() => setShowOptionsDropdown(!showOptionsDropdown)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-white/60 hover:text-white hover:bg-white/[0.06] transition-colors"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.06] transition-colors"
                     aria-label="Conversation options"
                   >
                     <MoreVertical className="h-4 w-4" strokeWidth={1.75} />
                   </button>
 
                   {showOptionsDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-surface-4 rounded-xl shadow-2xl border border-white/[0.08] py-1.5 z-50 text-xs">
+                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-surface-4 rounded-xl shadow-2xl border border-slate-200 dark:border-white/[0.08] py-1.5 z-50 text-xs">
                       <Link
                         href={`/profile/${activeConversation.participant.username}`}
-                        className="flex items-center gap-2 px-3.5 py-2 text-white/70 hover:text-white hover:bg-white/[0.04]"
+                        className="flex items-center gap-2 px-3.5 py-2 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]"
                         onClick={() => setShowOptionsDropdown(false)}
                       >
                         <span>View African Profile</span>
@@ -305,9 +305,9 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                           setShowOptionsDropdown(false);
                           setIsReportModalOpen(true);
                         }}
-                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-white/70 hover:text-white hover:bg-white/[0.04]"
+                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-slate-700 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.04]"
                       >
-                        <ShieldAlert className="h-3.5 w-3.5 text-white/40" strokeWidth={1.75} />
+                        <ShieldAlert className="h-3.5 w-3.5 text-slate-400 dark:text-white/40" strokeWidth={1.75} />
                         <span>Report Dialogue</span>
                       </button>
                       <button
@@ -316,7 +316,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                           setShowOptionsDropdown(false);
                           setIsBlockModalOpen(true);
                         }}
-                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-red-400 hover:bg-red-500/10"
+                        className="w-full text-left flex items-center gap-2 px-3.5 py-2 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10"
                       >
                         <Ban className="h-3.5 w-3.5" strokeWidth={1.75} />
                         <span>Block User</span>
@@ -357,10 +357,10 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
                   return (
                     <React.Fragment key={msg.id}>
-                      {/* Date separators text-[10px] text-white/15 */}
+                      {/* Date separators text-[10px] */}
                       {showDateSeparator && (
                         <div className="flex items-center justify-center my-4">
-                          <span className="text-[10px] text-white/15 px-3 py-0.5 rounded-full bg-white/[0.02] border border-white/[0.04] font-medium select-none">
+                          <span className="text-[10px] text-slate-400 dark:text-white/30 px-3 py-0.5 rounded-full bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.04] font-medium select-none">
                             {formatDate(msg.createdAt)}
                           </span>
                         </div>
@@ -371,8 +371,8 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                         <div
                           className={`leading-relaxed ${
                             isMine
-                              ? 'self-end max-w-[75%] bg-emerald-700/40 rounded-2xl rounded-br-md px-4 py-2.5 text-sm text-white/90'
-                              : 'self-start max-w-[75%] bg-white/[0.06] rounded-2xl rounded-bl-md px-4 py-2.5 text-sm text-white/80'
+                              ? 'self-end max-w-[75%] bg-emerald-600 text-white dark:bg-emerald-700/60 dark:text-white rounded-2xl rounded-br-md px-4 py-2.5 text-sm'
+                              : 'self-start max-w-[75%] bg-slate-100 text-slate-900 dark:bg-white/[0.06] dark:text-white/90 border border-slate-200 dark:border-white/5 rounded-2xl rounded-bl-md px-4 py-2.5 text-sm'
                           }`}
                         >
                           {/* Attached Image (if present and not audio) */}
@@ -395,15 +395,15 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                                 duration="0:32"
                               />
 
-                              {/* Translation row below: border-t border-white/[0.04] mt-2 pt-2 */}
-                              <div className="border-t border-white/[0.04] mt-2 pt-2 flex items-start gap-2">
-                                <Languages className="h-3.5 w-3.5 text-amber-400/60 shrink-0 mt-0.5" strokeWidth={1.75} />
+                              {/* Translation row below: border-t border-slate-200 dark:border-white/10 mt-2 pt-2 */}
+                              <div className="border-t border-slate-200 dark:border-white/10 mt-2 pt-2 flex items-start gap-2 text-slate-600 dark:text-white/60">
+                                <Languages className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400/80 shrink-0 mt-0.5" strokeWidth={1.75} />
                                 <div className="flex-1 min-w-0">
-                                  <p className="italic text-xs text-white/40 leading-relaxed">
+                                  <p className="italic text-xs text-slate-600 dark:text-white/60 leading-relaxed">
                                     {isTranslated && translation ? translation.translatedText : msg.content}
                                   </p>
                                 </div>
-                                <span className="text-[9px] bg-amber-500/10 text-amber-400/60 px-1.5 py-0.5 rounded font-mono shrink-0">
+                                <span className="text-[9px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-mono shrink-0">
                                   Yoruba → English
                                 </span>
                               </div>
@@ -414,12 +414,12 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
                               {/* Translation row if text is translated */}
                               {isTranslated && translation && (
-                                <div className="border-t border-white/[0.04] mt-2 pt-2 flex items-start gap-2">
-                                  <Languages className="h-3.5 w-3.5 text-amber-400/60 shrink-0 mt-0.5" strokeWidth={1.75} />
-                                  <p className="italic text-xs text-white/40 leading-relaxed flex-1">
+                                <div className="border-t border-slate-200 dark:border-white/10 mt-2 pt-2 flex items-start gap-2 text-slate-600 dark:text-white/60">
+                                  <Languages className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400/80 shrink-0 mt-0.5" strokeWidth={1.75} />
+                                  <p className="italic text-xs text-slate-600 dark:text-white/60 leading-relaxed flex-1">
                                     {translation.translatedText}
                                   </p>
-                                  <span className="text-[9px] bg-amber-500/10 text-amber-400/60 px-1.5 py-0.5 rounded font-mono shrink-0">
+                                  <span className="text-[9px] bg-amber-500/10 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-mono shrink-0">
                                     Yoruba → English
                                   </span>
                                 </div>
@@ -428,16 +428,16 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                           )}
                         </div>
 
-                        {/* Metadata: Timestamp text-[9px] text-white/15; outgoing CheckCheck h-3 w-3 read=emerald / delivered=muted */}
+                        {/* Metadata: Timestamp text-[10px] text-slate-500 dark:text-white/40; outgoing CheckCheck h-3 w-3 */}
                         <div
-                          className={`flex items-center gap-1.5 mt-1 px-1 text-[9px] text-white/15 select-none ${
+                          className={`flex items-center gap-1.5 mt-1 px-1 text-[10px] text-slate-500 dark:text-white/40 select-none ${
                             isMine ? 'justify-end' : 'justify-start'
                           }`}
                         >
                           <span>{formatTime(msg.createdAt)}</span>
                           {isMine && (
                             <CheckCheck
-                              className={`h-3 w-3 ${msg.isRead ? 'text-emerald-400' : 'text-white/30'}`}
+                              className={`h-3 w-3 ${msg.isRead ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-white/30'}`}
                               strokeWidth={1.75}
                             />
                           )}
@@ -458,14 +458,14 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                   );
                 })
               ) : (
-                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-white/30 space-y-2 select-none">
-                  <div className="w-12 h-12 rounded-2xl bg-white/[0.03] border border-white/[0.06] text-emerald-400 flex items-center justify-center">
+                <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400 dark:text-white/30 space-y-2 select-none">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                     <Sparkles className="h-6 w-6" strokeWidth={1.75} />
                   </div>
-                  <h3 className="font-semibold text-sm text-white/90 font-sora">
+                  <h3 className="font-semibold text-sm text-slate-900 dark:text-white/90 font-sora">
                     Start Dialogue
                   </h3>
-                  <p className="text-xs text-white/40 max-w-xs">
+                  <p className="text-xs text-slate-500 dark:text-white/40 max-w-xs">
                     Send a direct note to {activeConversation.participant.fullName} across borders.
                   </p>
                 </div>
@@ -473,7 +473,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
               {/* Typing indicator bubble */}
               {isPartnerTyping && (
-                <div className="flex items-center gap-2 text-xs text-white/40 italic p-2 bg-white/[0.04] rounded-xl w-fit">
+                <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-white/40 italic p-2 bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/5 rounded-xl w-fit">
                   <span className="flex gap-1 items-center">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse delay-100" />
@@ -488,18 +488,18 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
 
             {/* Media URL Input Box (if opened via ImagePlus) */}
             {showMediaInput && (
-              <div className="px-4 py-2 bg-surface-1 border-t border-white/[0.06] flex items-center gap-2 shrink-0">
+              <div className="px-4 py-2 bg-white dark:bg-surface-1 border-t border-slate-200 dark:border-white/10 flex items-center gap-2 shrink-0">
                 <input
                   type="url"
                   placeholder="Paste media link URL..."
                   value={mediaUrlInput}
                   onChange={(e) => setMediaUrlInput(e.target.value)}
-                  className="flex-1 text-xs px-3 py-1.5 rounded-xl border border-white/[0.08] bg-white/[0.03] text-white focus:outline-none focus:border-emerald-500/50"
+                  className="flex-1 text-xs px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/[0.08] bg-slate-100 dark:bg-white/[0.03] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/40 focus:outline-none focus:border-emerald-500/50"
                 />
                 <button
                   type="button"
                   onClick={() => setShowMediaInput(false)}
-                  className="text-white/40 hover:text-white p-1"
+                  className="text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white p-1"
                   aria-label="Close media input"
                 >
                   <X className="h-4 w-4" strokeWidth={1.75} />
@@ -514,7 +514,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                 className={`mx-4 mb-4 rounded-2xl flex items-end gap-2 p-2 min-h-[48px] pointer-events-auto transition-colors ${
                   isRecordingActive
                     ? 'border border-red-500/20 bg-red-500/5'
-                    : 'bg-white/[0.04] border border-white/[0.06]'
+                    : 'bg-slate-100 dark:bg-white/[0.04] border border-slate-200 dark:border-white/10'
                 }`}
               >
                 {isRecordingActive ? (
@@ -535,7 +535,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                       <EmojiPickerPopover
                         onSelectEmoji={(emoji) => setMessageText((prev) => prev + emoji)}
                         placement="top"
-                        buttonClassName="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors p-0"
+                        buttonClassName="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.06] transition-colors p-0"
                       />
 
                       {/* ImagePlus in 32x32 hit target */}
@@ -544,8 +544,8 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                         onClick={() => setShowMediaInput(!showMediaInput)}
                         className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                           showMediaInput || mediaUrlInput
-                            ? 'bg-emerald-500/20 text-emerald-400'
-                            : 'text-white/50 hover:text-white hover:bg-white/[0.06]'
+                            ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400'
+                            : 'text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.06]'
                         }`}
                         title="Attach image"
                         aria-label="Attach image"
@@ -557,7 +557,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                       <button
                         type="button"
                         onClick={() => setShowMediaInput(!showMediaInput)}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-white/50 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 dark:text-white/40 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/60 dark:hover:bg-white/[0.06] transition-colors"
                         title="Attach file"
                         aria-label="Attach file"
                       >
@@ -573,7 +573,7 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
                       value={messageText}
                       onChange={handleTextareaChange}
                       onKeyDown={handleKeyDown}
-                      className="flex-1 min-h-[32px] max-h-[120px] resize-none bg-transparent text-sm text-white placeholder:text-white/25 focus:outline-none py-1.5 px-2 leading-relaxed"
+                      className="flex-1 min-h-[32px] max-h-[120px] resize-none bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none py-1.5 px-2 leading-relaxed"
                     />
 
                     {/* Right Action: empty → Mic in 36x36 bg-emerald-600/20; has text → Send 36x36 bg-emerald-600 */}
@@ -602,14 +602,14 @@ export const ChatView: React.FC<ChatViewProps> = ({ initialConversationId }) => 
             </div>
           </>
         ) : (
-          <div className="h-full flex flex-col items-center justify-center text-center p-8 text-white/30 space-y-3 select-none">
-            <div className="w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-emerald-400">
+          <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-400 dark:text-white/30 space-y-3 select-none">
+            <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.06] flex items-center justify-center text-emerald-600 dark:text-emerald-400">
               <Sparkles className="h-8 w-8 text-[#D9A441]" strokeWidth={1.75} />
             </div>
-            <h3 className="text-base font-bold text-white/90 font-sora">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white/90 font-sora">
               Select an African Dialogue
             </h3>
-            <p className="text-xs text-white/40 max-w-xs leading-relaxed">
+            <p className="text-xs text-slate-500 dark:text-white/40 max-w-xs leading-relaxed">
               Choose an existing conversation from the list or start a fresh connection across borders.
             </p>
           </div>
