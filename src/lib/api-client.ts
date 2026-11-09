@@ -1,18 +1,11 @@
 /**
  * AfriLink Core API Client & Response Envelope Enforcement
- * 
- * Strict implementation of Phase 2/4 API Specification:
- * - Reads NEXT_PUBLIC_API_BASE_URL with fallback to 'http://localhost:4000/api/v1'
- * - Guarantees strict response envelope structure:
- *   {
- *     "data": T | null,
- *     "meta": Meta | null,
- *     "error": { "code": string, "message": string, "details"?: any[] } | null
- *   }
- * - Auto-injects Authorization Bearer header when JWT access token is present
- * - Silent 401 token refresh queue mutex via POST /auth/refresh
- * - Non-throwing network error fallback returning normalized NETWORK_ERROR envelope
- * - Graceful mock fallback guard for offline / unconfigured environments
+ *
+ * Fully integrated with NestJS Cookie Session & CSRF Architecture:
+ * - Includes credentials: 'include' on all requests for HTTP-Only cookies (afrilink_at, afrilink_rt)
+ * - Automatically injects X-CSRF-Token header from afrilink_csrf cookie on mutating methods
+ * - Handles cookie-based /auth/refresh mutex
+ * - Guarantees strict response envelope structure: { data, meta, error }
  */
 
 export interface ApiErrorDetail {
@@ -61,22 +54,31 @@ export interface ApiRequestOptions extends RequestInit {
 }
 
 /**
- * Normalizes any backend response (enveloped, NestJS error, or raw) into
- * the strict AfriLink API Response Envelope.
+ * Utility to extract cookie value by name in browser environments.
+ */
+export function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+  return null;
+}
+
+/**
+ * Normalizes any backend response into strict AfriLink API Response Envelope.
  */
 export function parseEnvelope<T = any>(
   raw: any,
   status: number = 200,
   statusText: string = 'OK'
 ): ApiResponse<T> {
-  // 1. Handle empty or null bodies
   if (raw === null || raw === undefined || raw === '') {
     if (status >= 400) {
       return {
         data: null,
         meta: null,
         error: {
-          code: status === 401 ? 'UNAUTHORIZED' : status === 404 ? 'NOT_FOUND' : 'API_ERROR',
+          code: status === 401 ? 'AUTHENTICATION_REQUIRED' : status === 404 ? 'NOT_FOUND' : 'API_ERROR',
           message: statusText || 'Request failed',
         },
       };
@@ -84,8 +86,6 @@ export function parseEnvelope<T = any>(
     return { data: null, meta: null, error: null };
   }
 
-  // 2. Handle standard NestJS Exception Filter payloads { statusCode, message, error }
-  // e.g.: { statusCode: 400, message: ['...'], error: 'Bad Request' }
   if (
     typeof raw === 'object' &&
     ('statusCode' in raw || (typeof raw.error === 'string' && !('data' in raw)))
@@ -98,9 +98,9 @@ export function parseEnvelope<T = any>(
       if (raw.error && typeof raw.error === 'string') {
         code = raw.error.toUpperCase().replace(/\s+/g, '_');
       } else if (statusCode === 401) {
-        code = 'UNAUTHORIZED';
+        code = 'AUTHENTICATION_REQUIRED';
       } else if (statusCode === 422 || statusCode === 400) {
-        code = 'VALIDATION_ERROR';
+        code = 'VALIDATION_FAILED';
       } else if (statusCode === 404) {
         code = 'NOT_FOUND';
       }
@@ -117,19 +117,12 @@ export function parseEnvelope<T = any>(
         );
       } else if (typeof raw.message === 'string') {
         message = raw.message;
-      } else if (typeof raw.error === 'string') {
-        message = raw.error;
       }
 
-      return {
-        data: null,
-        meta: null,
-        error: { code, message, details },
-      };
+      return { data: null, meta: null, error: { code, message, details } };
     }
   }
 
-  // 3. Handle standard AfriLink Envelope { data, meta, error }
   if (typeof raw === 'object' && ('data' in raw || 'error' in raw || 'meta' in raw)) {
     const data = raw.data !== undefined ? raw.data : null;
     const meta = raw.meta !== undefined ? raw.meta : null;
@@ -137,13 +130,13 @@ export function parseEnvelope<T = any>(
 
     if (raw.error && typeof raw.error === 'object') {
       error = {
-        code: raw.error.code || (status === 401 ? 'UNAUTHORIZED' : status === 422 ? 'VALIDATION_ERROR' : 'API_ERROR'),
+        code: raw.error.code || (status === 401 ? 'AUTHENTICATION_REQUIRED' : 'API_ERROR'),
         message: raw.error.message || statusText || 'Request failed',
         details: Array.isArray(raw.error.details) ? raw.error.details : undefined,
       };
     } else if (status >= 400) {
       error = {
-        code: status === 401 ? 'UNAUTHORIZED' : status === 422 ? 'VALIDATION_ERROR' : 'API_ERROR',
+        code: status === 401 ? 'AUTHENTICATION_REQUIRED' : 'API_ERROR',
         message: statusText || 'Request failed',
       };
     }
@@ -151,56 +144,41 @@ export function parseEnvelope<T = any>(
     return { data, meta, error };
   }
 
-  // 4. Handle raw success object / array without envelope
   if (status < 400) {
-    return {
-      data: raw as T,
-      meta: null,
-      error: null,
-    };
+    return { data: raw as T, meta: null, error: null };
   }
 
-  // 5. Fallback for unhandled error status
   return {
     data: null,
     meta: null,
-    error: {
-      code: 'API_ERROR',
-      message: statusText || 'Unknown error occurred',
-    },
+    error: { code: 'API_ERROR', message: statusText || 'Unknown error occurred' },
   };
 }
 
-/**
- * Creates a normalized NETWORK_ERROR envelope for offline or timeout scenarios.
- */
 export function createNetworkErrorEnvelope(errorMessage?: string): ApiResponse<null> {
   return {
     data: null,
     meta: null,
     error: {
       code: 'NETWORK_ERROR',
-      message: errorMessage || 'Unable to connect to the AfriLink server. Please check your network connection.',
+      message: errorMessage || 'Unable to connect to the AfriLink server.',
     },
   };
 }
 
 export class ApiClient {
   private baseURL: string;
-  private accessToken: string | null = null;
-  private refreshToken: string | null = null;
-  private refreshTokenKey = 'afrilink_refresh_token';
   public defaultThrowOnError: boolean = false;
 
-  // Refresh token mutex queue
+  // Refresh token mutex
   private isRefreshing = false;
-  private refreshPromise: Promise<string | null> | null = null;
+  private refreshPromise: Promise<boolean> | null = null;
 
   constructor(baseURL?: string, defaultThrowOnError: boolean = false) {
     this.baseURL =
       baseURL ||
       (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_BASE_URL) ||
-      'http://localhost:4000/api/v1';
+      'http://localhost:3001/api/v1';
     this.defaultThrowOnError = defaultThrowOnError;
   }
 
@@ -216,64 +194,29 @@ export class ApiClient {
     return Boolean(typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_BASE_URL);
   }
 
-  // --- Token Management ---
-  public setAccessToken(token: string | null): void {
-    this.accessToken = token;
+  // --- Backward-Compatible Token Stubs (Cookie Architecture Migration) ---
+  public setAccessToken(_token: string | null): void {
+    // In cookie architecture, access tokens are managed exclusively via HttpOnly cookies
   }
 
   public getAccessToken(): string | null {
-    return this.accessToken;
+    return null;
   }
 
-  public setRefreshToken(token: string | null): void {
-    this.refreshToken = token;
-    if (typeof window !== 'undefined') {
-      try {
-        if (token) {
-          localStorage.setItem(this.refreshTokenKey, token);
-        } else {
-          localStorage.removeItem(this.refreshTokenKey);
-        }
-      } catch {
-        // Safe ignore on restricted environments
-      }
-    }
+  public setRefreshToken(_token: string | null): void {
+    // Refresh tokens are managed exclusively via HttpOnly cookies
   }
 
   public getRefreshToken(): string | null {
-    if (this.refreshToken) {
-      return this.refreshToken;
-    }
-    if (typeof window !== 'undefined') {
-      try {
-        return localStorage.getItem(this.refreshTokenKey);
-      } catch {
-        return null;
-      }
-    }
     return null;
   }
 
   public clearTokens(): void {
-    this.accessToken = null;
-    this.refreshToken = null;
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.removeItem(this.refreshTokenKey);
-      } catch {
-        // Safe ignore
-      }
-    }
+    // In cookie architecture, session clearance is performed via POST /auth/logout
   }
 
-  // --- Silent Token Refresh Mutex ---
-  private async refreshAccessToken(): Promise<string | null> {
-    const refreshToken = this.getRefreshToken();
-    if (!refreshToken) {
-      this.clearTokens();
-      return null;
-    }
-
+  // --- Cookie-Based Token Refresh Mutex ---
+  public async refreshAccessToken(): Promise<boolean> {
     if (this.isRefreshing && this.refreshPromise) {
       return this.refreshPromise;
     }
@@ -283,35 +226,15 @@ export class ApiClient {
       try {
         const response = await fetch(`${this.baseURL}/auth/refresh`, {
           method: 'POST',
+          credentials: 'include', // Sends afrilink_rt HTTP-Only cookie
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ refreshToken }),
         });
 
-        let envelope: ApiResponse<{ accessToken: string; refreshToken?: string }>;
-        if (response.ok) {
-          try {
-            const text = await response.text();
-            envelope = parseEnvelope(text ? JSON.parse(text) : null, response.status);
-          } catch {
-            envelope = { data: null, meta: null, error: null };
-          }
-
-          if (envelope.data?.accessToken) {
-            this.setAccessToken(envelope.data.accessToken);
-            if (envelope.data.refreshToken) {
-              this.setRefreshToken(envelope.data.refreshToken);
-            }
-            return envelope.data.accessToken;
-          }
-        }
-
-        this.clearTokens();
-        return null;
+        return response.ok;
       } catch {
-        this.clearTokens();
-        return null;
+        return false;
       } finally {
         this.isRefreshing = false;
         this.refreshPromise = null;
@@ -334,21 +257,38 @@ export class ApiClient {
       ? endpoint
       : `${this.baseURL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
+    const method = (options.method || 'GET').toUpperCase();
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
       ...((options.headers as Record<string, string>) || {}),
     };
 
-    if (this.accessToken && !headers['Authorization']) {
-      headers['Authorization'] = `Bearer ${this.accessToken}`;
+    // Auto-inject CSRF Token header for mutating requests
+    if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+      const csrfToken = getCookie('afrilink_csrf');
+      const hasExistingCsrf = Object.keys(headers).some(
+        (key) => key.toLowerCase() === 'x-csrf-token'
+      );
+      if (csrfToken && !hasExistingCsrf) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+    }
+
+    // Configure optional timeout signal
+    let signal = options.signal;
+    if (options.timeoutMs && typeof AbortSignal !== 'undefined' && 'timeout' in AbortSignal) {
+      signal = AbortSignal.timeout(options.timeoutMs);
     }
 
     let response: Response;
     try {
       response = await fetch(url, {
         ...options,
+        method,
         headers,
+        signal,
+        credentials: 'include', // Passes HTTP-Only cookies (afrilink_at, afrilink_rt)
       });
     } catch (networkError: any) {
       const networkEnvelope = createNetworkErrorEnvelope(networkError?.message);
@@ -364,32 +304,16 @@ export class ApiClient {
       return networkEnvelope as ApiResponse<T>;
     }
 
-    // Intercept 401 for silent token refresh
-    if (response.status === 401 && retryOn401) {
-      let isTokenExpired = false;
-      try {
-        const text = await response.clone().text();
-        if (text) {
-          const parsed = JSON.parse(text);
-          if (
-            parsed?.error?.code === 'TOKEN_EXPIRED' ||
-            parsed?.error?.code === 'UNAUTHORIZED' ||
-            parsed?.error?.message?.toLowerCase().includes('expired') ||
-            parsed?.message?.toLowerCase?.()?.includes('expired')
-          ) {
-            isTokenExpired = true;
-          }
-        }
-      } catch {
-        isTokenExpired = true;
-      }
+    // Intercept 401 for silent cookie-based token refresh
+    const isAuthHandshake =
+      endpoint.includes('/auth/login') ||
+      endpoint.includes('/auth/refresh') ||
+      endpoint.includes('/auth/register');
 
-      if (isTokenExpired || response.status === 401) {
-        const newAccessToken = await this.refreshAccessToken();
-        if (newAccessToken) {
-          headers['Authorization'] = `Bearer ${newAccessToken}`;
-          return this.request<T>(endpoint, { ...options, headers }, false);
-        }
+    if (response.status === 401 && retryOn401 && !isAuthHandshake) {
+      const refreshed = await this.refreshAccessToken();
+      if (refreshed) {
+        return this.request<T>(endpoint, { ...options, headers }, false);
       }
     }
 
@@ -403,18 +327,13 @@ export class ApiClient {
       envelope = {
         data: null,
         meta: null,
-        error: {
-          code: 'PARSE_ERROR',
-          message: 'Invalid response envelope received from server.',
-        },
+        error: { code: 'PARSE_ERROR', message: 'Invalid response envelope.' },
       };
     }
 
-    // Handle error dispatch / throwing
     if (!response.ok || envelope.error) {
       if (shouldThrow) {
-        const errCode =
-          envelope.error?.code || (response.status === 401 ? 'INVALID_CREDENTIALS' : 'API_ERROR');
+        const errCode = envelope.error?.code || 'API_ERROR';
         const errMessage = envelope.error?.message || response.statusText || 'Operation failed';
         throw new ApiError(errCode, errMessage, response.status, envelope.error?.details, envelope);
       }
@@ -428,11 +347,7 @@ export class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  public post<T = any>(
-    endpoint: string,
-    body?: any,
-    options?: ApiRequestOptions
-  ): Promise<ApiResponse<T>> {
+  public post<T = any>(endpoint: string, body?: any, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'POST',
@@ -440,11 +355,7 @@ export class ApiClient {
     });
   }
 
-  public put<T = any>(
-    endpoint: string,
-    body?: any,
-    options?: ApiRequestOptions
-  ): Promise<ApiResponse<T>> {
+  public put<T = any>(endpoint: string, body?: any, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PUT',
@@ -452,11 +363,7 @@ export class ApiClient {
     });
   }
 
-  public patch<T = any>(
-    endpoint: string,
-    body?: any,
-    options?: ApiRequestOptions
-  ): Promise<ApiResponse<T>> {
+  public patch<T = any>(endpoint: string, body?: any, options?: ApiRequestOptions): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, {
       ...options,
       method: 'PATCH',
@@ -468,18 +375,10 @@ export class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 
-  /**
-   * Safe request method that guarantees no unhandled exception is thrown,
-   * returning normalized { data, meta, error } envelope in all cases.
-   */
-  public safeRequest<T = any>(
-    endpoint: string,
-    options: ApiRequestOptions = {}
-  ): Promise<ApiResponse<T>> {
+  public safeRequest<T = any>(endpoint: string, options: ApiRequestOptions = {}): Promise<ApiResponse<T>> {
     return this.request<T>(endpoint, { ...options, throwOnError: false });
   }
 }
 
-// Default export for src/lib/api-client: non-throwing envelope client
 export const apiClient = new ApiClient(undefined, false);
 export default apiClient;
